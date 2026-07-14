@@ -280,21 +280,22 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       overflow: hidden;
+      background: #fff;
     }
 
     .rank-row,
     .rank-head {
       display: grid;
-      grid-template-columns: 52px 1fr 92px;
+      grid-template-columns: 52px 1fr 102px 70px;
       align-items: center;
       gap: 10px;
-      min-height: 42px;
-      padding: 0 12px;
+      min-height: 48px;
+      padding: 0 14px;
       border-bottom: 1px solid var(--line);
     }
 
     .rank-head {
-      background: #f2f5f9;
+      background: #f7f9fc;
       color: var(--muted);
       font-size: 12px;
       font-weight: 700;
@@ -303,15 +304,20 @@
     .rank-row {
       background: #fff;
       cursor: pointer;
+      transition: background 0.14s ease;
     }
 
     .rank-row:last-child {
       border-bottom: 0;
     }
 
+    .rank-row:hover {
+      background: #f8fbff;
+    }
+
     .rank-row.selected {
       background: #eef5ff;
-      outline: 1px solid rgba(37, 99, 235, 0.42);
+      outline: 1px solid rgba(37, 99, 235, 0.5);
       outline-offset: -1px;
     }
 
@@ -324,6 +330,41 @@
       background: #edf1f7;
       font-weight: 700;
       color: #405064;
+    }
+
+    .rank-row.selected .rank-num {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .keyword-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-weight: 800;
+    }
+
+    .keyword-badge {
+      border: 1px solid #d7e0f0;
+      background: #f7f9fc;
+      color: #657286;
+      border-radius: 999px;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .rank-detail-button {
+      height: 28px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      color: #425166;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
     }
 
     .change.up { color: var(--green); font-weight: 700; }
@@ -701,37 +742,38 @@
         <article class="card span-7">
           <div class="card-title">
             <h3>검색량 수요 분석</h3>
-            <span class="caption">월별 인기 키워드 랭킹</span>
+            <span class="caption">월간 인기 검색어 TOP 8</span>
           </div>
           <div class="ranking" id="ranking">
             <div class="rank-head">
               <span>순위</span>
               <span>키워드</span>
               <span>전월 대비</span>
+              <span>상세</span>
             </div>
             <div class="rank-row selected" data-keyword="미니냉장고" data-change="▲ 12%" data-tags="상시,제품 탐색,소형 가전" data-related="소형냉장고, 작은 냉장고, 미니 냉장고 추천" data-reco="검색량이 가장 넓은 기본 키워드이므로 제품 발견을 위한 대표 키워드로 활용">
-              <span><b class="rank-num">1</b></span><strong>미니냉장고</strong><span class="change up">▲ 12%</span>
+              <span><b class="rank-num">1</b></span><span class="keyword-main">미니냉장고 <em class="keyword-badge">제품군</em></span><span class="change up">▲ 12%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
             <div class="rank-row" data-keyword="술장고" data-change="▲ 24%" data-tags="여름,홈바,음료 보관" data-related="맥주 냉장고, 홈바 냉장고, 음료 냉장고" data-reco="여름철 음료 보관과 홈바 사용 장면을 강조한 콘텐츠에 활용">
-              <span><b class="rank-num">2</b></span><strong>술장고</strong><span class="change up">▲ 24%</span>
+              <span><b class="rank-num">2</b></span><span class="keyword-main">술장고 <em class="keyword-badge">상승</em></span><span class="change up">▲ 24%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
             <div class="rank-row" data-keyword="소형냉장고" data-change="▲ 8%" data-tags="상시,제품 탐색,공간 절약" data-related="미니냉장고, 원룸 냉장고, 작은 냉장고" data-reco="제품군 탐색 키워드로 검색 광고와 비교형 콘텐츠에 활용">
-              <span><b class="rank-num">3</b></span><strong>소형냉장고</strong><span class="change up">▲ 8%</span>
+              <span><b class="rank-num">3</b></span><span class="keyword-main">소형냉장고 <em class="keyword-badge">제품군</em></span><span class="change up">▲ 8%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
             <div class="rank-row" data-keyword="자취 냉장고" data-change="▼ 3%" data-tags="신학기,원룸,자취방" data-related="원룸 냉장고, 자취 필수템, 자취방 가전" data-reco="2~3월 신학기 시즌에 자취방 배치 콘텐츠로 재활용">
-              <span><b class="rank-num">4</b></span><strong>자취 냉장고</strong><span class="change down">▼ 3%</span>
+              <span><b class="rank-num">4</b></span><span class="keyword-main">자취 냉장고 <em class="keyword-badge">상황</em></span><span class="change down">▼ 3%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
             <div class="rank-row" data-keyword="화장품 냉장고" data-change="▲ 5%" data-tags="여름,뷰티,보관" data-related="스킨케어 냉장고, 화장대 냉장고, 뷰티 냉장고" data-reco="뷰티 보관 사용 상황을 별도 타겟 콘텐츠로 테스트">
-              <span><b class="rank-num">5</b></span><strong>화장품 냉장고</strong><span class="change up">▲ 5%</span>
+              <span><b class="rank-num">5</b></span><span class="keyword-main">화장품 냉장고 <em class="keyword-badge">목적</em></span><span class="change up">▲ 5%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
             <div class="rank-row" data-keyword="사무실 냉장고" data-change="▲ 2%" data-tags="직장인,개인 공간,음료" data-related="개인 냉장고, 책상 냉장고, 사무실 미니냉장고" data-reco="직장인에게 책상 옆 개인 음료 보관 장면으로 접근">
-              <span><b class="rank-num">6</b></span><strong>사무실 냉장고</strong><span class="change up">▲ 2%</span>
+              <span><b class="rank-num">6</b></span><span class="keyword-main">사무실 냉장고 <em class="keyword-badge">상황</em></span><span class="change up">▲ 2%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
             <div class="rank-row" data-keyword="캐릭터 냉장고" data-change="▲ 18%" data-tags="감성,굿즈,선물" data-related="귀여운 냉장고, 캐릭터 가전, 라인프렌즈 냉장고" data-reco="검색량은 작아도 상승률이 높으므로 차별 메시지와 선물 콘텐츠에 활용">
-              <span><b class="rank-num">7</b></span><strong>캐릭터 냉장고</strong><span class="change up">▲ 18%</span>
+              <span><b class="rank-num">7</b></span><span class="keyword-main">캐릭터 냉장고 <em class="keyword-badge">감성</em></span><span class="change up">▲ 18%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
             <div class="rank-row" data-keyword="꼬모냉장고" data-change="▲ 6%" data-tags="브랜드,직접 탐색,구매 검토" data-related="꼬모 냉장고 후기, 꼬모냉장고 가격, 꼬모냉장고 소음" data-reco="브랜드명 검색자는 구매 검토 단계일 가능성이 높으므로 리뷰와 불안 해소 콘텐츠 연결">
-              <span><b class="rank-num">8</b></span><strong>꼬모냉장고</strong><span class="change up">▲ 6%</span>
+              <span><b class="rank-num">8</b></span><span class="keyword-main">꼬모냉장고 <em class="keyword-badge">브랜드</em></span><span class="change up">▲ 6%</span><button class="rank-detail-button" type="button">보기</button>
             </div>
           </div>
 
