@@ -203,6 +203,7 @@ export default function Home() {
   }, [datasets.search, liveMarket]);
 
   const ageRows = liveMarket?.ages?.length ? liveMarket.ages : sampleAges;
+  const topAge = [...ageRows].sort((a, b) => b.value - a.value)[0];
   const femaleShare = liveMarket?.gender.female || 58;
   const maleShare = liveMarket?.gender.male || 42;
   const monthLabels = liveMarket?.searchPeriods?.length ? liveMarket.searchPeriods.map((period) => period.slice(2, 7).replace("-", ".")) : trend.map((_, index) => `${index + 1}월`);
@@ -283,9 +284,9 @@ export default function Home() {
             <section className="hero-insight">
               <div className="hero-copy">
                 <span className="ai-label">AI 종합 인사이트</span>
-                <h2>현재 가장 가능성 높은 고객은<br/><strong>{analysis.target}</strong>입니다.</h2>
-                <p>핵심 구매 동기는 <b>{analysis.topMotive}</b>, 가장 큰 저해 요인은 <b>{analysis.topBarrier}</b>로 나타났습니다.</p>
-                <div className="evidence"><span>근거</span>{analysis.evidence}</div>
+                <h2>{liveMarket ? <>네이버 쇼핑에서 관심 신호가 가장 높은 연령은<br/><strong>{topAge.label}</strong>입니다.</> : <>현재 가장 가능성 높은 고객은<br/><strong>{analysis.target}</strong>입니다.</>}</h2>
+                <p>{liveMarket ? <>해당 연령대의 24개월 평균 관심지수는 <b>{topAge.value}</b>이며, 실제 구매 연령은 주문·CRM 데이터로 별도 확인해야 합니다.</> : <>핵심 구매 동기는 <b>{analysis.topMotive}</b>, 가장 큰 저해 요인은 <b>{analysis.topBarrier}</b>로 나타났습니다.</>}</p>
+                <div className="evidence"><span>근거</span>{liveMarket ? "네이버 쇼핑인사이트 ‘소형 냉장고’ 키워드 연령별 클릭 추이" : analysis.evidence}</div>
               </div>
               <div className="hero-score">
                 <div className="score-ring" style={{ "--score": "72%" } as React.CSSProperties}><strong>72</strong><span>시장 기회 점수</span></div>
@@ -325,9 +326,9 @@ export default function Home() {
               <article className="panel target-panel">
                 <div className="panel-head"><div><span className="panel-kicker">TARGET SIGNAL</span><h3>관심층 연령 분포</h3></div><span className="source-badge">네이버 쇼핑 클릭</span></div>
                 <div className="horizontal-bars">
-                  {ageRows.map((age) => <div key={age.label}><span>{age.label}</span><i><b style={{ width: `${Math.min(100, age.value / Math.max(...ageRows.map((item) => item.value), 1) * 100)}%` }}/></i><strong>{age.value}%</strong></div>)}
+                  {ageRows.map((age) => <div key={age.label}><span>{age.label}</span><i><b style={{ width: `${Math.min(100, age.value / Math.max(...ageRows.map((item) => item.value), 1) * 100)}%` }}/></i><strong>지수 {age.value}</strong></div>)}
                 </div>
-                <div className="target-summary"><span>핵심 구간</span><b>20~39세 59%</b><small>실제 구매자는 CRM 데이터로 별도 검증</small></div>
+                <div className="target-summary"><span>최고 관심 연령</span><b>{topAge.label} · 지수 {topAge.value}</b><small>네이버 쇼핑 클릭 관심도이며 실제 구매자 비율은 아님</small></div>
               </article>
 
               <article className="panel barrier-panel">

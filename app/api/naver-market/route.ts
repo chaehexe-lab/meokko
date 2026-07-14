@@ -39,6 +39,18 @@ function percentages(totals: Record<string, number>) {
   return Object.fromEntries(Object.entries(totals).map(([key, value]) => [key, Math.round((value / sum) * 100)]));
 }
 
+function averageIndexByGroup(data: TrendPoint[]) {
+  const grouped = data.reduce<Record<string, { sum: number; count: number }>>((result, point) => {
+    if (!point.group) return result;
+    const current = result[point.group] || { sum: 0, count: 0 };
+    result[point.group] = { sum: current.sum + point.ratio, count: current.count + 1 };
+    return result;
+  }, {});
+  const averages = Object.fromEntries(Object.entries(grouped).map(([group, value]) => [group, value.sum / Math.max(value.count, 1)]));
+  const max = Math.max(...Object.values(averages), 1);
+  return Object.fromEntries(Object.entries(averages).map(([group, value]) => [group, Math.round((value / max) * 100)]));
+}
+
 export async function GET() {
   const trendId = process.env.NAVER_TREND_CLIENT_ID;
   const trendSecret = process.env.NAVER_TREND_CLIENT_SECRET;
@@ -84,7 +96,7 @@ export async function GET() {
     const searchPoints = search.results?.[0]?.data || [];
     const shoppingPoints = shopping.results?.[0]?.data || [];
     const genderShare = percentages(sumByGroup(gender.results?.[0]?.data || []));
-    const ageShare = percentages(sumByGroup(age.results?.[0]?.data || []));
+    const ageIndex = averageIndexByGroup(age.results?.[0]?.data || []);
     const keywordChanges = (shopping.results || []).map((result) => {
       const values = (result.data || []).map((point) => point.ratio);
       const recent = values.slice(-3).reduce((sum, value) => sum + value, 0) / Math.max(values.slice(-3).length, 1);
@@ -100,9 +112,9 @@ export async function GET() {
       shoppingTrend: shoppingPoints.map((point) => Math.round(point.ratio)),
       keywordChanges,
       gender: { female: genderShare.f || 0, male: genderShare.m || 0 },
-      ages: ["10", "20", "30", "40", "50", "60"].map((group) => ({ label: group === "60" ? "60대+" : `${group}대`, value: ageShare[group] || 0 })),
+      ages: ["10", "20", "30", "40", "50", "60"].map((group) => ({ label: group === "60" ? "60대+" : `${group}대`, value: ageIndex[group] || 0 })),
       source: "네이버 데이터랩 · 쇼핑인사이트",
-      metricNotice: "검색량과 클릭량은 기간 내 최댓값을 100으로 둔 상대지수입니다.",
+      metricNotice: "검색량·클릭량과 연령 관심도는 비교 구간의 최댓값을 100으로 둔 상대지수입니다.",
     }, { headers: { "Cache-Control": "no-store, no-cache, must-revalidate" } });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "데이터 조회에 실패했습니다." }, { status: 502 });
