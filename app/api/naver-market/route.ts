@@ -50,9 +50,9 @@ export async function GET() {
   }
 
   const end = new Date();
-  end.setDate(end.getDate() - 1);
+  end.setDate(0); // 진행 중인 이번 달을 제외한 직전 월 말
   const start = new Date(end);
-  start.setMonth(start.getMonth() - 11, 1);
+  start.setMonth(start.getMonth() - 23, 1);
   const common = { startDate: dateString(start), endDate: dateString(end), timeUnit: "month" };
   const shoppingCommon = { ...common, category, keyword: "소형 냉장고", device: "", gender: "", ages: [] };
 

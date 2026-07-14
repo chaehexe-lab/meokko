@@ -28,7 +28,7 @@ type LiveMarketData = {
   metricNotice: string;
 };
 
-const sampleTrend = [42, 49, 46, 53, 61, 78, 91, 84, 66, 54, 48, 59];
+const sampleTrend = [38, 42, 45, 41, 48, 52, 60, 72, 85, 79, 63, 51, 44, 49, 46, 53, 61, 78, 91, 84, 66, 54, 48, 59];
 const sampleAges = [
   { label: "10대", value: 12 },
   { label: "20대", value: 31 },
@@ -199,13 +199,13 @@ export default function Home() {
   const trend = useMemo(() => {
     if (!datasets.search.length) return liveMarket?.searchTrend?.length ? liveMarket.searchTrend : sampleTrend;
     const values = datasets.search.map((row) => Number(row.value || row.ratio || row.volume || 0)).filter((value) => Number.isFinite(value));
-    return values.length ? values.slice(-12) : sampleTrend;
+    return values.length ? values.slice(-24) : sampleTrend;
   }, [datasets.search, liveMarket]);
 
   const ageRows = liveMarket?.ages?.length ? liveMarket.ages : sampleAges;
   const femaleShare = liveMarket?.gender.female || 58;
   const maleShare = liveMarket?.gender.male || 42;
-  const monthLabels = liveMarket?.searchPeriods?.length ? liveMarket.searchPeriods.map((period) => `${Number(period.slice(5, 7))}월`) : trend.map((_, index) => `${index + 1}월`);
+  const monthLabels = liveMarket?.searchPeriods?.length ? liveMarket.searchPeriods.map((period) => period.slice(2, 7).replace("-", ".")) : trend.map((_, index) => `${index + 1}월`);
   const keywordRows = liveMarket?.keywordChanges?.length
     ? liveMarket.keywordChanges.map((item) => [item.keyword, `${item.change > 0 ? "+" : ""}${item.change}%`])
     : [["화장품 냉장고", "+42%"], ["방 냉장고", "+31%"], ["캐릭터 냉장고", "+28%"], ["술장고", "+19%"], ["저소음 미니냉장고", "+16%"]];
@@ -291,7 +291,7 @@ export default function Home() {
             </section>
 
             <section className="metric-grid">
-              <article className="metric-card"><span>검색 관심도</span><strong>{trendChange > 0 ? "+" : ""}{trendChange}%</strong><small>{liveMarket ? "최근 12개월 상대지수 변화" : "예시 데이터 기준"}</small><div className="spark-bars">{trend.slice(-8).map((v, i) => <i key={i} style={{ height: `${Math.max(18, v / maxTrend * 100)}%` }} />)}</div></article>
+              <article className="metric-card"><span>검색 관심도</span><strong>{trendChange > 0 ? "+" : ""}{trendChange}%</strong><small>{liveMarket ? "최근 24개월 첫 달 대비 변화" : "예시 데이터 기준"}</small><div className="spark-bars">{trend.slice(-8).map((v, i) => <i key={i} style={{ height: `${Math.max(18, v / maxTrend * 100)}%` }} />)}</div></article>
               <article className="metric-card"><span>긍정 반응률</span><strong>{analysis.positive}%</strong><small>리뷰·문의 텍스트 기준</small><div className="meter"><i style={{ width: `${analysis.positive}%` }} /></div></article>
               <article className="metric-card warning"><span>최대 구매 저해 요인</span><strong>{analysis.topBarrier}</strong><small>관련 언급 {analysis.barrierRate}%</small><div className="tag-row"><em>가격</em><em>가성비</em><em>비교</em></div></article>
               <article className="metric-card"><span>경쟁제품 가격 중앙값</span><strong>{formatWon([...competitors].sort((a,b) => a.price-b.price)[Math.floor(competitors.length/2)]?.price || 0)}</strong><small>공개 판매가 기준</small><div className="mini-line"><i/><i/><i/><i/><i/></div></article>
@@ -299,11 +299,11 @@ export default function Home() {
 
             <section className="dashboard-grid">
               <article className="panel trend-panel">
-                <div className="panel-head"><div><span className="panel-kicker">MARKET DEMAND</span><h3>월별 소형 냉장고 관심도</h3></div><span className="period-chip">{liveMarket ? "네이버 실데이터" : "최근 12개월"}</span></div>
-                <div className="bar-trend" aria-label="월별 관심도 막대그래프">
+                <div className="panel-head"><div><span className="panel-kicker">MARKET DEMAND</span><h3>월별 소형 냉장고 관심도</h3></div><span className="period-chip">{liveMarket ? "네이버 실데이터 · 2년" : "최근 24개월"}</span></div>
+                <div className="trend-scroll"><div className="bar-trend" aria-label="최근 2년 월별 관심도 막대그래프">
                   {trend.map((value, index) => <div key={index} className={value === maxTrend ? "peak" : ""}><span style={{ height: `${Math.max(12, value / maxTrend * 100)}%` }}><b>{value}</b></span><small>{monthLabels[index] || `${index + 1}월`}</small></div>)}
-                </div>
-                <p className="chart-note"><i/> 7~8월 수요 집중 · ‘미니 냉장고’, ‘화장품 냉장고’, ‘술장고’ 동반 상승</p>
+                </div></div>
+                <p className="chart-note"><i/> ‘소형 냉장고’·‘미니 냉장고’·‘1인 냉장고’ 통합검색 상대지수 · 최고 월=100</p>
               </article>
 
               <article className="panel sentiment-panel">
@@ -341,7 +341,7 @@ export default function Home() {
           <section className="page-section">
             <div className="section-title"><div><span className="panel-kicker">MARKET DATA</span><h2>시장에서 고객 신호 찾기</h2><p>검색 관심도는 구매량이 아닌 수요 신호로 표시합니다.</p></div><span className="quality-badge">상대지수 · 출처 구분</span></div>
             <div className="dashboard-grid">
-              <article className="panel wide"><div className="panel-head"><div><h3>시즌별 검색 수요</h3><p>월별 키워드 관심도 상대지수</p></div></div><div className="bar-trend tall">{trend.map((v,i)=><div key={i}><span style={{height:`${v/maxTrend*100}%`}}><b>{v}</b></span><small>{monthLabels[i] || `${i+1}월`}</small></div>)}</div></article>
+              <article className="panel wide"><div className="panel-head"><div><h3>2년간 시즌별 검색 수요</h3><p>완료된 최근 24개월 · 월별 키워드 관심도 상대지수</p></div></div><div className="trend-scroll"><div className="bar-trend tall">{trend.map((v,i)=><div key={i}><span style={{height:`${v/maxTrend*100}%`}}><b>{v}</b></span><small>{monthLabels[i] || `${i+1}월`}</small></div>)}</div></div></article>
               <article className="panel"><div className="panel-head"><div><h3>성별 관심 분포</h3><p>네이버 쇼핑 클릭 기준</p></div></div><div className="gender-split"><div className="gender-circle female">{femaleShare}%</div><div><b>여성 {femaleShare}%</b><span>남성 {maleShare}%</span><small>실제 구매자 성별과 다를 수 있음</small></div></div></article>
               <article className="panel"><div className="panel-head"><div><h3>키워드 증감</h3><p>{liveMarket ? "최근 3개월 vs 직전 3개월" : "예시 데이터"}</p></div></div><div className="keyword-table">{keywordRows.map(([a,b],i)=><p key={a}><span>{i+1}</span><b>{a}</b><em>{b}</em></p>)}</div></article>
               <article className="panel wide"><div className="panel-head"><div><h3>연령대별 라인 캐릭터 호감도</h3><p>동일 이미지·무작위 순서 설문 필요</p></div><span className="source-badge">예시 설문 n=200</span></div><div className="heat-table"><div className="heat-head"><span>캐릭터</span><span>10대</span><span>20대</span><span>30대</span><span>40대</span></div>{characters.map(c=><div key={c.name}><b>{c.name}</b>{[c.teen,c.twenty,c.thirty,c.forty].map((v,i)=><span key={i} style={{"--alpha":`${Math.max(.12,v/100)}`} as React.CSSProperties}>{v}%</span>)}</div>)}</div></article>

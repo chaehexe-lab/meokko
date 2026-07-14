@@ -89,6 +89,8 @@ button { cursor: pointer; }
 .text-button { padding: 0; border: 0; background: transparent; color: var(--blue); font-size: 10px; font-weight: 900; }
 
 .trend-panel { min-height: 310px; }
+.trend-scroll { overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+.trend-scroll .bar-trend { min-width: 720px; }
 .bar-trend { height: 180px; display: flex; align-items: flex-end; gap: clamp(5px,1vw,12px); padding: 22px 5px 0; border-bottom: 1px solid var(--line); background: repeating-linear-gradient(to top, transparent 0 44px, #f0f2f6 45px); }
 .bar-trend.tall { height: 260px; }
 .bar-trend > div { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 7px; }
