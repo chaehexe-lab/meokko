@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>STEP1 시장·고객·경쟁사 분석 대시보드</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --line: #d9dee7;
+      --text: #1d2733;
+      --muted: #667487;
+      --blue: #2563eb;
+      --green: #0f9f6e;
+      --orange: #e3762b;
+      --red: #d94b4b;
+      --shadow: 0 10px 28px rgba(19, 31, 49, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.2;
+    }
+
+    .title-block p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .filters select,
+    .refresh {
+      height: 38px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0 12px;
+    }
+
+    .refresh {
+      min-width: 38px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+    }
+
+    .tab strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .tab span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tab.active {
+      border-color: var(--blue);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 8px 0 16px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 0 rgba(19, 31, 49, 0.03);
+      min-width: 0;
+    }
+
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card-title h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .ranking {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .rank-row,
+    .rank-head {
+      display: grid;
+      grid-template-columns: 52px 1fr 92px;
+      align-items: center;
+      gap: 10px;
+      min-height: 42px;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .rank-head {
+      background: #f2f5f9;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .rank-row {
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .rank-row:last-child {
+      border-bottom: 0;
+    }
+
+    .rank-row.selected {
+      background: #eef5ff;
+      outline: 1px solid rgba(37, 99, 235, 0.42);
+      outline-offset: -1px;
+    }
+
+    .rank-num {
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #edf1f7;
+      font-weight: 700;
+      color: #405064;
+    }
+
+    .change.up { color: var(--green); font-weight: 700; }
+    .change.down { color: var(--red); font-weight: 700; }
+
+    .detail-panel {
+      margin-top: 12px;
+      border: 1px solid #cddbf3;
+      background: #f8fbff;
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .detail-panel.hidden {
+      display: none;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .mini-chart {
+      height: 118px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(to top, transparent 24%, #e4e9f1 25%, transparent 26%),
+        linear-gradient(to right, transparent 24%, #edf0f5 25%, transparent 26%),
+        #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mini-chart svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: #425166;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .tag.blue { border-color: #b9ccff; color: #244fbb; background: #f1f5ff; }
+    .tag.green { border-color: #adddcb; color: #087b56; background: #effaf6; }
+    .tag.orange { border-color: #f4c7a8; color: #a84d0c; background: #fff6ef; }
+
+    .bar-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 86px 1fr 42px;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #edf1f6;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--blue);
+    }
+
+    .bar-fill.green { background: var(--green); }
+    .bar-fill.orange { background: var(--orange); }
+
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 132px;
+    }
+
+    .donut {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: conic-gradient(var(--blue) 0 64%, #e7ebf2 64% 100%);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .donut.green {
+      background: conic-gradient(var(--green) 0 72%, #e7ebf2 72% 100%);
+    }
+
+    .donut.sentiment {
+      background: conic-gradient(var(--green) 0 68%, var(--red) 68% 84%, #e7ebf2 84% 100%);
+    }
+
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      background: var(--panel);
+    }
+
+    .donut-value {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      z-index: 1;
+    }
+
+    .metric-list {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric-list strong {
+      color: var(--text);
+    }
+
+    .accordion {
+      display: grid;
+      gap: 10px;
+    }
+
+    .acc-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .acc-button {
+      width: 100%;
+      min-height: 44px;
+      border: 0;
+      background: #fff;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .acc-body {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      background: #fbfcfe;
+    }
+
+    .acc-item.open .acc-body {
+      display: block;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .table th,
+    .table td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .table th {
+      color: var(--muted);
+      background: #f2f5f9;
+      font-size: 12px;
+    }
+
+    .status-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .status {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .status b {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .status span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .topbar,
+      .section-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .span-3,
+      .span-4,
+      .span-5,
+      .span-6,
+      .span-7,
+      .span-8,
+      .span-12 {
+        grid-column: span 12;
+      }
+
+      .detail-grid,
+      .status-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="title-block">
+        <h1>STEP1 시장·고객·경쟁사 분석 대시보드</h1>
+        <p>현재 제품을 기준으로 핵심 타겟과 마케팅 방향성을 도출하는 분석 화면</p>
+      </div>
+      <div class="filters" aria-label="대시보드 필터">
+        <select aria-label="기간">
+          <option>2026년 7월</option>
+          <option>최근 3개월</option>
+          <option>최근 12개월</option>
+        </select>
+        <select aria-label="데이터 출처">
+          <option>전체 데이터</option>
+          <option>검색 데이터</option>
+          <option>CRM/리뷰 데이터</option>
+          <option>경쟁사 데이터</option>
+        </select>
+        <select aria-label="채널">
+          <option>전체 채널</option>
+          <option>네이버</option>
+          <option>쿠팡</option>
+          <option>오늘의집</option>
+          <option>SNS</option>
+        </select>
+        <button class="refresh" type="button" aria-label="새로고침">↻</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="분석 영역 선택">
+      <button class="tab active" type="button" data-target="market">
+        <strong>1. 시장 데이터 분석</strong>
+        <span>검색 수요와 잠재 타겟을 확인</span>
+      </button>
+      <button class="tab" type="button" data-target="customer">
+        <strong>2. 고객 데이터 분석</strong>
+        <span>구매 동기, 문의, 리뷰 반응 분석</span>
+      </button>
+      <button class="tab" type="button" data-target="competitor">
+        <strong>3. 경쟁사 분석</strong>
+        <span>Top 10 제품과 마케팅 포지션 비교</span>
+      </button>
+    </nav>
+
+    <section class="section active" id="market">
+      <div class="section-head">
+        <div>
+          <h2>시장 데이터 분석</h2>
+          <p>시장에서 사람들이 어떤 키워드와 상황으로 소형 냉장고를 찾는지 확인합니다.</p>
+        </div>
+        <span class="caption">기본 화면은 요약만, 키워드 클릭 시 상세 분석 표시</span>
+      </div>
+
+      <div class="grid">
+        <article class="card span-7">
+          <div class="card-title">
+            <h3>검색량 수요 분석</h3>
+            <span class="caption">월별 인기 키워드 랭킹</span>
+          </div>
+          <div class="ranking" id="ranking">
+            <div class="rank-head">
+              <span>순위</span>
+              <span>키워드</span>
+              <span>전월 대비</span>
+            </div>
+            <div class="rank-row selected" data-keyword="미니냉장고" data-change="▲ 12%" data-tags="상시,제품 탐색,소형 가전" data-related="소형냉장고, 작은 냉장고, 미니 냉장고 추천" data-reco="검색량이 가장 넓은 기본 키워드이므로 제품 발견을 위한 대표 키워드로 활용">
+              <span><b class="rank-num">1</b></span><strong>미니냉장고</strong><span class="change up">▲ 12%</span>
+            </div>
+            <div class="rank-row" data-keyword="술장고" data-change="▲ 24%" data-tags="여름,홈바,음료 보관" data-related="맥주 냉장고, 홈바 냉장고, 음료 냉장고" data-reco="여름철 음료 보관과 홈바 사용 장면을 강조한 콘텐츠에 활용">
+              <span><b class="rank-num">2</b></span><strong>술장고</strong><span class="change up">▲ 24%</span>
+            </div>
+            <div class="rank-row" data-keyword="소형냉장고" data-change="▲ 8%" data-tags="상시,제품 탐색,공간 절약" data-related="미니냉장고, 원룸 냉장고, 작은 냉장고" data-reco="제품군 탐색 키워드로 검색 광고와 비교형 콘텐츠에 활용">
+              <span><b class="rank-num">3</b></span><strong>소형냉장고</strong><span class="change up">▲ 8%</span>
+            </div>
+            <div class="rank-row" data-keyword="자취 냉장고" data-change="▼ 3%" data-tags="신학기,원룸,자취방" data-related="원룸 냉장고, 자취 필수템, 자취방 가전" data-reco="2~3월 신학기 시즌에 자취방 배치 콘텐츠로 재활용">
+              <span><b class="rank-num">4</b></span><strong>자취 냉장고</strong><span class="change down">▼ 3%</span>
+            </div>
+            <div class="rank-row" data-keyword="화장품 냉장고" data-change="▲ 5%" data-tags="여름,뷰티,보관" data-related="스킨케어 냉장고, 화장대 냉장고, 뷰티 냉장고" data-reco="뷰티 보관 사용 상황을 별도 타겟 콘텐츠로 테스트">
+              <span><b class="rank-num">5</b></span><strong>화장품 냉장고</strong><span class="change up">▲ 5%</span>
+            </div>
+            <div class="rank-row" data-keyword="사무실 냉장고" data-change="▲ 2%" data-tags="직장인,개인 공간,음료" data-related="개인 냉장고, 책상 냉장고, 사무실 미니냉장고" data-reco="직장인에게 책상 옆 개인 음료 보관 장면으로 접근">
+              <span><b class="rank-num">6</b></span><strong>사무실 냉장고</strong><span class="change up">▲ 2%</span>
+            </div>
+            <div class="rank-row" data-keyword="캐릭터 냉장고" data-change="▲ 18%" data-tags="감성,굿즈,선물" data-related="귀여운 냉장고, 캐릭터 가전, 라인프렌즈 냉장고" data-reco="검색량은 작아도 상승률이 높으므로 차별 메시지와 선물 콘텐츠에 활용">
+              <span><b class="rank-num">7</b></span><strong>캐릭터 냉장고</strong><span class="change up">▲ 18%</span>
+            </div>
+            <div class="rank-row" data-keyword="꼬모냉장고" data-change="▲ 6%" data-tags="브랜드,직접 탐색,구매 검토" data-related="꼬모 냉장고 후기, 꼬모냉장고 가격, 꼬모냉장고 소음" data-reco="브랜드명 검색자는 구매 검토 단계일 가능성이 높으므로 리뷰와 불안 해소 콘텐츠 연결">
+              <span><b class="rank-num">8</b></span><strong>꼬모냉장고</strong><span class="change up">▲ 6%</span>
+            </div>
+          </div>
+
+          <div class="detail-panel" id="keywordDetail">
+            <div class="card-title">
+              <h3 id="detailTitle">미니냉장고 상세보기</h3>
+              <span class="caption" id="detailChange">전월 대비 ▲ 12%</span>
+            </div>
+            <div class="detail-grid">
+              <div>
+                <p class="caption">월별 검색량 추이</p>
+                <div class="mini-chart" aria-label="월별 검색량 추이 그래프">
+                  <svg viewBox="0 0 320 118" role="img">
+                    <polyline points="8,90 38,74 68,80 98,58 128,64 158,42 188,48 218,28 248,36 278,24 312,30" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    <circle cx="218" cy="28" r="5" fill="#2563eb"></circle>
+                    <circle cx="278" cy="24" r="5" fill="#2563eb"></circle>
+                  </svg>
+                </div>
+              </div>
+              <div>
+                <p class="caption">상세 분석</p>
+                <div class="tags" id="detailTags"></div>
+                <p><strong>관련 키워드</strong><br><span id="detailRelated">소형냉장고, 작은 냉장고, 미니 냉장고 추천</span></p>
+                <p><strong>마케팅 활용</strong><br><span id="detailReco">검색량이 가장 넓은 기본 키워드이므로 제품 발견을 위한 대표 키워드로 활용</span></p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-5">
+          <div class="card-title">
+            <h3>소형 냉장고 관심 연령대</h3>
+            <span class="caption">막대그래프</span>
+          </div>
+          <div class="bar-list">
+            <div class="bar-row"><span>10대</span><div class="bar-track"><div class="bar-fill" style="width: 18%"></div></div><b>18</b></div>
+            <div class="bar-row"><span>20대</span><div class="bar-track"><div class="bar-fill" style="width: 82%"></div></div><b>82</b></div>
+            <div class="bar-row"><span>30대</span><div class="bar-track"><div class="bar-fill" style="width: 74%"></div></div><b>74</b></div>
+            <div class="bar-row"><span>40대</span><div class="bar-track"><div class="bar-fill" style="width: 45%"></div></div><b>45</b></div>
+            <div class="bar-row"><span>50대+</span><div class="bar-track"><div class="bar-fill" style="width: 32%"></div></div><b>32</b></div>
+          </div>
+        </article>
+
+        <article class="card span-4">
+          <div class="card-title">
+            <h3>성별 관심 비율</h3>
+          </div>
+          <div class="donut-wrap">
+            <div class="donut"><span class="donut-value">64%</span></div>
+            <div class="metric-list">
+              <span><strong>여성</strong> 64%</span>
+              <span><strong>남성</strong> 36%</span>
+              <span>키워드 관심도 기준</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-4">
+          <div class="card-title">
+            <h3>라인캐릭터 전체 선호도</h3>
+          </div>
+          <div class="donut-wrap">
+            <div class="donut green"><span class="donut-value">72%</span></div>
+            <div class="metric-list">
+              <span><strong>호감</strong> 72%</span>
+              <span><strong>보통/비호감</strong> 28%</span>
+              <span>캐릭터형 포지션 가능성 확인</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-4">
+          <div class="card-title">
+            <h3>시장 관심도 추이</h3>
+            <span class="caption">판매량 대체 지표</span>
+          </div>
+          <div class="mini-chart" aria-label="시장 관심도 추이 그래프">
+            <svg viewBox="0 0 320 118" role="img">
+              <polyline points="8,84 38,78 68,72 98,66 128,70 158,54 188,50 218,42 248,35 278,30 312,22" fill="none" stroke="#0f9f6e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+            </svg>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="customer">
+      <div class="section-head">
+        <div>
+          <h2>고객 데이터 분석</h2>
+          <p>실제 사용 경험, 문의, 리뷰를 통해 구매 이유와 장벽을 확인합니다.</p>
+        </div>
+        <span class="caption">CRM/리뷰/블로그/SNS 텍스트 분석 기반</span>
+      </div>
+
+      <div class="grid">
+        <article class="card span-6">
+          <div class="card-title">
+            <h3>구매 동기 / 사용 상황</h3>
+            <span class="caption">중복 선택 가능</span>
+          </div>
+          <div class="bar-list">
+            <div class="bar-row"><span>자취방</span><div class="bar-track"><div class="bar-fill green" style="width: 78%"></div></div><b>78</b></div>
+            <div class="bar-row"><span>사무실</span><div class="bar-track"><div class="bar-fill green" style="width: 62%"></div></div><b>62</b></div>
+            <div class="bar-row"><span>홈바</span><div class="bar-track"><div class="bar-fill green" style="width: 55%"></div></div><b>55</b></div>
+            <div class="bar-row"><span>선물용</span><div class="bar-track"><div class="bar-fill green" style="width: 46%"></div></div><b>46</b></div>
+            <div class="bar-row"><span>화장품</span><div class="bar-track"><div class="bar-fill green" style="width: 30%"></div></div><b>30</b></div>
+          </div>
+        </article>
+
+        <article class="card span-6">
+          <div class="card-title">
+            <h3>문의 내용 분석</h3>
+            <span class="caption">개선 기회 탐색</span>
+          </div>
+          <div class="status-list">
+            <div class="status"><b>소음</b><span>작동음, 침실 사용 가능 여부</span></div>
+            <div class="status"><b>용량</b><span>캔/병 수납 가능 개수</span></div>
+            <div class="status"><b>배송</b><span>파손, 배송 기간, 설치 여부</span></div>
+            <div class="status"><b>AS</b><span>보증 기간, 교환/수리 기준</span></div>
+            <div class="status"><b>가격</b><span>할인, 프로모션, 선물 가치</span></div>
+            <div class="status"><b>냉각력</b><span>여름철 음료 보관 성능</span></div>
+          </div>
+        </article>
+
+        <article class="card span-5">
+          <div class="card-title">
+            <h3>리뷰 긍·부정 반응</h3>
+          </div>
+          <div class="donut-wrap">
+            <div class="donut sentiment"><span class="donut-value">68%</span></div>
+            <div class="metric-list">
+              <span><strong>긍정</strong> 68%</span>
+              <span><strong>부정</strong> 16%</span>
+              <span><strong>중립</strong> 16%</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-7">
+          <div class="card-title">
+            <h3>반응 원인 키워드</h3>
+          </div>
+          <div class="tags">
+            <span class="tag green">귀여움</span>
+            <span class="tag green">실용성</span>
+            <span class="tag green">선물용</span>
+            <span class="tag blue">인테리어</span>
+            <span class="tag orange">소음</span>
+            <span class="tag orange">가격</span>
+            <span class="tag orange">냉각력</span>
+            <span class="tag orange">용량</span>
+          </div>
+          <div class="accordion" style="margin-top: 14px;">
+            <div class="acc-item open">
+              <button class="acc-button" type="button">긍정 반응 원인 <span>⌃</span></button>
+              <div class="acc-body">귀여운 디자인, 선물용으로 특별함, 침실/사무실에 둘 수 있는 작은 크기, 캐릭터 굿즈처럼 보이는 소장 가치가 반복적으로 언급됩니다.</div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-button" type="button">부정 반응 원인 <span>⌄</span></button>
+              <div class="acc-body">가격 부담, 소음 걱정, 냉각력 의심, 실제 수납량을 알기 어렵다는 반응이 구매 전환을 방해하는 요소로 분류됩니다.</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="competitor">
+      <div class="section-head">
+        <div>
+          <h2>경쟁사 분석</h2>
+          <p>Top 10 소형 냉장고의 제품 정보와 마케팅 포지션을 비교합니다.</p>
+        </div>
+        <span class="caption">제품 개선보다 포지셔닝과 메시지 차별화에 초점</span>
+      </div>
+
+      <div class="grid">
+        <article class="card span-8">
+          <div class="card-title">
+            <h3>Top 10 소형냉장고 비교</h3>
+            <span class="caption">예시 데이터</span>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>제품</th>
+                <th>가격</th>
+                <th>판매량</th>
+                <th>별점</th>
+                <th>플랫폼</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>하이얼 미니냉장고</td><td>149,000</td><td>8,430</td><td>4.7</td><td>네이버쇼핑</td></tr>
+              <tr><td>쿠잉 소형냉장고</td><td>129,000</td><td>7,920</td><td>4.6</td><td>쿠팡</td></tr>
+              <tr><td>미디어 미니냉장고</td><td>159,000</td><td>6,100</td><td>4.5</td><td>오늘의집</td></tr>
+              <tr><td>꼬모 냉장고</td><td>비교 입력</td><td>CRM 입력</td><td>리뷰 입력</td><td>공식/쇼핑몰</td></tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="card span-4">
+          <div class="card-title">
+            <h3>가격 비교</h3>
+          </div>
+          <div class="bar-list">
+            <div class="bar-row"><span>하이얼</span><div class="bar-track"><div class="bar-fill" style="width: 72%"></div></div><b>14.9</b></div>
+            <div class="bar-row"><span>쿠잉</span><div class="bar-track"><div class="bar-fill" style="width: 62%"></div></div><b>12.9</b></div>
+            <div class="bar-row"><span>미디어</span><div class="bar-track"><div class="bar-fill" style="width: 76%"></div></div><b>15.9</b></div>
+            <div class="bar-row"><span>꼬모</span><div class="bar-track"><div class="bar-fill orange" style="width: 84%"></div></div><b>입력</b></div>
+          </div>
+        </article>
+
+        <article class="card span-5">
+          <div class="card-title">
+            <h3>판매량 순위</h3>
+          </div>
+          <div class="bar-list">
+            <div class="bar-row"><span>하이얼</span><div class="bar-track"><div class="bar-fill green" style="width: 92%"></div></div><b>1위</b></div>
+            <div class="bar-row"><span>쿠잉</span><div class="bar-track"><div class="bar-fill green" style="width: 84%"></div></div><b>2위</b></div>
+            <div class="bar-row"><span>미디어</span><div class="bar-track"><div class="bar-fill green" style="width: 70%"></div></div><b>3위</b></div>
+            <div class="bar-row"><span>기타</span><div class="bar-track"><div class="bar-fill green" style="width: 48%"></div></div><b>4위</b></div>
+          </div>
+        </article>
+
+        <article class="card span-7">
+          <div class="card-title">
+            <h3>Hidden 상세 분석</h3>
+            <span class="caption">클릭해서 펼치기</span>
+          </div>
+          <div class="accordion">
+            <div class="acc-item open">
+              <button class="acc-button" type="button">제품 특징 및 차별점 <span>⌃</span></button>
+              <div class="acc-body">
+                공통 항목: 용량, 저소음, 냉각력, 에너지 효율, 수납 구성, 색상. 차별점 항목: 캐릭터 디자인, 선물성, 인테리어 오브제, 홈바/개인 공간 연출 가능성.
+              </div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-button" type="button">주요 마케팅 수단 <span>⌄</span></button>
+              <div class="acc-body">
+                <div class="tags">
+                  <span class="tag blue">네이버쇼핑</span>
+                  <span class="tag blue">쿠팡</span>
+                  <span class="tag blue">오늘의집</span>
+                  <span class="tag green">인스타그램</span>
+                  <span class="tag green">유튜브</span>
+                  <span class="tag green">블로그</span>
+                </div>
+                <p>상세페이지 첫 문구, 대표 이미지, 리뷰 강조 방식, 숏폼/블로그 협찬 여부를 비교해 꼬모가 사용할 메시지 방향을 도출합니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const sections = document.querySelectorAll(".section");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.target;
+        tabs.forEach((item) => item.classList.toggle("active", item === tab));
+        sections.forEach((section) => section.classList.toggle("active", section.id === target));
+      });
+    });
+
+    const ranking = document.querySelector("#ranking");
+    const detailTitle = document.querySelector("#detailTitle");
+    const detailChange = document.querySelector("#detailChange");
+    const detailTags = document.querySelector("#detailTags");
+    const detailRelated = document.querySelector("#detailRelated");
+    const detailReco = document.querySelector("#detailReco");
+
+    function renderKeywordDetail(row) {
+      document.querySelectorAll(".rank-row").forEach((item) => item.classList.toggle("selected", item === row));
+      const keyword = row.dataset.keyword;
+      const change = row.dataset.change;
+      const tags = row.dataset.tags.split(",");
+      detailTitle.textContent = `${keyword} 상세보기`;
+      detailChange.textContent = `전월 대비 ${change}`;
+      detailTags.innerHTML = tags.map((tag, index) => {
+        const color = index === 0 ? "blue" : index === 1 ? "green" : "orange";
+        return `<span class="tag ${color}">${tag}</span>`;
+      }).join("");
+      detailRelated.textContent = row.dataset.related;
+      detailReco.textContent = row.dataset.reco;
+    }
+
+    ranking.addEventListener("click", (event) => {
+      const row = event.target.closest(".rank-row");
+      if (!row) return;
+      renderKeywordDetail(row);
+    });
+
+    document.querySelectorAll(".acc-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const item = button.closest(".acc-item");
+        item.classList.toggle("open");
+        const marker = button.querySelector("span");
+        marker.textContent = item.classList.contains("open") ? "⌃" : "⌄";
+      });
+    });
+
+    renderKeywordDetail(document.querySelector(".rank-row.selected"));
+  </script>
+</body>
+</html>
