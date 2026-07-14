@@ -87,7 +87,7 @@
 
     .tabs {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       margin: 18px 0;
     }
@@ -118,6 +118,94 @@
       border-color: var(--blue);
       box-shadow: var(--shadow);
       transform: translateY(-1px);
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .overview-card {
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+    }
+
+    .overview-card:hover {
+      border-color: var(--blue);
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .overview-kicker {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .overview-card h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .overview-card p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .overview-list {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0;
+      color: #425166;
+      font-size: 13px;
+    }
+
+    .overview-list span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .overview-list span::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .open-section {
+      height: 38px;
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+      border-radius: 8px;
+      padding: 0 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .back-button {
+      height: 34px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0 11px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .section {
@@ -473,6 +561,10 @@
         grid-template-columns: 1fr;
       }
 
+      .overview-grid {
+        grid-template-columns: 1fr;
+      }
+
       .span-3,
       .span-4,
       .span-5,
@@ -521,7 +613,11 @@
     </header>
 
     <nav class="tabs" aria-label="분석 영역 선택">
-      <button class="tab active" type="button" data-target="market">
+      <button class="tab active" type="button" data-target="overview">
+        <strong>전체 요약</strong>
+        <span>분석 영역을 선택</span>
+      </button>
+      <button class="tab" type="button" data-target="market">
         <strong>1. 시장 데이터 분석</strong>
         <span>검색 수요와 잠재 타겟을 확인</span>
       </button>
@@ -535,13 +631,70 @@
       </button>
     </nav>
 
-    <section class="section active" id="market">
+    <section class="section active" id="overview">
+      <div class="section-head">
+        <div>
+          <h2>STEP1 분석 영역 선택</h2>
+          <p>관리자가 보고 싶은 분석 영역을 선택하면 해당 상세 화면만 표시됩니다.</p>
+        </div>
+        <span class="caption">시장 → 고객 → 경쟁사 흐름으로 마케팅 방향성을 도출</span>
+      </div>
+
+      <div class="overview-grid">
+        <article class="card overview-card" data-target="market">
+          <div>
+            <div class="overview-kicker">1. MARKET DATA</div>
+            <h3>시장 데이터 분석</h3>
+            <p>앞으로 고객이 될 수 있는 사람들의 검색 수요, 관심층, 캐릭터 선호도, 시장 관심도 흐름을 확인합니다.</p>
+            <div class="overview-list">
+              <span>검색량 수요 분석</span>
+              <span>연령·성별 관심도</span>
+              <span>라인캐릭터 전체 선호도</span>
+              <span>시장 관심도 추이</span>
+            </div>
+          </div>
+          <button class="open-section" type="button" data-target="market">시장 데이터 보기</button>
+        </article>
+
+        <article class="card overview-card" data-target="customer">
+          <div>
+            <div class="overview-kicker">2. CUSTOMER DATA</div>
+            <h3>고객 데이터 분석</h3>
+            <p>실제 사용 경험과 문의·리뷰 데이터를 바탕으로 구매 동기, 사용 상황, 구매 저해 요인을 파악합니다.</p>
+            <div class="overview-list">
+              <span>구매 동기 / 사용 상황</span>
+              <span>문의 내용 분석</span>
+              <span>리뷰 긍·부정 반응</span>
+              <span>반응 원인 키워드</span>
+            </div>
+          </div>
+          <button class="open-section" type="button" data-target="customer">고객 데이터 보기</button>
+        </article>
+
+        <article class="card overview-card" data-target="competitor">
+          <div>
+            <div class="overview-kicker">3. COMPETITOR</div>
+            <h3>경쟁사 분석</h3>
+            <p>Top 10 소형 냉장고의 가격, 판매량, 특징, 마케팅 수단을 비교해 꼬모의 포지션을 찾습니다.</p>
+            <div class="overview-list">
+              <span>Top 10 제품 비교</span>
+              <span>가격·판매량 비교</span>
+              <span>제품 특징 및 차별점</span>
+              <span>주요 마케팅 수단</span>
+            </div>
+          </div>
+          <button class="open-section" type="button" data-target="competitor">경쟁사 분석 보기</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="market">
       <div class="section-head">
         <div>
           <h2>시장 데이터 분석</h2>
           <p>시장에서 사람들이 어떤 키워드와 상황으로 소형 냉장고를 찾는지 확인합니다.</p>
         </div>
-        <span class="caption">기본 화면은 요약만, 키워드 클릭 시 상세 분석 표시</span>
+        <button class="back-button" type="button" data-target="overview">전체 요약으로</button>
       </div>
 
       <div class="grid">
@@ -670,7 +823,7 @@
           <h2>고객 데이터 분석</h2>
           <p>실제 사용 경험, 문의, 리뷰를 통해 구매 이유와 장벽을 확인합니다.</p>
         </div>
-        <span class="caption">CRM/리뷰/블로그/SNS 텍스트 분석 기반</span>
+        <button class="back-button" type="button" data-target="overview">전체 요약으로</button>
       </div>
 
       <div class="grid">
@@ -751,7 +904,7 @@
           <h2>경쟁사 분석</h2>
           <p>Top 10 소형 냉장고의 제품 정보와 마케팅 포지션을 비교합니다.</p>
         </div>
-        <span class="caption">제품 개선보다 포지셔닝과 메시지 차별화에 초점</span>
+        <button class="back-button" type="button" data-target="overview">전체 요약으로</button>
       </div>
 
       <div class="grid">
@@ -839,11 +992,15 @@
     const tabs = document.querySelectorAll(".tab");
     const sections = document.querySelectorAll(".section");
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const target = tab.dataset.target;
-        tabs.forEach((item) => item.classList.toggle("active", item === tab));
-        sections.forEach((section) => section.classList.toggle("active", section.id === target));
+    function showSection(target) {
+      tabs.forEach((item) => item.classList.toggle("active", item.dataset.target === target));
+      sections.forEach((section) => section.classList.toggle("active", section.id === target));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll("[data-target]").forEach((control) => {
+      control.addEventListener("click", () => {
+        showSection(control.dataset.target);
       });
     });
 
