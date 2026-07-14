@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { crmSummary } from "./data/crm-summary";
 
 type DatasetKey = "search" | "reviews" | "crm" | "competitors";
 type Row = Record<string, string>;
@@ -214,6 +215,14 @@ export default function Home() {
     ? liveMarket.keywordChanges.map((item) => [item.keyword, `${item.change > 0 ? "+" : ""}${item.change}%`])
     : [["화장품 냉장고", "+42%"], ["방 냉장고", "+31%"], ["캐릭터 냉장고", "+28%"], ["술장고", "+19%"], ["저소음 미니냉장고", "+16%"]];
   const trendChange = trend.length > 1 && trend[0] ? Math.round(((trend.at(-1)! - trend[0]) / trend[0]) * 1000) / 10 : 0;
+  const purchaseAgeRows = crmSummary.customer.ageBuyers;
+  const maxPurchaseAge = Math.max(...purchaseAgeRows.map((item) => item.buyers), 1);
+  const topPurchaseAge = [...purchaseAgeRows].sort((a, b) => b.buyers - a.buyers)[0];
+  const femaleBuyerShare = Math.round((crmSummary.customer.genderBuyers[1].buyers / crmSummary.customer.buyers) * 100);
+  const maleBuyerShare = 100 - femaleBuyerShare;
+  const maxSales = Math.max(...crmSummary.sales.monthly24.map(([, units]) => units), 1);
+  const maxCsPhenomenon = Math.max(...crmSummary.cs.phenomena.map(([, count]) => count), 1);
+  const topCsShare = Math.round(crmSummary.cs.phenomena[0][1] / crmSummary.cs.records * 100);
 
   async function handleFile(key: DatasetKey, file?: File) {
     if (!file) return;
@@ -268,7 +277,7 @@ export default function Home() {
           </div>
         </div>
         <div className="top-actions">
-          <span className={`source-state ${sourceCount || liveMarket ? "connected" : ""}`} title={liveError}><i /> {sourceCount ? `${sourceCount}개 파일 + 네이버 연결` : liveMarket ? "네이버 실데이터 연결" : liveError ? "실데이터 연결 확인 필요" : "네이버 연결 중"}</span>
+          <span className="source-state connected" title={liveError}><i /> CRM 3개{liveMarket ? " + 네이버 연결" : " 연결"}{sourceCount ? ` + 추가 ${sourceCount}개` : ""}</span>
           <button className="ghost-button" onClick={exportReport}>분석 결과 저장</button>
           <button className="primary-button" onClick={runAnalysis} disabled={running}>{running ? "분석 중…" : "AI 분석 실행"}</button>
         </div>
@@ -283,22 +292,22 @@ export default function Home() {
           <>
             <section className="hero-insight">
               <div className="hero-copy">
-                <span className="ai-label">AI 종합 인사이트</span>
-                <h2>{liveMarket ? <>네이버 쇼핑에서 관심 신호가 가장 높은 연령은<br/><strong>{topAge.label}</strong>입니다.</> : <>현재 가장 가능성 높은 고객은<br/><strong>{analysis.target}</strong>입니다.</>}</h2>
-                <p>{liveMarket ? <>해당 연령대의 24개월 평균 관심지수는 <b>{topAge.value}</b>이며, 실제 구매 연령은 주문·CRM 데이터로 별도 확인해야 합니다.</> : <>핵심 구매 동기는 <b>{analysis.topMotive}</b>, 가장 큰 저해 요인은 <b>{analysis.topBarrier}</b>로 나타났습니다.</>}</p>
-                <div className="evidence"><span>근거</span>{liveMarket ? "네이버 쇼핑인사이트 ‘소형 냉장고’ 키워드 연령별 클릭 추이" : analysis.evidence}</div>
+                <span className="ai-label">CRM 실데이터 인사이트</span>
+                <h2>실제 결제고객이 가장 많은 연령은<br/><strong>{topPurchaseAge.label}</strong>입니다.</h2>
+                <p>18개월간 결제고객 <b>{crmSummary.customer.buyers.toLocaleString("코-KR")}명</b> 중 30·40대가 358명으로, 전체의 <b>71.7%</b>를 차지했습니다.</p>
+                <div className="evidence"><span>근거</span>스마트스토어 고객분석 성·연령별 원본 · {crmSummary.customer.period}</div>
               </div>
               <div className="hero-score">
-                <div className="score-ring" style={{ "--score": "72%" } as React.CSSProperties}><strong>72</strong><span>시장 기회 점수</span></div>
-                <p>관심도는 높지만 가격 가치 증명이 필요합니다.</p>
+                <div className="score-ring" style={{ "--score": "71.7%" } as React.CSSProperties}><strong>71.7</strong><span>30·40대 비중</span></div>
+                <p>관심지수가 아닌 실제 결제고객 구성비입니다.</p>
               </div>
             </section>
 
             <section className="metric-grid">
               <article className="metric-card"><span>검색 관심도</span><strong>{trendChange > 0 ? "+" : ""}{trendChange}%</strong><small>{liveMarket ? "최근 24개월 첫 달 대비 변화" : "예시 데이터 기준"}</small><div className="spark-bars">{trend.slice(-8).map((v, i) => <i key={i} style={{ height: `${Math.max(18, v / maxTrend * 100)}%` }} />)}</div></article>
-              <article className="metric-card"><span>긍정 반응률</span><strong>{analysis.positive}%</strong><small>리뷰·문의 텍스트 기준</small><div className="meter"><i style={{ width: `${analysis.positive}%` }} /></div></article>
-              <article className="metric-card warning"><span>최대 구매 저해 요인</span><strong>{analysis.topBarrier}</strong><small>관련 언급 {analysis.barrierRate}%</small><div className="tag-row"><em>가격</em><em>가성비</em><em>비교</em></div></article>
-              <article className="metric-card"><span>경쟁제품 가격 중앙값</span><strong>{formatWon([...competitors].sort((a,b) => a.price-b.price)[Math.floor(competitors.length/2)]?.price || 0)}</strong><small>공개 판매가 기준</small><div className="mini-line"><i/><i/><i/><i/><i/></div></article>
+              <article className="metric-card"><span>실제 결제고객</span><strong>{crmSummary.customer.buyers.toLocaleString("코-KR")}명</strong><small>{crmSummary.customer.months}개월 누적 · 전환율 {crmSummary.customer.conversion}%</small><div className="meter"><i style={{ width: `${crmSummary.customer.conversion}%` }} /></div></article>
+              <article className="metric-card warning"><span>최다 구매 연령</span><strong>{topPurchaseAge.label}</strong><small>{topPurchaseAge.buyers}명 · 전체의 {Math.round(topPurchaseAge.buyers / crmSummary.customer.buyers * 100)}%</small><div className="tag-row"><em>CRM</em><em>실결제</em><em>18개월</em></div></article>
+              <article className="metric-card"><span>CS 접수</span><strong>{crmSummary.cs.records.toLocaleString("코-KR")}건</strong><small>{crmSummary.cs.period} · 수리·교환 기록</small><div className="mini-line"><i/><i/><i/><i/><i/></div></article>
             </section>
 
             <section className="dashboard-grid">
@@ -311,30 +320,28 @@ export default function Home() {
               </article>
 
               <article className="panel sentiment-panel">
-                <div className="panel-head"><div><span className="panel-kicker">MARKET REACTION</span><h3>꼬모 반응 분석</h3></div><button className="text-button" onClick={() => setActiveTab("customer")}>원인 보기 →</button></div>
+                <div className="panel-head"><div><span className="panel-kicker">CS SIGNAL</span><h3>실제 CS 현상 구성</h3></div><button className="text-button" onClick={() => setActiveTab("customer")}>상세 보기 →</button></div>
                 <div className="sentiment-layout">
-                  <div className="donut" style={{ background: `conic-gradient(#3767ff 0 ${analysis.positive}%, #ff6f61 ${analysis.positive}% ${analysis.positive + analysis.negative}%, #e9edf5 0)` }}><div><strong>{analysis.positive}%</strong><span>긍정</span></div></div>
+                  <div className="donut" style={{ background: `conic-gradient(#3767ff 0 ${topCsShare}%, #ff9d35 ${topCsShare}% 90%, #e9edf5 0)` }}><div><strong>{topCsShare}%</strong><span>{crmSummary.cs.phenomena[0][0]}</span></div></div>
                   <div className="sentiment-list">
-                    <p><i className="dot positive"/><span>긍정</span><b>{analysis.positive}%</b></p>
-                    <p><i className="dot neutral"/><span>중립</span><b>{analysis.neutral}%</b></p>
-                    <p><i className="dot negative"/><span>부정</span><b>{analysis.negative}%</b></p>
+                    {crmSummary.cs.phenomena.slice(0, 3).map(([label, count], index) => <p key={label}><i className={`dot ${index === 0 ? "positive" : index === 1 ? "neutral" : "negative"}`}/><span>{label}</span><b>{Math.round(count / crmSummary.cs.records * 100)}%</b></p>)}
                   </div>
                 </div>
-                <div className="keyword-cloud"><b>귀여운 디자인</b><span>소장 가치</span><span>저소음</span><em>가격 부담</em><span>선물용</span><em>용량</em></div>
+                <div className="keyword-cloud"><b>접수 {crmSummary.cs.records.toLocaleString("코-KR")}건</b><span>부품교환</span><span>방문 AS</span><em>어댑터</em><span>냉장</span><em>디스플레이</em></div>
               </article>
 
               <article className="panel target-panel">
-                <div className="panel-head"><div><span className="panel-kicker">TARGET SIGNAL</span><h3>관심층 연령 분포</h3></div><span className="source-badge">네이버 쇼핑 클릭</span></div>
+                <div className="panel-head"><div><span className="panel-kicker">BUYER PROFILE</span><h3>실제 결제고객 연령</h3></div><span className="source-badge">스마트스토어 CRM</span></div>
                 <div className="horizontal-bars">
-                  {ageRows.map((age) => <div key={age.label}><span>{age.label}</span><i><b style={{ width: `${Math.min(100, age.value / Math.max(...ageRows.map((item) => item.value), 1) * 100)}%` }}/></i><strong>지수 {age.value}</strong></div>)}
+                  {purchaseAgeRows.map((age) => <div key={age.label}><span>{age.label}</span><i><b style={{ width: `${age.buyers / maxPurchaseAge * 100}%` }}/></i><strong>{age.buyers}명</strong></div>)}
                 </div>
-                <div className="target-summary"><span>최고 관심 연령</span><b>{topAge.label} · 지수 {topAge.value}</b><small>네이버 쇼핑 클릭 관심도이며 실제 구매자 비율은 아님</small></div>
+                <div className="target-summary"><span>최다 결제 연령</span><b>{topPurchaseAge.label} · {topPurchaseAge.buyers}명</b><small>{crmSummary.customer.period} 누적 결제고객 기준</small></div>
               </article>
 
               <article className="panel barrier-panel">
-                <div className="panel-head"><div><span className="panel-kicker">PURCHASE BARRIER</span><h3>구매 저해 요인</h3></div><span className="source-badge">AI 분류</span></div>
+                <div className="panel-head"><div><span className="panel-kicker">CS PRIORITY</span><h3>CS 현상 우선순위</h3></div><span className="source-badge">접수 원본 집계</span></div>
                 <div className="rank-list">
-                  {[{n:"가격 부담",v:34},{n:"냉장 성능 불신",v:24},{n:"용량 부족",v:18},{n:"소음 우려",v:13},{n:"사용 목적 부족",v:11}].map((item,index)=><div key={item.n} className={index===0?"hot":""}><span>{index+1}</span><b>{item.n}</b><i><em style={{width:`${item.v/34*100}%`}}/></i><strong>{item.v}%</strong></div>)}
+                  {crmSummary.cs.phenomena.slice(0, 5).map(([label, count], index)=><div key={label} className={index===0?"hot":""}><span>{index+1}</span><b>{label}</b><i><em style={{width:`${count/maxCsPhenomenon*100}%`}}/></i><strong>{count.toLocaleString("코-KR")}건</strong></div>)}
                 </div>
               </article>
             </section>
@@ -347,7 +354,9 @@ export default function Home() {
             <div className="dashboard-grid">
               <article className="panel wide"><div className="panel-head"><div><h3>2년간 시즌별 검색 수요</h3><p>완료된 최근 24개월 · 월별 키워드 관심도 상대지수</p></div></div><div className="trend-scroll"><div className="bar-trend tall">{trend.map((v,i)=><div key={i}><span style={{height:`${v/maxTrend*100}%`}}><b>{v}</b></span><small>{monthLabels[i] || `${i+1}월`}</small></div>)}</div></div></article>
               <article className="panel"><div className="panel-head"><div><h3>성별 관심 분포</h3><p>네이버 쇼핑 클릭 기준</p></div></div><div className="gender-split"><div className="gender-circle female">{femaleShare}%</div><div><b>여성 {femaleShare}%</b><span>남성 {maleShare}%</span><small>실제 구매자 성별과 다를 수 있음</small></div></div></article>
+              <article className="panel"><div className="panel-head"><div><h3>연령별 검색 관심</h3><p>네이버 쇼핑 클릭 상대지수</p></div><span className="source-badge">최고 {topAge.label}</span></div><div className="horizontal-bars">{ageRows.map((age)=><div key={age.label}><span>{age.label}</span><i><b style={{width:`${age.value/Math.max(...ageRows.map(item=>item.value),1)*100}%`}}/></i><strong>{age.value}</strong></div>)}</div></article>
               <article className="panel"><div className="panel-head"><div><h3>키워드 증감</h3><p>{liveMarket ? "최근 3개월 vs 직전 3개월" : "예시 데이터"}</p></div></div><div className="keyword-table">{keywordRows.map(([a,b],i)=><p key={a}><span>{i+1}</span><b>{a}</b><em>{b}</em></p>)}</div></article>
+              <article className="panel wide"><div className="panel-head"><div><h3>꼬모 유상판매 24개월 추이</h3><p>전체 소형 냉장고 시장이 아닌 자사 순판매량</p></div><span className="source-badge">유상판매현황 원본</span></div><div className="trend-scroll"><div className="bar-trend tall">{crmSummary.sales.monthly24.map(([month,units])=><div key={month}><span style={{height:`${Math.max(8, units/maxSales*100)}%`}}><b>{units}</b></span><small>{month.slice(2).replace("-", ".")}</small></div>)}</div></div><p className="chart-note"><i/> {crmSummary.sales.period} 전체 순판매 {crmSummary.sales.netUnits.toLocaleString("코-KR")}대 · 최근 24개월만 표시</p></article>
               <article className="panel wide"><div className="panel-head"><div><h3>연령대별 라인 캐릭터 호감도</h3><p>동일 이미지·무작위 순서 설문 필요</p></div><span className="source-badge">예시 설문 n=200</span></div><div className="heat-table"><div className="heat-head"><span>캐릭터</span><span>10대</span><span>20대</span><span>30대</span><span>40대</span></div>{characters.map(c=><div key={c.name}><b>{c.name}</b>{[c.teen,c.twenty,c.thirty,c.forty].map((v,i)=><span key={i} style={{"--alpha":`${Math.max(.12,v/100)}`} as React.CSSProperties}>{v}%</span>)}</div>)}</div></article>
             </div>
           </section>
@@ -355,12 +364,13 @@ export default function Home() {
 
         {activeTab === "customer" && (
           <section className="page-section">
-            <div className="section-title"><div><span className="panel-kicker">CUSTOMER DATA</span><h2>사용한 사람들의 목소리</h2><p>리뷰와 문의를 구매 동기·불편·개선 기회로 구조화합니다.</p></div><span className="quality-badge">근거 원문 보존</span></div>
-            <section className="metric-grid three"><article className="metric-card"><span>분석 문장</span><strong>{(datasets.reviews.length+datasets.crm.length||326).toLocaleString()}건</strong><small>리뷰와 문의 합계</small></article><article className="metric-card"><span>주요 구매 동기</span><strong>{analysis.topMotive}</strong><small>관련 키워드 묶음</small></article><article className="metric-card warning"><span>개선 우선순위</span><strong>{analysis.topBarrier}</strong><small>빈도 × 부정 강도</small></article></section>
+            <div className="section-title"><div><span className="panel-kicker">CUSTOMER DATA</span><h2>실제 고객과 CS 데이터</h2><p>구매자 구성과 접수 현상은 실데이터로, 구매 동기와 만족도는 미확인으로 구분합니다.</p></div><span className="quality-badge">개인식별자 제외</span></div>
+            <section className="metric-grid three"><article className="metric-card"><span>결제고객</span><strong>{crmSummary.customer.buyers.toLocaleString("코-KR")}명</strong><small>{crmSummary.customer.period} · 스마트스토어</small></article><article className="metric-card"><span>구매전환율</span><strong>{crmSummary.customer.conversion}%</strong><small>방문 {crmSummary.customer.visitors.toLocaleString("코-KR")}명 기준</small></article><article className="metric-card warning"><span>CS 접수</span><strong>{crmSummary.cs.records.toLocaleString("코-KR")}건</strong><small>{crmSummary.cs.period} · 수리·교환 데이터</small></article></section>
             <div className="dashboard-grid">
-              <article className="panel"><div className="panel-head"><div><h3>구매 동기</h3><p>실제 사용 상황 분류</p></div></div><div className="rank-list clean">{[["디자인·소장 가치",38],["개인 공간 음료 보관",26],["선물",18],["화장품 보관",11],["자녀 간식 보관",7]].map(([n,v],i)=><div key={String(n)}><span>{i+1}</span><b>{n}</b><i><em style={{width:`${Number(v)/38*100}%`}}/></i><strong>{v}%</strong></div>)}</div></article>
-              <article className="panel"><div className="panel-head"><div><h3>문의 유형</h3><p>개선 기회 탐색</p></div></div><div className="issue-grid">{[["온도·냉각",29],["배송·설치",21],["블루투스",17],["소음",14],["AS",11],["사용법",8]].map(([n,v])=><div key={String(n)}><strong>{v}%</strong><span>{n}</span></div>)}</div></article>
-              <article className="panel wide"><div className="panel-head"><div><h3>반응 원인 총정리</h3><p>감성만 보여주지 않고 판단 근거를 함께 제공합니다.</p></div></div><div className="reason-columns"><div className="reason positive-reason"><span>긍정 원인</span><h4>“냉장고라기보다 방 안의 캐릭터 오브제 같아요.”</h4><ul><li>형태 자체가 캐릭터인 독특한 디자인</li><li>침실에 두기 좋은 크기와 저소음</li><li>선물·굿즈로서의 소장 가치</li></ul></div><div className="reason negative-reason"><span>부정 원인</span><h4>“기능이 좋아도 일반 31L 제품보다 가격이 부담돼요.”</h4><ul><li>동일 용량 실용형 제품 대비 높은 가격</li><li>냉동 불가와 실제 냉각 성능에 대한 질문</li><li>스피커 기능을 얼마나 쓸지 불확실</li></ul></div></div></article>
+              <article className="panel"><div className="panel-head"><div><h3>결제고객 연령</h3><p>연령대별 누적 결제고객</p></div></div><div className="rank-list clean">{[...purchaseAgeRows].sort((a,b)=>b.buyers-a.buyers).slice(0,5).map((item,i)=><div key={item.label}><span>{i+1}</span><b>{item.label}</b><i><em style={{width:`${item.buyers/maxPurchaseAge*100}%`}}/></i><strong>{item.buyers}명</strong></div>)}</div></article>
+              <article className="panel"><div className="panel-head"><div><h3>성별 결제고객</h3><p>스마트스토어 실결제 기준</p></div></div><div className="gender-split"><div className="gender-circle female">{femaleBuyerShare}%</div><div><b>여성 {femaleBuyerShare}% · 265명</b><span>남성 {maleBuyerShare}% · 234명</span><small>방문고객이 아닌 결제고객 구성비</small></div></div></article>
+              <article className="panel wide"><div className="panel-head"><div><h3>CS 접수 현상</h3><p>원본의 ‘현상구분’ 항목을 그대로 집계</p></div><span className="source-badge">{crmSummary.cs.records.toLocaleString("코-KR")}건</span></div><div className="issue-grid">{crmSummary.cs.phenomena.map(([label,count])=><div key={label}><strong>{Math.round(count/crmSummary.cs.records*100)}%</strong><span>{label} · {count.toLocaleString("코-KR")}건</span></div>)}</div></article>
+              <article className="panel wide"><div className="panel-head"><div><h3>현재 확인된 것과 추가로 필요한 것</h3><p>CRM으로 알 수 있는 범위를 넘지 않도록 구분합니다.</p></div></div><div className="reason-columns"><div className="reason positive-reason"><span>실데이터로 확인</span><h4>30·40대가 결제고객의 71.7%입니다.</h4><ul><li>여성 53%, 남성 47%로 성별 차이는 크지 않음</li><li>18개월 누적 구매전환율 3.5%</li><li>CS는 어댑터와 냉장 현상이 대부분</li></ul></div><div className="reason negative-reason"><span>추가 데이터 필요</span><h4>긍정 반응률과 구매 동기는 아직 계산할 수 없습니다.</h4><ul><li>리뷰·블로그·커뮤니티 원문이 있어야 반응 분석 가능</li><li>구매 동기는 설문 또는 리뷰 사용 상황 응답 필요</li><li>CS 접수률 계산은 판매 코호트별 연결 필요</li></ul></div></div></article>
             </div>
           </section>
         )}
@@ -385,7 +395,8 @@ export default function Home() {
 
         {activeTab === "data" && (
           <section className="page-section data-page">
-            <div className="section-title"><div><span className="panel-kicker">DATA CONNECTION</span><h2>분석할 데이터를 연결하세요</h2><p>CSV는 이 브라우저 안에서만 처리되며, 텍스트 원문과 출처가 함께 보존됩니다.</p></div><button className="primary-button large" onClick={runAnalysis}>{running?"분석 중…":"업로드 데이터 분석"}</button></div>
+            <div className="section-title"><div><span className="panel-kicker">DATA CONNECTION</span><h2>CRM 실데이터가 연결됐습니다</h2><p>성·연령별 고객분석, 유상판매현황, CS접수현황을 개인식별자 없이 집계했습니다.</p></div><button className="primary-button large" onClick={runAnalysis}>{running?"분석 중…":"추가 CSV 분석"}</button></div>
+            <article className="panel schema-panel"><div><span className="ai-label">CONNECTED CRM</span><h3>현재 사용 중인 실데이터</h3></div><ul><li><b>고객분석</b> {crmSummary.customer.period} · 결제고객 {crmSummary.customer.buyers}명</li><li><b>유상판매</b> {crmSummary.sales.period} · {crmSummary.sales.sourceRows.toLocaleString("코-KR")}행</li><li><b>CS접수</b> {crmSummary.cs.period} · {crmSummary.cs.records.toLocaleString("코-KR")}건</li><li><b>개인정보</b> 대시보드에는 집계값만 포함</li></ul></article>
             <div className="upload-grid">
               {dataCards.map((card)=><article className={`upload-card ${datasets[card.key].length?"uploaded":""}`} key={card.key} onClick={()=>inputRefs.current[card.key]?.click()}>
                 <input ref={(node)=>{inputRefs.current[card.key]=node}} type="file" accept=".csv,text/csv" onChange={(event)=>handleFile(card.key,event.target.files?.[0])}/>
@@ -396,7 +407,7 @@ export default function Home() {
           </section>
         )}
       </section>
-      <footer><span>CCOMO MARKET AI · MVP 0.1</span><p>예시 수치는 화면 설계 검증용입니다. 실제 의사결정에는 출처가 확인된 데이터를 사용하세요.</p></footer>
+      <footer><span>CCOMO MARKET AI · CRM CONNECTED</span><p>CRM과 네이버 지표는 실데이터이며, 캐릭터 호감도·경쟁사 예시는 실조사 전까지 예시로 구분합니다.</p></footer>
     </main>
   );
 }
