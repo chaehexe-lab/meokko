@@ -171,7 +171,7 @@ export default function Home() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/naver-market")
+    fetch("/api/naver-market?range=24m", { cache: "no-store" })
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "실데이터를 불러오지 못했습니다.");
@@ -206,6 +206,9 @@ export default function Home() {
   const femaleShare = liveMarket?.gender.female || 58;
   const maleShare = liveMarket?.gender.male || 42;
   const monthLabels = liveMarket?.searchPeriods?.length ? liveMarket.searchPeriods.map((period) => period.slice(2, 7).replace("-", ".")) : trend.map((_, index) => `${index + 1}월`);
+  const rangeLabel = liveMarket?.searchPeriods?.length
+    ? `${liveMarket.searchPeriods.length}개월 · ${monthLabels[0]}~${monthLabels.at(-1)}`
+    : "최근 24개월";
   const keywordRows = liveMarket?.keywordChanges?.length
     ? liveMarket.keywordChanges.map((item) => [item.keyword, `${item.change > 0 ? "+" : ""}${item.change}%`])
     : [["화장품 냉장고", "+42%"], ["방 냉장고", "+31%"], ["캐릭터 냉장고", "+28%"], ["술장고", "+19%"], ["저소음 미니냉장고", "+16%"]];
@@ -299,7 +302,7 @@ export default function Home() {
 
             <section className="dashboard-grid">
               <article className="panel trend-panel">
-                <div className="panel-head"><div><span className="panel-kicker">MARKET DEMAND</span><h3>월별 소형 냉장고 관심도</h3></div><span className="period-chip">{liveMarket ? "네이버 실데이터 · 2년" : "최근 24개월"}</span></div>
+                <div className="panel-head"><div><span className="panel-kicker">MARKET DEMAND</span><h3>월별 소형 냉장고 관심도</h3></div><span className="period-chip">{rangeLabel}</span></div>
                 <div className="trend-scroll"><div className="bar-trend" aria-label="최근 2년 월별 관심도 막대그래프">
                   {trend.map((value, index) => <div key={index} className={value === maxTrend ? "peak" : ""}><span style={{ height: `${Math.max(12, value / maxTrend * 100)}%` }}><b>{value}</b></span><small>{monthLabels[index] || `${index + 1}월`}</small></div>)}
                 </div></div>

@@ -103,7 +103,7 @@ export async function GET() {
       ages: ["10", "20", "30", "40", "50", "60"].map((group) => ({ label: group === "60" ? "60대+" : `${group}대`, value: ageShare[group] || 0 })),
       source: "네이버 데이터랩 · 쇼핑인사이트",
       metricNotice: "검색량과 클릭량은 기간 내 최댓값을 100으로 둔 상대지수입니다.",
-    }, { headers: { "Cache-Control": "public, max-age=3600" } });
+    }, { headers: { "Cache-Control": "no-store, no-cache, must-revalidate" } });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "데이터 조회에 실패했습니다." }, { status: 502 });
   }
