@@ -104,13 +104,14 @@ function hasAny(text: string, words: string[]) {
   return words.some((word) => text.includes(word));
 }
 
-function isRelevant(text: string, _query: string) {
-  const compactText = text.replace(/\s+/g, "").toLowerCase();
+function isRelevant(item: Mention) {
+  const compactText = item.text.replace(/\s+/g, "").toLowerCase();
+  const compactTitle = item.title.replace(/\s+/g, "").toLowerCase();
   if (!compactText.includes("냉장고")) return false;
 
   const brandedFridge = ["꼬모", "라인프렌즈", "bt21"]
     .some((brand) => compactText.includes(brand));
-  const genericCharacterFridge = compactText.includes("캐릭터냉장고");
+  const genericCharacterFridge = compactTitle.includes("캐릭터냉장고");
   const namedCharacterFridge = /(브라운|샐리).{0,12}냉장고|냉장고.{0,12}(브라운|샐리)/.test(compactText);
   return brandedFridge || genericCharacterFridge || namedCharacterFridge;
 }
@@ -179,7 +180,7 @@ export async function GET() {
     const unique = [...new Map(raw.filter((item) => item.link).map((item) => [item.link, item])).values()];
     const excluded = { commercial: 0, usedReview: 0, irrelevant: 0 };
     const eligible = unique.filter((item) => {
-      if (!isRelevant(item.text, item.query)) {
+      if (!isRelevant(item)) {
         excluded.irrelevant += 1;
         return false;
       }
