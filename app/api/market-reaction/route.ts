@@ -241,7 +241,7 @@ export async function GET() {
         methodology: "광고성 문구·실사용 후기를 제외하고, 제목과 검색 요약문에서 일반 소비자의 호감·우려·정보 탐색 표현을 규칙 기반으로 분류했습니다.",
         limitation: "공개 온라인 언급 표본이며 시장 전체 여론이나 작성자의 연령·성별을 대표하지 않습니다.",
       },
-      { headers: { "Cache-Control": "public, max-age=0, s-maxage=21600" } },
+      { headers: { "Cache-Control": "no-store, no-cache, must-revalidate" } },
     );
   } catch (error) {
     return NextResponse.json(
