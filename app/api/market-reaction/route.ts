@@ -33,9 +33,9 @@ const queries = [
   "캐릭터 냉장고",
   "라인프렌즈 냉장고",
   "브라운 냉장고",
-  "예쁜 냉장고",
-  "인테리어 냉장고",
-  "방꾸미기 냉장고",
+  "꼬모 냉장고",
+  "캐릭터 가전",
+  "라인프렌즈 가전",
 ];
 
 const positiveWords = [
@@ -52,10 +52,9 @@ const usedReviewWords = [
 ];
 const commercialWords = [
   "협찬", "제공받", "원고료", "광고 포함", "소정의", "체험단", "구매링크", "최저가", "렌탈 상담",
-  "공동구매", "공구 진행", "스마트스토어", "제품 판매", "구매 문의", "전화 상담",
+  "공동구매", "공구 진행", "스마트스토어", "제품 판매", "구매 문의", "전화 상담", "보도자료",
+  "공식몰", "판매처", "출시 소식", "신제품 소개",
 ];
-const reactionWords = [...positiveWords, ...negativeWords, "가격", "크기", "공간", "소음", "냉각", "성능", "용량", "선물"];
-
 const themes = [
   { name: "디자인·소장", words: ["예쁘", "귀엽", "디자인", "감성", "소장", "인테리어", "방꾸미기", "취향", "취저"] },
   { name: "구매 의향", words: ["갖고 싶", "갖고싶", "사고 싶", "사고싶", "탐나", "살까", "구매하고 싶"] },
@@ -94,6 +93,18 @@ function clean(value = "") {
 
 function hasAny(text: string, words: string[]) {
   return words.some((word) => text.includes(word));
+}
+
+function isRelevant(text: string, query: string) {
+  const compactText = text.replace(/\s+/g, "");
+  const compactQuery = query.replace(/\s+/g, "");
+  if (compactText.includes(compactQuery)) return true;
+
+  const [first, second] = query.split(/\s+/);
+  if (!first || !second) return false;
+  const escapedFirst = first.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedSecond = second.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(?:${escapedFirst}.{0,12}${escapedSecond}|${escapedSecond}.{0,12}${escapedFirst})`).test(text);
 }
 
 function classify(text: string): Sentiment {
@@ -158,18 +169,18 @@ export async function GET() {
     );
 
     const unique = [...new Map(raw.filter((item) => item.link).map((item) => [item.link, item])).values()];
-    const excluded = { commercial: 0, usedReview: 0, noReaction: 0 };
+    const excluded = { commercial: 0, usedReview: 0, irrelevant: 0 };
     const eligible = unique.filter((item) => {
+      if (!isRelevant(item.text, item.query)) {
+        excluded.irrelevant += 1;
+        return false;
+      }
       if (hasAny(item.text, commercialWords)) {
         excluded.commercial += 1;
         return false;
       }
       if (hasAny(item.text, usedReviewWords)) {
         excluded.usedReview += 1;
-        return false;
-      }
-      if (!hasAny(item.text, reactionWords)) {
-        excluded.noReaction += 1;
         return false;
       }
       return true;

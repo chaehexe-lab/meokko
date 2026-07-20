@@ -39,7 +39,7 @@ type MarketReactionData = {
     excluded: number;
     commercial: number;
     usedReview: number;
-    noReaction: number;
+    irrelevant: number;
   };
   sources: { blog: number; cafe: number };
   sentiment: { positive: number; negative: number; neutral: number };
@@ -420,7 +420,7 @@ export default function Home() {
                     </div>
                     <div className="reaction-evidence">
                       <div><b>분석 기준</b><span>{marketReaction.methodology}</span></div>
-                      <div><b>제외 내역</b><span>광고 {marketReaction.counts.commercial}건 · 실사용 후기 {marketReaction.counts.usedReview}건 · 반응 표현 없음 {marketReaction.counts.noReaction}건</span></div>
+                      <div><b>제외 내역</b><span>문맥 불일치 {marketReaction.counts.irrelevant}건 · 광고 {marketReaction.counts.commercial}건 · 실사용 후기 {marketReaction.counts.usedReview}건</span></div>
                       <div><b>해석 주의</b><span>{marketReaction.limitation}</span></div>
                     </div>
                     {marketReaction.examples.length > 0 && <div className="reaction-links">{marketReaction.examples.slice(0, 4).map((example) => <a key={example.link} href={example.link} target="_blank" rel="noreferrer"><em>{example.source}</em><span>{example.title}</span></a>)}</div>}
