@@ -29,6 +29,33 @@ type LiveMarketData = {
   metricNotice: string;
 };
 
+type MarketReactionData = {
+  fetchedAt: string;
+  scope: string;
+  counts: {
+    collected: number;
+    unique: number;
+    analyzed: number;
+    excluded: number;
+    commercial: number;
+    usedReview: number;
+    noReaction: number;
+  };
+  sources: { blog: number; cafe: number };
+  sentiment: { positive: number; negative: number; neutral: number };
+  themes: { name: string; count: number; share: number }[];
+  examples: {
+    title: string;
+    excerpt: string;
+    link: string;
+    source: string;
+    postdate: string | null;
+    sentiment: "positive" | "negative" | "neutral";
+  }[];
+  methodology: string;
+  limitation: string;
+};
+
 const sampleTrend = [38, 42, 45, 41, 48, 52, 60, 72, 85, 79, 63, 51, 44, 49, 46, 53, 61, 78, 91, 84, 66, 54, 48, 59];
 const sampleAges = [
   { label: "10대", value: 12 },
@@ -168,6 +195,8 @@ export default function Home() {
   const [running, setRunning] = useState(false);
   const [liveMarket, setLiveMarket] = useState<LiveMarketData | null>(null);
   const [liveError, setLiveError] = useState("");
+  const [marketReaction, setMarketReaction] = useState<MarketReactionData | null>(null);
+  const [reactionError, setReactionError] = useState("");
   const inputRefs = useRef<Partial<Record<DatasetKey, HTMLInputElement | null>>>({});
 
   useEffect(() => {
@@ -180,6 +209,19 @@ export default function Home() {
       })
       .then((data) => { if (active) setLiveMarket(data); })
       .catch((error) => { if (active) setLiveError(error instanceof Error ? error.message : "실데이터 연결 실패"); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/market-reaction", { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "온라인 반응을 불러오지 못했습니다.");
+        return data as MarketReactionData;
+      })
+      .then((data) => { if (active) setMarketReaction(data); })
+      .catch((error) => { if (active) setReactionError(error instanceof Error ? error.message : "온라인 반응 연결 실패"); });
     return () => { active = false; };
   }, []);
 
@@ -223,6 +265,8 @@ export default function Home() {
   const maxSales = Math.max(...crmSummary.sales.monthly24.map(([, units]) => units), 1);
   const maxCsPhenomenon = Math.max(...crmSummary.cs.phenomena.map(([, count]) => count), 1);
   const topCsShare = Math.round(crmSummary.cs.phenomena[0][1] / crmSummary.cs.records * 100);
+  const reactionSentiment = marketReaction?.sentiment ?? { positive: 0, negative: 0, neutral: 0 };
+  const reactionDonut = `conic-gradient(var(--green) 0 ${reactionSentiment.positive}%, var(--red) ${reactionSentiment.positive}% ${reactionSentiment.positive + reactionSentiment.negative}%, #dfe5ef 0)`;
 
   async function handleFile(key: DatasetKey, file?: File) {
     if (!file) return;
@@ -352,6 +396,39 @@ export default function Home() {
           <section className="page-section">
             <div className="section-title"><div><span className="panel-kicker">MARKET DATA</span><h2>시장에서 고객 신호 찾기</h2><p>검색 관심도는 구매량이 아닌 수요 신호로 표시합니다.</p></div><span className="quality-badge">상대지수 · 출처 구분</span></div>
             <div className="dashboard-grid">
+              <article className="panel wide reaction-panel">
+                <div className="panel-head">
+                  <div><span className="panel-kicker">PUBLIC BUZZ</span><h3>캐릭터 냉장고 온라인 공개 반응</h3><p>광고성 문구와 실사용 후기를 제외한 네이버 블로그·공개 카페 언급</p></div>
+                  <span className="source-badge">{marketReaction ? `분석 ${marketReaction.counts.analyzed.toLocaleString("ko-KR")}건` : reactionError ? "연결 확인 필요" : "수집 중"}</span>
+                </div>
+                {marketReaction ? (
+                  <>
+                    <div className="reaction-overview">
+                      <div className="donut reaction-donut" style={{ background: reactionDonut }}>
+                        <div><strong>{reactionSentiment.positive}%</strong><span>긍정 반응</span></div>
+                      </div>
+                      <div className="sentiment-list reaction-sentiments">
+                        <p><i className="dot positive"/><span>긍정</span><b>{reactionSentiment.positive}%</b></p>
+                        <p><i className="dot negative"/><span>부정</span><b>{reactionSentiment.negative}%</b></p>
+                        <p><i className="dot neutral"/><span>중립·정보탐색</span><b>{reactionSentiment.neutral}%</b></p>
+                        <small>수집 {marketReaction.counts.collected.toLocaleString("ko-KR")}건 → 중복 제거 {marketReaction.counts.unique.toLocaleString("ko-KR")}건 → 최종 분석 {marketReaction.counts.analyzed.toLocaleString("ko-KR")}건</small>
+                      </div>
+                      <div className="reaction-themes">
+                        <h4>주요 반응 주제</h4>
+                        {marketReaction.themes.slice(0, 5).map((theme) => <p key={theme.name}><span>{theme.name}</span><i><b style={{ width: `${theme.share}%` }}/></i><strong>{theme.count}건</strong></p>)}
+                      </div>
+                    </div>
+                    <div className="reaction-evidence">
+                      <div><b>분석 기준</b><span>{marketReaction.methodology}</span></div>
+                      <div><b>제외 내역</b><span>광고 {marketReaction.counts.commercial}건 · 실사용 후기 {marketReaction.counts.usedReview}건 · 반응 표현 없음 {marketReaction.counts.noReaction}건</span></div>
+                      <div><b>해석 주의</b><span>{marketReaction.limitation}</span></div>
+                    </div>
+                    {marketReaction.examples.length > 0 && <div className="reaction-links">{marketReaction.examples.slice(0, 4).map((example) => <a key={example.link} href={example.link} target="_blank" rel="noreferrer"><em>{example.source}</em><span>{example.title}</span></a>)}</div>}
+                  </>
+                ) : (
+                  <div className="reaction-empty"><strong>{reactionError ? "온라인 반응을 불러오지 못했습니다." : "공개 반응을 수집하고 있습니다."}</strong><span>{reactionError || "네이버 최신 공개 검색결과를 정리하는 중입니다."}</span></div>
+                )}
+              </article>
               <article className="panel wide"><div className="panel-head"><div><h3>2년간 시즌별 검색 수요</h3><p>완료된 최근 24개월 · 월별 키워드 관심도 상대지수</p></div></div><div className="trend-scroll"><div className="bar-trend tall">{trend.map((v,i)=><div key={i}><span style={{height:`${v/maxTrend*100}%`}}><b>{v}</b></span><small>{monthLabels[i] || `${i+1}월`}</small></div>)}</div></div></article>
               <article className="panel"><div className="panel-head"><div><h3>성별 관심 분포</h3><p>네이버 쇼핑 클릭 기준</p></div></div><div className="gender-split"><div className="gender-circle female">{femaleShare}%</div><div><b>여성 {femaleShare}%</b><span>남성 {maleShare}%</span><small>실제 구매자 성별과 다를 수 있음</small></div></div></article>
               <article className="panel"><div className="panel-head"><div><h3>연령별 검색 관심</h3><p>네이버 쇼핑 클릭 상대지수</p></div><span className="source-badge">최고 {topAge.label}</span></div><div className="horizontal-bars">{ageRows.map((age)=><div key={age.label}><span>{age.label}</span><i><b style={{width:`${age.value/Math.max(...ageRows.map(item=>item.value),1)*100}%`}}/></i><strong>{age.value}</strong></div>)}</div></article>
