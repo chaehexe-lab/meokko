@@ -146,6 +146,7 @@ button { cursor: pointer; }
 .reaction-sentiments { padding-right:24px;border-right:1px solid var(--line); }
 .reaction-sentiments p { margin-bottom:14px;font-size:11px; }
 .reaction-sentiments small { display:block;margin-top:18px;color:#8d96a7;font-size:9px;line-height:1.6; }
+.reaction-sentiments .sample-warning { display:block;margin:0 0 16px;padding:10px 11px;border-radius:8px;background:#fff4e8;color:#a95a17;font-size:9px;line-height:1.5; }
 .reaction-sentiments .dot.positive { background:var(--green); }
 .reaction-sentiments .dot.negative { background:var(--red); }
 .reaction-sentiments .dot.neutral { background:#aeb9ca; }

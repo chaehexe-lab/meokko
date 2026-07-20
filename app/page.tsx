@@ -407,12 +407,16 @@ export default function Home() {
                   <>
                     <div className="reaction-overview">
                       <div className="donut reaction-donut" style={{ background: reactionDonut }}>
-                        <div><strong>{reactionSentiment.positive}%</strong><span>긍정 반응</span></div>
+                        <div>
+                          <strong>{marketReaction.reliable ? `${reactionSentiment.positive}%` : `${marketReaction.counts.analyzed}건`}</strong>
+                          <span>{marketReaction.reliable ? "긍정 반응" : "유효 표본"}</span>
+                        </div>
                       </div>
                       <div className="sentiment-list reaction-sentiments">
-                        <p><i className="dot positive"/><span>긍정</span><b>{reactionSentiment.positive}%</b></p>
-                        <p><i className="dot negative"/><span>부정</span><b>{reactionSentiment.negative}%</b></p>
-                        <p><i className="dot neutral"/><span>중립·정보탐색</span><b>{reactionSentiment.neutral}%</b></p>
+                        {!marketReaction.reliable && <strong className="sample-warning">온라인 일반 반응이 적어 감성 비율을 확정할 수 없습니다.</strong>}
+                        <p><i className="dot positive"/><span>긍정{marketReaction.reliable ? "" : " (참고)"}</span><b>{reactionSentiment.positive}%</b></p>
+                        <p><i className="dot negative"/><span>부정{marketReaction.reliable ? "" : " (참고)"}</span><b>{reactionSentiment.negative}%</b></p>
+                        <p><i className="dot neutral"/><span>중립·정보탐색{marketReaction.reliable ? "" : " (참고)"}</span><b>{reactionSentiment.neutral}%</b></p>
                         <small>수집 {marketReaction.counts.collected.toLocaleString("ko-KR")}건 → 중복 제거 {marketReaction.counts.unique.toLocaleString("ko-KR")}건 → 최종 분석 {marketReaction.counts.analyzed.toLocaleString("ko-KR")}건</small>
                       </div>
                       <div className="reaction-themes">
