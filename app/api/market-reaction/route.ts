@@ -32,10 +32,10 @@ type Mention = {
 const queries = [
   "캐릭터 냉장고",
   "라인프렌즈 냉장고",
-  "브라운 냉장고",
+  "브라운 캐릭터 냉장고",
   "꼬모 냉장고",
-  "캐릭터 가전",
   "라인프렌즈 가전",
+  "BT21 냉장고",
 ];
 
 const positiveWords = [
@@ -98,13 +98,7 @@ function hasAny(text: string, words: string[]) {
 function isRelevant(text: string, query: string) {
   const compactText = text.replace(/\s+/g, "");
   const compactQuery = query.replace(/\s+/g, "");
-  if (compactText.includes(compactQuery)) return true;
-
-  const [first, second] = query.split(/\s+/);
-  if (!first || !second) return false;
-  const escapedFirst = first.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const escapedSecond = second.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`(?:${escapedFirst}.{0,12}${escapedSecond}|${escapedSecond}.{0,12}${escapedFirst})`).test(text);
+  return compactText.includes(compactQuery);
 }
 
 function classify(text: string): Sentiment {
