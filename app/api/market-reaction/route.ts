@@ -130,12 +130,16 @@ export async function GET() {
   }
 
   try {
-    const batches = await Promise.all(
-      queries.flatMap((query) => [
-        searchNaver("blog", query, available).then((items) => ({ items, query, source: "블로그" as Source })),
-        searchNaver("cafearticle", query, available).then((items) => ({ items, query, source: "카페" as Source })),
-      ]),
-    );
+    const batches: { items: SearchItem[]; query: string; source: Source }[] = [];
+    for (const query of queries) {
+      const blogItems = await searchNaver("blog", query, available);
+      batches.push({ items: blogItems, query, source: "블로그" });
+      await new Promise((resolve) => setTimeout(resolve, 250));
+
+      const cafeItems = await searchNaver("cafearticle", query, available);
+      batches.push({ items: cafeItems, query, source: "카페" });
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
 
     const raw: Mention[] = batches.flatMap(({ items, query, source }) =>
       items.map((item) => {
