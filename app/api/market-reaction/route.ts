@@ -104,10 +104,12 @@ function hasAny(text: string, words: string[]) {
   return words.some((word) => text.includes(word));
 }
 
-function isRelevant(text: string, query: string) {
+function isRelevant(text: string, _query: string) {
   const compactText = text.replace(/\s+/g, "");
-  const compactQuery = query.replace(/\s+/g, "");
-  return compactText.includes(compactQuery);
+  const hasFridge = compactText.includes("냉장고");
+  const hasCharacterContext = ["꼬모", "라인프렌즈", "브라운", "샐리", "BT21", "캐릭터"]
+    .some((word) => compactText.toLowerCase().includes(word.toLowerCase()));
+  return hasFridge && hasCharacterContext;
 }
 
 function classify(text: string): Sentiment {
