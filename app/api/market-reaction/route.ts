@@ -105,11 +105,14 @@ function hasAny(text: string, words: string[]) {
 }
 
 function isRelevant(text: string, _query: string) {
-  const compactText = text.replace(/\s+/g, "");
-  const hasFridge = compactText.includes("냉장고");
-  const hasCharacterContext = ["꼬모", "라인프렌즈", "브라운", "샐리", "BT21", "캐릭터"]
-    .some((word) => compactText.toLowerCase().includes(word.toLowerCase()));
-  return hasFridge && hasCharacterContext;
+  const compactText = text.replace(/\s+/g, "").toLowerCase();
+  if (!compactText.includes("냉장고")) return false;
+
+  const brandedFridge = ["꼬모", "라인프렌즈", "bt21"]
+    .some((brand) => compactText.includes(brand));
+  const genericCharacterFridge = compactText.includes("캐릭터냉장고");
+  const namedCharacterFridge = /(브라운|샐리).{0,12}냉장고|냉장고.{0,12}(브라운|샐리)/.test(compactText);
+  return brandedFridge || genericCharacterFridge || namedCharacterFridge;
 }
 
 function classify(text: string): Sentiment {
