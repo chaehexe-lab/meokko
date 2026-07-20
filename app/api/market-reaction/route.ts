@@ -49,7 +49,7 @@ const negativeWords = [
 const usedReviewWords = [
   "내돈내산", "사용 후기", "구매 후기", "실사용", "써봤", "사용해보", "한 달 사용", "한달 사용",
   "배송받", "직접 구매", "구입했", "샀는데", "설치했", "사용 중", "사용중", "후기", "사용 기간",
-  "실제 사용", "숙소", "체감", "입양해왔", "데려왔", "받아왔", "고장",
+  "실제 사용", "숙소", "체감", "입양해왔", "입양(?)", "해왔", "데려왔", "받아왔", "진열상품", "고장",
 ];
 const commercialWords = [
   "협찬", "제공받", "원고료", "광고 포함", "소정의", "체험단", "구매링크", "최저가", "렌탈 상담",
@@ -66,6 +66,11 @@ const themes = [
   { name: "공간·크기", words: ["자리", "공간", "크기", "작은", "방", "침실", "책상"] },
   { name: "성능 우려", words: ["소음", "냉각", "성능", "전기료", "온도"] },
   { name: "선물", words: ["선물", "생일", "집들이"] },
+];
+const reactionWords = [
+  ...positiveWords,
+  ...negativeWords,
+  "살까", "구매", "가격", "디자인", "크기", "공간", "소음", "냉각", "성능", "전기료", "온도", "선물",
 ];
 
 function credentials(): Credential[] {
@@ -170,6 +175,10 @@ export async function GET() {
     const excluded = { commercial: 0, usedReview: 0, irrelevant: 0 };
     const eligible = unique.filter((item) => {
       if (!isRelevant(item.text, item.query)) {
+        excluded.irrelevant += 1;
+        return false;
+      }
+      if (!hasAny(item.text, reactionWords)) {
         excluded.irrelevant += 1;
         return false;
       }
