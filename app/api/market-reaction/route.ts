@@ -30,13 +30,14 @@ type Mention = {
 };
 
 const queries = [
-  "캐릭터 냉장고",
-  "라인프렌즈 냉장고",
-  "브라운 캐릭터 냉장고",
   "꼬모 냉장고",
-  "라인프렌즈 가전",
+  "꼬모 라인프렌즈 냉장고",
+  "라인프렌즈 냉장고",
+  "브라운 냉장고",
+  "샐리 냉장고",
   "BT21 냉장고",
 ];
+const searchStarts = [1, 101, 201];
 
 const positiveWords = [
   "예쁘", "귀엽", "갖고 싶", "갖고싶", "사고 싶", "사고싶", "탐나", "취향", "마음에",
@@ -109,11 +110,8 @@ function isRelevant(item: Mention) {
   const compactTitle = item.title.replace(/\s+/g, "").toLowerCase();
   if (!compactText.includes("냉장고")) return false;
 
-  const brandedFridge = ["꼬모", "라인프렌즈", "bt21"]
-    .some((brand) => compactText.includes(brand));
-  const genericCharacterFridge = compactTitle.includes("캐릭터냉장고");
-  const namedCharacterFridge = /(브라운|샐리).{0,12}냉장고|냉장고.{0,12}(브라운|샐리)/.test(compactText);
-  return brandedFridge || genericCharacterFridge || namedCharacterFridge;
+  const productContext = /(꼬모|라인프렌즈|bt21|브라운|샐리).{0,8}냉장고|냉장고.{0,8}(꼬모|라인프렌즈|bt21|브라운|샐리)/.test(compactText);
+  return productContext || compactTitle.includes("캐릭터냉장고");
 }
 
 function classify(text: string): Sentiment {
@@ -124,10 +122,10 @@ function classify(text: string): Sentiment {
   return "neutral";
 }
 
-async function searchNaver(source: "blog" | "cafearticle", query: string, available: Credential[]) {
+async function searchNaver(source: "blog" | "cafearticle", query: string, start: number, available: Credential[]) {
   let lastError = "네이버 검색 API 호출에 실패했습니다.";
   for (const credential of available) {
-    const params = new URLSearchParams({ query, display: "100", start: "1", sort: "date" });
+    const params = new URLSearchParams({ query, display: "100", start: String(start), sort: "date" });
     const response = await fetch(`https://openapi.naver.com/v1/search/${source}.json?${params}`, {
       headers: {
         "X-Naver-Client-Id": credential.id,
@@ -152,13 +150,15 @@ export async function GET() {
   try {
     const batches: { items: SearchItem[]; query: string; source: Source }[] = [];
     for (const query of queries) {
-      const blogItems = await searchNaver("blog", query, available);
-      batches.push({ items: blogItems, query, source: "블로그" });
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      for (const start of searchStarts) {
+        const blogItems = await searchNaver("blog", query, start, available);
+        batches.push({ items: blogItems, query, source: "블로그" });
+        await new Promise((resolve) => setTimeout(resolve, 250));
 
-      const cafeItems = await searchNaver("cafearticle", query, available);
-      batches.push({ items: cafeItems, query, source: "카페" });
-      await new Promise((resolve) => setTimeout(resolve, 250));
+        const cafeItems = await searchNaver("cafearticle", query, start, available);
+        batches.push({ items: cafeItems, query, source: "카페" });
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
     }
 
     const raw: Mention[] = batches.flatMap(({ items, query, source }) =>
