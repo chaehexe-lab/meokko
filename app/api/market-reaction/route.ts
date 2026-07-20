@@ -47,13 +47,6 @@ const negativeWords = [
   "비싸", "부담", "필요 없", "필요없", "쓸모 없", "쓸모없", "자리 차지", "공간 부족",
   "소음 걱정", "전기료", "냉각 걱정", "성능 걱정", "아쉽", "과하", "별로", "애매",
 ];
-const usedReviewWords = [
-  "내돈내산", "사용 후기", "구매 후기", "실사용", "써봤", "사용해보", "한 달 사용", "한달 사용",
-  "배송받", "직접 구매", "구입했", "샀는데", "설치했", "사용 중", "사용중", "후기", "사용 기간",
-  "실제 사용", "사용하고", "사용한다", "사용했", "숙소", "체감", "입양해왔", "입양(?)", "해왔",
-  "데려왔", "받아왔", "진열상품", "고장", "구입", "구매하려다", "구매했다", "구매했",
-  "선택한 이유", "선물로 주", "쓰고 있다", "쓰고있다",
-];
 const commercialWords = [
   "협찬", "제공받", "원고료", "광고 포함", "소정의", "체험단", "구매링크", "최저가", "렌탈 상담",
   "공동구매", "공구 진행", "스마트스토어", "제품 판매", "구매 문의", "전화 상담", "보도자료",
@@ -196,10 +189,6 @@ export async function GET() {
         excluded.commercial += 1;
         return false;
       }
-      if (hasAny(item.text, usedReviewWords)) {
-        excluded.usedReview += 1;
-        return false;
-      }
       return true;
     });
 
@@ -258,8 +247,8 @@ export async function GET() {
         themes: themeRows,
         examples,
         reliable: eligible.length >= 30,
-        warning: eligible.length >= 30 ? null : "광고·판매글·실사용 후기를 제외한 일반 반응이 30건 미만이라 탐색적 신호로만 해석해야 합니다.",
-        methodology: "광고성 문구·실사용 후기를 제외하고, 제목과 검색 요약문에서 일반 소비자의 호감·우려·정보 탐색 표현을 규칙 기반으로 분류했습니다.",
+        warning: eligible.length >= 30 ? null : "광고·판매글을 제외한 공개 반응이 30건 미만이라 탐색적 신호로만 해석해야 합니다.",
+        methodology: "광고성 문구와 판매글을 제외하고, 실사용 후기를 포함한 제목·검색 요약문에서 호감·우려·정보 탐색 표현을 규칙 기반으로 분류했습니다.",
         limitation: "공개 온라인 언급 표본이며 시장 전체 여론이나 작성자의 연령·성별을 대표하지 않습니다.",
       },
       { headers: { "Cache-Control": "no-store, no-cache, must-revalidate" } },

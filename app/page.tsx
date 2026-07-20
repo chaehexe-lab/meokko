@@ -400,7 +400,7 @@ export default function Home() {
             <div className="dashboard-grid">
               <article className="panel wide reaction-panel">
                 <div className="panel-head">
-                  <div><span className="panel-kicker">PUBLIC BUZZ</span><h3>캐릭터 냉장고 온라인 공개 반응</h3><p>광고성 문구와 실사용 후기를 제외한 네이버 블로그·공개 카페 언급</p></div>
+                  <div><span className="panel-kicker">PUBLIC BUZZ</span><h3>캐릭터 냉장고 온라인 공개 반응</h3><p>광고·판매글을 제외하고 실사용 후기를 포함한 네이버 블로그·공개 카페 언급</p></div>
                   <span className="source-badge">{marketReaction ? `${marketReaction.reliable ? "분석" : "표본 부족"} ${marketReaction.counts.analyzed.toLocaleString("ko-KR")}건` : reactionError ? "연결 확인 필요" : "수집 중"}</span>
                 </div>
                 {marketReaction ? (
@@ -426,7 +426,7 @@ export default function Home() {
                     </div>
                     <div className="reaction-evidence">
                       <div><b>분석 기준</b><span>{marketReaction.methodology}</span></div>
-                      <div><b>제외 내역</b><span>문맥 불일치 {marketReaction.counts.irrelevant}건 · 광고 {marketReaction.counts.commercial}건 · 실사용 후기 {marketReaction.counts.usedReview}건</span></div>
+                      <div><b>제외 내역</b><span>문맥 불일치 {marketReaction.counts.irrelevant}건 · 광고·판매글 {marketReaction.counts.commercial}건</span></div>
                       <div><b>해석 주의</b><span>{marketReaction.limitation}</span></div>
                       {marketReaction.warning && <div><b>표본 경고</b><span>{marketReaction.warning}</span></div>}
                     </div>

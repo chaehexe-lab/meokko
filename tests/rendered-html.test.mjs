@@ -35,6 +35,7 @@ test("connects the public market-reaction surface to its API", async () => {
   assert.match(page, /fetch\("\/api\/market-reaction"/);
   assert.match(page, /캐릭터 냉장고 온라인 공개 반응/);
   assert.match(route, /v1\/search\/\$\{source\}\.json/);
-  assert.match(route, /광고성 문구·실사용 후기를 제외/);
+  assert.match(route, /실사용 후기를 포함/);
+  assert.match(route, /광고성 문구와 판매글을 제외/);
   assert.match(route, /NAVER_TREND_CLIENT_ID/);
 });
