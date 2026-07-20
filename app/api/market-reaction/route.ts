@@ -33,8 +33,8 @@ const queries = [
   "꼬모 냉장고",
   "꼬모 라인프렌즈 냉장고",
   "라인프렌즈 냉장고",
-  "브라운 냉장고",
-  "샐리 냉장고",
+  "브라운 캐릭터 냉장고",
+  "샐리 캐릭터 냉장고",
   "BT21 냉장고",
 ];
 const searchStarts = [1, 101, 201];
@@ -110,8 +110,10 @@ function isRelevant(item: Mention) {
   const compactTitle = item.title.replace(/\s+/g, "").toLowerCase();
   if (!compactText.includes("냉장고")) return false;
 
-  const productContext = /(꼬모|라인프렌즈|bt21|브라운|샐리).{0,8}냉장고|냉장고.{0,8}(꼬모|라인프렌즈|bt21|브라운|샐리)/.test(compactText);
-  return productContext || compactTitle.includes("캐릭터냉장고");
+  const productPhrases = [
+    "꼬모냉장고", "라인프렌즈냉장고", "bt21냉장고", "브라운캐릭터냉장고", "샐리캐릭터냉장고",
+  ];
+  return productPhrases.some((phrase) => compactText.includes(phrase)) || compactTitle.includes("캐릭터냉장고");
 }
 
 function classify(text: string): Sentiment {
