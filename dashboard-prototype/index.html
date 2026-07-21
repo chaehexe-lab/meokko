@@ -3,24 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>꼬모 STEP1 타겟 인사이트</title>
+  <title>꼬모 STEP1 관리자 대시보드</title>
   <style>
     :root {
       --bg: #eef6fb;
-      --panel: #ffffff;
-      --panel-soft: #f7fbff;
+      --panel: #fff;
+      --soft: #f7fbff;
       --ink: #17222b;
       --muted: #6d7b8b;
       --line: #dbe7ef;
       --blue: #4f80ff;
       --blue-dark: #2e62d9;
-      --green: #22c982;
-      --green-dark: #0f9562;
+      --green: #18b87d;
       --cyan: #25c4d8;
-      --red: #f16464;
+      --red: #e85c5c;
       --orange: #ffad42;
-      --yellow: #ffdd67;
-      --shadow: 0 20px 48px rgba(55, 93, 122, .14);
+      --warn: #fff6df;
+      --shadow: 0 16px 34px rgba(55, 93, 122, .11);
     }
 
     * { box-sizing: border-box; }
@@ -29,34 +28,30 @@
       margin: 0;
       min-height: 100vh;
       color: var(--ink);
-      background:
-        radial-gradient(circle at 12% 8%, rgba(79, 128, 255, .16), transparent 28%),
-        radial-gradient(circle at 86% 2%, rgba(34, 201, 130, .18), transparent 30%),
-        linear-gradient(135deg, #f7fbff 0%, #eaf5f8 100%);
+      background: linear-gradient(135deg, #f7fbff 0%, #eaf5f8 100%);
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
       letter-spacing: 0;
     }
 
-    button { font: inherit; }
+    button, select { font: inherit; }
 
     .app {
-      width: min(1500px, calc(100vw - 28px));
-      margin: 14px auto;
+      width: min(1500px, calc(100vw - 24px));
+      margin: 12px auto;
       display: grid;
-      grid-template-columns: 214px minmax(0, 1fr);
-      min-height: calc(100vh - 28px);
+      grid-template-columns: 204px minmax(0, 1fr);
+      min-height: calc(100vh - 24px);
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, .88);
-      border-radius: 28px;
-      background: rgba(250, 253, 255, .84);
-      box-shadow: 0 28px 80px rgba(52, 84, 112, .17);
-      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 24px;
+      background: rgba(250,253,255,.88);
+      box-shadow: 0 24px 70px rgba(52, 84, 112, .14);
     }
 
     aside {
-      padding: 22px 14px;
+      padding: 18px 12px;
       border-right: 1px solid var(--line);
-      background: rgba(255, 255, 255, .76);
+      background: rgba(255,255,255,.78);
     }
 
     .brand {
@@ -64,39 +59,39 @@
       align-items: center;
       gap: 10px;
       padding: 0 8px;
-      margin-bottom: 28px;
+      margin-bottom: 22px;
       font-weight: 900;
     }
 
     .logo {
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       display: grid;
       place-items: center;
-      border-radius: 14px;
+      border-radius: 12px;
       background: linear-gradient(135deg, var(--blue), var(--green));
       color: #fff;
       font-size: 13px;
-      box-shadow: 0 14px 30px rgba(79, 128, 255, .28);
+      box-shadow: 0 10px 24px rgba(79,128,255,.24);
     }
 
     .nav-title {
-      margin: 22px 10px 9px;
+      margin: 20px 10px 8px;
       color: #93a2b0;
       font-size: 11px;
       font-weight: 900;
     }
 
-    .nav { display: grid; gap: 7px; }
+    .nav { display: grid; gap: 6px; }
 
     .nav button {
-      height: 42px;
+      height: 40px;
       border: 0;
-      border-radius: 13px;
+      border-radius: 12px;
       background: transparent;
       color: #607282;
       text-align: left;
-      padding: 0 13px;
+      padding: 0 12px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 850;
@@ -105,14 +100,14 @@
     .nav button.active {
       color: #fff;
       background: linear-gradient(135deg, var(--blue), var(--cyan));
-      box-shadow: 0 14px 26px rgba(79, 128, 255, .24);
+      box-shadow: 0 10px 22px rgba(79,128,255,.22);
     }
 
-    .source {
-      margin-top: 24px;
-      padding: 14px;
+    .side-note {
+      margin-top: 22px;
+      padding: 12px;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 14px;
       background: var(--panel);
       color: var(--muted);
       font-size: 12px;
@@ -121,15 +116,15 @@
 
     main {
       min-width: 0;
-      padding: 24px;
+      padding: 20px;
     }
 
     .topbar {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
       align-items: end;
-      gap: 18px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .eyebrow {
@@ -139,127 +134,60 @@
     }
 
     h1 {
-      margin: 5px 0 0;
-      font-size: 32px;
-      line-height: 1.12;
+      margin: 4px 0 0;
+      font-size: 28px;
+      line-height: 1.16;
     }
 
     .topbar p {
-      margin: 8px 0 0;
+      margin: 7px 0 0;
       color: var(--muted);
       font-size: 13px;
       font-weight: 750;
     }
 
-    .stamp {
-      flex: 0 0 auto;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--panel);
-      padding: 10px 15px;
-      color: #607282;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr);
-      gap: 16px;
-      align-items: start;
-    }
-
-    .stack { display: grid; gap: 16px; }
-
-    .card {
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: var(--panel);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .hero {
-      border: 0;
-      overflow: hidden;
-      color: #fff;
-      background: linear-gradient(135deg, #477cff 0%, #22c4c8 48%, #22c982 100%);
-      padding: 0;
-    }
-
-    .hero-inner {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      min-height: 224px;
-    }
-
-    .hero-main {
-      padding: 28px;
-      display: grid;
-      align-content: center;
-      gap: 12px;
-      border-right: 1px solid rgba(255, 255, 255, .2);
-    }
-
-    .hero-main small,
-    .hero-side small {
-      opacity: .86;
-      font-size: 12px;
-      font-weight: 950;
-    }
-
-    .hero-main b {
-      display: block;
-      font-size: 42px;
-      line-height: 1.02;
-    }
-
-    .hero-main .sub {
-      font-size: 15px;
-      font-weight: 800;
-      opacity: .9;
-    }
-
-    .hero-side {
-      padding: 24px;
-      display: grid;
-      align-content: center;
-      gap: 13px;
-    }
-
-    .score {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-
-    .score b { font-size: 46px; line-height: 1; }
-    .score span { opacity: .84; font-size: 14px; font-weight: 800; }
-
-    .chips {
+    .toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
     }
 
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      min-height: 28px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      color: #17405c;
-      background: #eef6fb;
-      border: 1px solid #d8e9f2;
+    .toolbar select,
+    .toolbar button {
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 0 12px;
+      color: #526575;
       font-size: 12px;
       font-weight: 850;
     }
 
-    .hero .chip {
+    .toolbar button.primary {
       color: #fff;
-      background: rgba(255, 255, 255, .18);
-      border-color: rgba(255, 255, 255, .25);
+      border: 0;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(380px, .95fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .stack { display: grid; gap: 14px; }
+
+    .card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 16px;
     }
 
     .head {
@@ -267,12 +195,12 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     h2, h3 { margin: 0; line-height: 1.24; }
-    h2 { font-size: 20px; }
-    h3 { font-size: 16px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 15px; }
 
     .cap {
       color: var(--muted);
@@ -281,86 +209,197 @@
       white-space: nowrap;
     }
 
-    .rank-list { display: grid; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
-
-    .rank-item {
-      min-height: 56px;
+    .kpis {
       display: grid;
-      grid-template-columns: 40px minmax(0, 1fr) auto;
-      align-items: center;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 10px;
-      padding: 10px 13px;
-      border-bottom: 1px solid var(--line);
-      background: #fff;
+      margin-bottom: 14px;
     }
 
-    .rank-item:last-child { border-bottom: 0; }
-
-    .rank-item em {
-      width: 28px;
-      height: 28px;
+    .kpi {
+      min-height: 78px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      padding: 12px;
       display: grid;
-      place-items: center;
-      border-radius: 10px;
-      background: #eaf2ff;
-      color: var(--blue-dark);
-      font-style: normal;
-      font-weight: 950;
+      align-content: center;
+      gap: 5px;
+      box-shadow: var(--shadow);
     }
 
-    .rank-item b {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 16px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 26px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      border: 1px solid #dce9f1;
-      color: #607282;
-      background: #f7fbff;
+    .kpi small,
+    .mini small {
+      color: var(--muted);
       font-size: 12px;
       font-weight: 900;
     }
 
-    .badge.hot {
+    .kpi b {
+      font-size: 22px;
+      line-height: 1.06;
+    }
+
+    .kpi span {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .decision {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .target-main {
+      border-radius: 18px;
+      padding: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, #2e62d9, #20b7c8);
+      display: grid;
+      align-content: center;
+      gap: 10px;
+    }
+
+    .target-main small {
+      opacity: .86;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .target-main b {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .target-main p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 800;
+      opacity: .92;
+    }
+
+    .decision-panel {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--soft);
+      display: grid;
+      gap: 6px;
+    }
+
+    .mini b {
+      font-size: 15px;
+      line-height: 1.38;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip,
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: #17405c;
+      background: #eef6fb;
+      border: 1px solid #d8e9f2;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .status.good { color: #0d6849; background: #e4f9ef; border-color: #c7efd9; }
+    .status.warn { color: #8a5d00; background: var(--warn); border-color: #ffe2a8; }
+    .status.bad { color: #9a3030; background: #fff0f0; border-color: #f8caca; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .tabs button {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #607282;
+      padding: 0 11px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .tabs button[aria-selected="true"] {
       color: #fff;
       border-color: transparent;
-      background: linear-gradient(135deg, var(--orange), var(--red));
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
     }
 
-    .split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
     }
 
-    .bars { display: grid; gap: 11px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    th, td {
+      padding: 9px 8px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #506576;
+      font-size: 12px;
+      font-weight: 950;
+      background: #f7fbff;
+      white-space: nowrap;
+    }
+
+    .table-wrap td { white-space: nowrap; }
+
+    .bars { display: grid; gap: 9px; }
 
     .bar-row {
       display: grid;
-      grid-template-columns: 72px minmax(0, 1fr) 46px;
+      grid-template-columns: 110px minmax(0, 1fr) 64px;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       font-size: 13px;
       font-weight: 850;
     }
 
     .bar-row .value {
       text-align: right;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 950;
     }
 
     .track {
-      height: 12px;
+      height: 11px;
       border-radius: 999px;
       background: #eaf1f7;
       overflow: hidden;
@@ -374,309 +413,111 @@
       background: linear-gradient(90deg, var(--blue), var(--cyan));
     }
 
-    .gender-card {
+    .action-list {
       display: grid;
-      grid-template-columns: 144px minmax(0, 1fr);
-      align-items: center;
-      gap: 14px;
+      gap: 9px;
     }
 
-    .donut {
-      --a: 56%;
-      width: 132px;
-      aspect-ratio: 1;
-      border-radius: 50%;
+    .action {
       display: grid;
-      place-items: center;
-      background: conic-gradient(var(--blue) 0 var(--a), var(--green) var(--a) 100%);
-    }
-
-    .donut::after {
-      content: attr(data-value);
-      width: 76px;
-      aspect-ratio: 1;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--panel);
-      font-size: 24px;
-      font-weight: 950;
-    }
-
-    .legend { display: grid; gap: 9px; font-size: 13px; font-weight: 850; }
-
-    .legend span {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--blue);
-      display: inline-block;
-      margin-right: 7px;
-    }
-
-    .dot.green { background: var(--green); }
-    .dot.red { background: var(--red); }
-
-    .reaction-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .reaction-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      background: var(--panel-soft);
-    }
-
-    .reaction-card .bar-row {
-      grid-template-columns: 92px minmax(0, 1fr) 36px;
-    }
-
-    .competitors {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .product {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .product img {
-      width: 100%;
-      aspect-ratio: 1.45;
-      object-fit: cover;
-      background: #eef5fa;
-      display: block;
-    }
-
-    .product-body {
-      display: grid;
-      gap: 8px;
-      padding: 12px;
-    }
-
-    .product b {
-      min-height: 42px;
-      font-size: 14px;
-      line-height: 1.42;
-    }
-
-    .price {
-      color: var(--blue-dark);
-      font-size: 20px;
-      font-weight: 950;
-    }
-
-    .metric-strip {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 34px minmax(0, 1fr) auto;
       gap: 10px;
-    }
-
-    .metric {
-      min-height: 82px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px;
-      background: var(--panel-soft);
-      display: grid;
-      align-content: center;
-      gap: 4px;
-    }
-
-    .metric small {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 850;
-    }
-
-    .metric b {
-      font-size: 24px;
-      line-height: 1.05;
-    }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .tabs button {
-      min-height: 36px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: #fff;
-      color: #607282;
-      padding: 0 12px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .tabs button[aria-selected="true"] {
-      color: #fff;
-      border-color: transparent;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      box-shadow: 0 10px 22px rgba(79, 128, 255, .22);
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-
-    .data-table th,
-    .data-table td {
-      white-space: nowrap;
-    }
-
-    .trend {
-      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      min-width: 58px;
-      min-height: 25px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 950;
-      background: #eef3f7;
-      color: #6b7783;
-    }
-
-    .trend.up,
-    .trend.soar { color: #fff; background: linear-gradient(135deg, var(--orange), var(--red)); }
-    .trend.down { color: #fff; background: linear-gradient(135deg, var(--blue), #2f63d6); }
-    .trend.new { color: #123f31; background: #dff9ed; }
-
-    .proposal {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .proposal-item {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--panel-soft);
-      padding: 14px;
+      border-radius: 14px;
+      background: var(--soft);
+      padding: 10px;
     }
 
-    .proposal-item small {
-      display: block;
-      margin-bottom: 6px;
+    .action em {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: #e9f2ff;
+      color: var(--blue-dark);
+      font-style: normal;
+      font-weight: 950;
+    }
+
+    .action b { font-size: 14px; }
+    .action span { color: var(--muted); font-size: 12px; font-weight: 800; }
+
+    .note {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 12px;
-      font-weight: 900;
-    }
-
-    .proposal-item b {
-      font-size: 16px;
-      line-height: 1.42;
+      line-height: 1.55;
+      font-weight: 750;
     }
 
     details {
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
       background: var(--panel);
     }
 
-    details + details { margin-top: 10px; }
+    details + details { margin-top: 9px; }
 
     summary {
       cursor: pointer;
       list-style: none;
-      padding: 14px 16px;
+      padding: 12px 14px;
+      min-height: 46px;
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      align-items: center;
+      gap: 10px;
       font-weight: 950;
       color: #203242;
     }
 
     summary::-webkit-details-marker { display: none; }
-    summary::after { content: "⌄"; color: var(--blue-dark); font-size: 18px; line-height: 1; transition: transform .22s ease; }
+    summary::after {
+      content: "⌄";
+      color: var(--blue-dark);
+      font-size: 17px;
+      transition: transform .2s ease;
+    }
+
     details[open] summary::after { transform: rotate(180deg); }
 
     .detail-body {
-      padding: 0 16px 16px;
+      padding: 0 14px 14px;
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.6;
-      animation: slideDown .22s ease;
+      line-height: 1.58;
+      animation: slideDown .2s ease;
     }
 
     @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-6px); }
+      from { opacity: 0; transform: translateY(-5px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    th, td {
-      padding: 10px 8px;
-      border-top: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th {
-      color: #506576;
-      font-size: 12px;
-      font-weight: 950;
-      background: #f7fbff;
-    }
-
-    .note {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-      font-weight: 750;
-    }
-
-    @media (max-width: 1100px) {
+    @media (max-width: 1120px) {
       .app { grid-template-columns: 1fr; }
       aside { display: none; }
-      .grid, .hero-inner, .split, .reaction-grid { grid-template-columns: 1fr; }
-      .competitors { grid-template-columns: 1fr; }
+      .grid, .decision, .decision-panel { grid-template-columns: 1fr; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 620px) {
+    @media (max-width: 640px) {
       .app { width: 100%; margin: 0; border-radius: 0; }
-      main { padding: 16px; }
-      .topbar { align-items: start; flex-direction: column; }
-      h1 { font-size: 27px; }
-      .hero-main b { font-size: 34px; }
-      .gender-card { grid-template-columns: 1fr; }
-      .metric-strip { grid-template-columns: 1fr; }
-      .proposal { grid-template-columns: 1fr; }
+      main { padding: 14px; }
+      .topbar { grid-template-columns: 1fr; }
+      .toolbar { justify-content: start; }
+      h1 { font-size: 24px; }
+      .kpis { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 86px minmax(0, 1fr) 52px; }
       .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
       .tabs button { flex: 0 0 auto; }
-      .rank-item { grid-template-columns: 34px minmax(0, 1fr); }
-      .rank-item .badge { grid-column: 2; justify-self: start; }
+      .action { grid-template-columns: 30px minmax(0, 1fr); }
+      .action .status { grid-column: 2; justify-self: start; }
     }
   </style>
 </head>
@@ -684,18 +525,17 @@
   <div class="app">
     <aside>
       <div class="brand"><span class="logo">ME</span><span>Meokko Admin</span></div>
-      <div class="nav-title">STEP1</div>
+      <div class="nav-title">DASHBOARD</div>
       <div class="nav">
-        <button class="active" data-scroll="insight">종합 인사이트</button>
-        <button data-scroll="search">검색 수요</button>
+        <button class="active" data-scroll="overview">오늘의 판단</button>
         <button data-scroll="target">타겟 근거</button>
-        <button data-scroll="reaction">반응 분석</button>
-        <button data-scroll="competitor">경쟁 포지션</button>
-        <button data-scroll="proposal">마케팅 제안</button>
+        <button data-scroll="search">검색 수요</button>
+        <button data-scroll="reaction">시장 반응</button>
+        <button data-scroll="product">상품·경쟁</button>
+        <button data-scroll="quality">데이터 품질</button>
       </div>
-      <div class="source">
-        실제 수집 데이터만 표시<br>
-        CRM, 네이버 데이터랩, 공개 웹 언급, 공식몰, 스마트스토어 HTML 기반
+      <div class="side-note">
+        내부 CRM과 외부 검색/리뷰 데이터를 분리 표기합니다. 추정 데이터는 노란 상태로 표시합니다.
       </div>
     </aside>
 
@@ -703,376 +543,326 @@
       <header class="topbar">
         <div>
           <div class="eyebrow">STEP1 시장·소비자 분석</div>
-          <h1>꼬모 냉장고 타겟 판단 대시보드</h1>
-          <p>관리자가 “누구에게, 어떤 키워드로, 어떤 장면을 보여줄지” 빠르게 판단하는 화면</p>
+          <h1>공개 데이터 + CRM 기반 마케팅 판단 화면</h1>
+          <p>관리자 계정 없이 확보 가능한 데이터만 사용해 타겟, 메시지, 유사제품 후보를 확인합니다.</p>
         </div>
-        <div class="stamp">프로토타입 · 실제 수집 데이터 반영</div>
+        <div class="toolbar" aria-label="대시보드 관리 도구">
+          <select aria-label="조회 기간">
+            <option>최근 CRM 전체 기간</option>
+            <option>최근 3개월</option>
+            <option>최근 1개월</option>
+          </select>
+          <button type="button" id="downloadSummary">근거 CSV 다운로드</button>
+          <button type="button" id="showUnavailable" class="primary">수집불가 항목 보기</button>
+        </div>
       </header>
 
-      <section id="insight" class="card hero">
-        <div class="hero-inner">
-          <div class="hero-main">
-            <small>최종 타겟 1위</small>
-            <b>40대 남성</b>
-            <div class="sub">CRM 방문·결제·매출 점수 기준 최상위 조합 · 홈바/음료 보관 메시지 우선</div>
-            <div class="chips">
-              <span class="chip">미니냉장고</span>
-              <span class="chip">소형냉장고</span>
-              <span class="chip">음료냉장고</span>
-              <span class="chip">술장고</span>
-            </div>
-          </div>
-          <div class="hero-side">
-            <small>타겟 우선순위 점수</small>
-            <div class="score"><b>63.8</b><span>점</span></div>
-            <div class="chips">
-              <span class="chip">방문 2,548</span>
-              <span class="chip">결제 86</span>
-              <span class="chip">매출 36,976,000원</span>
-            </div>
-          </div>
-        </div>
+      <section class="kpis" aria-label="운영 핵심 지표">
+        <div class="kpi"><small>최근 매출</small><b>13,066,700원</b><span>2026-06 · 전월 대비 +84%</span></div>
+        <div class="kpi"><small>최근 판매수량</small><b>35대</b><span>전월 22대</span></div>
+        <div class="kpi"><small>평균 판매단가</small><b>373,334원</b><span>전월 대비 +15.6%</span></div>
+        <div class="kpi"><small>최근 CS</small><b>12건</b><span>2026-07 · 냉장 11건</span></div>
+        <div class="kpi"><small>수집 기준</small><b>공개+CRM</b><span>조회·찜·장바구니 제외</span></div>
       </section>
 
-      <!-- 종합 인사이트: 기본 화면은 1위만, 상세는 아코디언으로 비교 -->
-      <section class="card" style="margin:16px 0;">
+      <section id="overview" class="card">
         <div class="head">
-          <h2>최종 타겟층 분석</h2>
-          <span class="cap">CRM + 검색 관심 + 리뷰 반응 종합</span>
+          <h2>오늘의 판단</h2>
+          <span class="cap">CRM 구매 신호 + 공개 검색·반응</span>
         </div>
-        <details>
-          <summary>2·3위 타겟 자세히 보기</summary>
-          <div class="detail-body">
-            <table>
-              <thead>
-                <tr><th>순위</th><th>타겟</th><th>주요 키워드</th><th>리뷰 요구</th><th>추천 메시지</th><th>근거</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>1</td><td>40대 남성</td><td>미니냉장고, 소형냉장고, 음료냉장고</td><td>사용 편의, 홈바/간식/음료</td><td>개인 홈바와 음료 보관 경험 강조</td><td>CRM 타겟 점수 63.8점, 매출 36,976,000원</td></tr>
-                <tr><td>2</td><td>30대 여성</td><td>미니냉장고, 소형냉장고, 원룸/키친핏</td><td>디자인/귀여움, 선물성</td><td>공간을 해치지 않는 감성 가전 강조</td><td>CRM 타겟 점수 62.5점, 결제고객 99명</td></tr>
-                <tr><td>3</td><td>30대 남성</td><td>미니냉장고, 소형냉장고, 업소용/음료</td><td>사용 편의, 가격 부담</td><td>책상 옆·사무실 개인 냉장고 활용 강조</td><td>CRM 타겟 점수 62.5점, 매출 32,764,100원</td></tr>
-              </tbody>
-            </table>
+        <div class="decision">
+          <div class="target-main">
+            <small>우선 콘텐츠 방향</small>
+            <b>홈바·음료 보관</b>
+            <p>공개 키워드 10개, 추천어 102개에서 반복 확인. CRM에서는 30~40대 남성, 40대 여성 구매 신호와 맞물립니다.</p>
           </div>
-        </details>
+          <div class="decision-panel">
+            <div class="mini"><small>누구에게</small><b>40대 남성 매출형, 30대 남성 전환형, 30대 여성 결제형</b></div>
+            <div class="mini"><small>무엇을 강조</small><b>개인 공간, 음료·간식 보관, 사용 편의</b></div>
+            <div class="mini"><small>어느 채널</small><b>네이버 쇼핑/블로그 + 공간 연출 콘텐츠</b></div>
+            <div class="mini"><small>메시지</small><b>내 자리에서 바로 쓰는 미니 홈바</b></div>
+            <div class="mini"><small>주의</small><b>CRM 구매 신호와 외부 검색 관심도는 분리 해석</b></div>
+            <div class="mini"><small>다음 액션</small><b>홈바/사무실 콘텐츠 A/B 테스트 설계</b></div>
+          </div>
+        </div>
       </section>
 
-      <section class="grid">
+      <section class="grid" style="margin-top:14px;">
         <div class="stack">
           <section id="target" class="card">
             <div class="head">
-              <h2>소형 냉장고 관심 연령대·성별</h2>
-              <span class="cap">CRM 스마트스토어 방문·결제 기반</span>
+              <h2>타겟 선정 근거</h2>
+              <span class="cap">CRM 스마트스토어 방문·결제·매출</span>
             </div>
-            <div class="split">
-              <div>
-                <h3>관심도 조합 TOP 10</h3>
-                <div class="bars" id="segmentBars" style="margin-top:14px;"></div>
-              </div>
-              <div>
-                <h3>상위 타겟 성별 비중</h3>
-                <div class="gender-card" style="margin-top:14px;">
-                  <div class="donut" data-value="67%" style="--a:67%;"></div>
-                  <div class="legend">
-                    <span><i><b class="dot"></b>남성</i><b>2/3</b></span>
-                    <span><i><b class="dot green"></b>여성</i><b>1/3</b></span>
-                    <span><i>기준</i><b>최종 타겟 TOP 3</b></span>
-                  </div>
-                </div>
-              </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>순위</th><th>타겟</th><th>방문</th><th>결제</th><th>매출</th><th>전환율</th><th>객단가</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td><b>40대 남성</b></td><td>2,548</td><td>86</td><td>36,976,000원</td><td>3.38%</td><td>429,953원</td></tr>
+                  <tr><td>2</td><td><b>30대 남성</b></td><td>1,959</td><td>86</td><td>32,764,100원</td><td>4.39%</td><td>380,978원</td></tr>
+                  <tr><td>3</td><td><b>30대 여성</b></td><td>2,725</td><td>99</td><td>19,201,200원</td><td>3.63%</td><td>193,952원</td></tr>
+                  <tr><td>4</td><td>40대 여성</td><td>2,544</td><td>87</td><td>23,018,300원</td><td>3.42%</td><td>264,578원</td></tr>
+                </tbody>
+              </table>
             </div>
-            <details style="margin-top:14px;">
-              <summary>데이터 한계 확인</summary>
-              <div class="detail-body">
-                네이버 쇼핑인사이트 API는 연령대별·성별 데이터를 각각 제공하지만, 현재 수집본만으로는 연령대×성별 조합 검색 관심도를 직접 제공하지 않습니다. 따라서 이 영역의 조합 순위는 CRM 스마트스토어 방문고객수, 결제고객수, 판매금액을 종합한 내부 관심도 점수를 사용했습니다.
-              </div>
+            <div class="note">순위는 CRM 방문·결제·매출을 종합한 현재 구매 신호입니다. 잠재 고객성, 광고 반응 가능성, 재구매 가능성은 별도 데이터가 필요합니다.</div>
+            <details>
+              <summary>전체 연령대·성별 데이터 보기 · 10개 조합</summary>
+              <div class="detail-body"><div class="bars" id="segmentBars"></div></div>
             </details>
           </section>
 
           <section id="search" class="card">
             <div class="head">
-              <h2>검색량 수요 분석</h2>
-              <span class="cap">네이버 공개 냉장고 키워드 랭킹</span>
+              <h2>검색 수요</h2>
+              <span class="cap">네이버 공개 랭킹 · 마케팅 활용 키워드만 필터링</span>
             </div>
             <div class="tabs" id="searchTabs" role="tablist" aria-label="검색 수요 타겟 선택"></div>
             <div class="table-wrap">
-              <table class="data-table">
-                <thead><tr><th>순위</th><th>키워드</th><th>관심도 지수</th><th>변화</th><th>상태</th></tr></thead>
+              <table>
+                <thead><tr><th>네이버 순위</th><th>키워드</th><th>출처</th><th>순위 변화</th><th>마케팅 연결</th></tr></thead>
                 <tbody id="keywordTable"></tbody>
               </table>
             </div>
-            <div class="note">검색량 절대값이 아니라 네이버플러스 스토어 공개 냉장고 카테고리 키워드 랭킹입니다. 기준일은 수집 파일의 sync_date 2026-07-19입니다.</div>
+            <div class="note">대형 냉장고/브랜드 키워드는 제외했습니다. 10대는 공개 랭킹 미제공으로 네이버 데이터랩 검색트렌드 보완값을 사용하며, 다른 탭과 직접 비교하지 않습니다.</div>
           </section>
 
-          <section class="card">
+          <section id="reaction" class="card">
             <div class="head">
-              <h2>연령대·성별 LINE FRIENDS 캐릭터 선호도</h2>
-              <span class="cap">CRM 캐릭터별 판매수량 대체 지표</span>
+              <h2>시장 반응과 실행 포인트</h2>
+              <span class="cap">공개 웹·리뷰 키워드 빈도</span>
             </div>
-            <div class="tabs" id="characterTabs" role="tablist" aria-label="캐릭터 선호 타겟 선택"></div>
-            <div class="bars" id="lineBars"></div>
-            <details style="margin-top:14px;">
-              <summary>데이터 기준 확인</summary>
+            <div class="action-list">
+              <div class="action"><em>1</em><div><b>디자인만 말하지 말고 사용 장면을 함께 보여주기</b><br><span>귀여움/디자인 40건, 홈바/술냉장고 34건</span></div><span class="status good">활용</span></div>
+              <div class="action"><em>2</em><div><b>전원·수리·가격 질문은 FAQ 소재로 분리</b><br><span>고장/수리/전원 28건, 가격 11건</span></div><span class="status warn">주의</span></div>
+              <div class="action"><em>3</em><div><b>리뷰 표본은 적어 방향성 참고로만 사용</b><br><span>공식 리뷰: 사용 편의 7건, 디자인/귀여움 6건</span></div><span class="status warn">표본 부족</span></div>
+            </div>
+            <details style="margin-top:10px;">
+              <summary>키워드 빈도 그래프 보기</summary>
               <div class="detail-body">
-                현재 보유 CRM에는 연령·성별과 캐릭터 상품명을 동시에 연결하는 교차 컬럼이 없습니다. 탭은 타겟 흐름을 맞추기 위해 제공하지만, 그래프 값은 모든 고객 기준 캐릭터별 판매수량입니다. 연령·성별별 캐릭터 선호도는 데이터 미확보입니다.
+                <h3>공개 웹 언급</h3>
+                <div class="bars" id="marketReactionBars" style="margin:10px 0 14px;"></div>
+                <h3>상품 리뷰 키워드</h3>
+                <div class="bars" id="reviewBars" style="margin-top:10px;"></div>
               </div>
             </details>
           </section>
         </div>
 
         <div class="stack">
-          <section id="reaction" class="card">
-            <div class="head">
-              <h2>꼬모 냉장고 시장·리뷰 반응</h2>
-              <span class="cap">공개 웹 언급 + 리뷰</span>
-            </div>
-            <div class="reaction-grid">
-              <div class="reaction-card">
-                <h3>시장 반응 키워드</h3>
-                <div class="bars" id="marketReactionBars" style="margin-top:14px;"></div>
-              </div>
-              <div class="reaction-card">
-                <h3>리뷰 긍·부정 키워드</h3>
-                <div class="bars" id="reviewBars" style="margin-top:14px;"></div>
-              </div>
-            </div>
-            <div class="note">긍정은 디자인·홈바·선물성, 우려는 전원·가격·용량 쪽으로 모입니다. 이 결과는 STEP2에서 콘텐츠 문구와 FAQ형 설명 소재로 연결할 수 있습니다.</div>
-          </section>
-
           <section class="card">
             <div class="head">
-              <h2>공식 상품에서 확인한 포지션</h2>
-              <span class="cap">공식몰·스마트스토어 HTML</span>
+              <h2>캠페인 후보</h2>
+              <span class="cap">수집 데이터 기반 가설</span>
             </div>
-            <div class="metric-strip">
-              <div class="metric"><small>스마트스토어 상품가</small><b>458,000원</b></div>
-              <div class="metric"><small>재고 수량</small><b>9,793</b></div>
-              <div class="metric"><small>공식 제품군</small><b>14개</b></div>
+            <div class="action-list">
+              <div class="action"><em>A</em><div><b>홈바·음료 보관 장면</b><br><span>공개 키워드 10개 + 추천어 102개</span></div><span class="status good">우선</span></div>
+              <div class="action"><em>B</em><div><b>소형/1인 공간 장면</b><br><span>공개 키워드 8개 + 추천어 112개</span></div><span class="status">보조</span></div>
+              <div class="action"><em>C</em><div><b>화장품 보관 장면</b><br><span>공개 키워드 2개 + 추천어 17개</span></div><span class="status">테스트</span></div>
             </div>
-            <div class="note">스마트스토어 저장 HTML에서 확인한 상품명은 “꼬모냉장고 샐리 실속형 31L 화장품 음료 분리 보관”입니다. 태그는 소형냉장고, 자취용품, 원룸냉장고, 음료수냉장고, 미니냉장고, 사무실냉장고, 화장품보관 등입니다.</div>
+          </section>
+
+          <section id="product" class="card">
+            <div class="head">
+              <h2>상품 포지션</h2>
+              <span class="cap">공식몰 공개 상품 데이터</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>항목</th><th>꼬모 샐리 실속형</th><th>근거</th></tr></thead>
+                <tbody>
+                  <tr><td>공식 가격</td><td>458,000원</td><td>공식몰/저장 HTML</td></tr>
+                  <tr><td>공식 평점·리뷰</td><td>평점 5 · 리뷰 1</td><td>공식몰 JSON-LD</td></tr>
+                  <tr><td>공식 리뷰 게시판</td><td>매칭 리뷰 3건 · 조회수 합 3,731</td><td>공식 리뷰 공개 페이지</td></tr>
+                  <tr><td>상품 포지션</td><td>음료와 화장품을 분리 보관하는 캐릭터 미니 냉장고</td><td>상품명·메타 키워드</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note">상품 조회수, 찜 수, 장바구니율은 공개 데이터로 수집되지 않아 표시하지 않았습니다.</div>
           </section>
 
           <section id="competitor" class="card">
             <div class="head">
-              <h2>경쟁 포지션 후보</h2>
-              <span class="cap">공개 베스트·관련 맥락 데이터</span>
+              <h2>공개 가격대·유사제품 후보</h2>
+              <span class="cap">다나와 공개 검색 · 실제 판매량 아님</span>
             </div>
-            <div class="competitors">
-              <article class="product">
-                <img src="https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450" alt="매직쉐프 와인셀러">
-                <div class="product-body">
-                  <span class="badge">매직쉐프Z</span>
-                  <b>와인셀러 34병 대용량 음료 냉장고</b>
-                  <div class="price">539,000원</div>
-                  <div class="chips"><span class="chip">홈바</span><span class="chip">대용량</span><span class="chip">와인</span></div>
-                </div>
-              </article>
-              <article class="product">
-                <img src="https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450" alt="아이지원 소형 냉동고">
-                <div class="product-body">
-                  <span class="badge">아이지원</span>
-                  <b>가정용 미니 냉동고 소형 스탠드</b>
-                  <div class="price">139,000원</div>
-                  <div class="chips"><span class="chip">소형공간</span><span class="chip">가격</span><span class="chip">리뷰 489</span></div>
-                </div>
-              </article>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>맥락</th><th>후보 수</th><th>중앙 가격</th><th>가격 범위</th><th>대표 특징</th><th>해석</th></tr></thead>
+                <tbody>
+                  <tr><td><b>소형/1인 공간</b></td><td>61개</td><td>226,140원</td><td>30,140~2,104,070원</td><td>원룸/사무실, 냉장+냉동</td><td><span class="status warn">가격 후보</span></td></tr>
+                  <tr><td><b>홈바/음료 보관</b></td><td>30개</td><td>270,000원</td><td>58,220~443,380원</td><td>홈바/음료, 저소음</td><td><span class="status warn">맥락 후보</span></td></tr>
+                  <tr><td><b>화장품 보관</b></td><td>17개</td><td>113,120원</td><td>48,140~419,690원</td><td>화장품/뷰티, 개인 공간</td><td><span class="status warn">용도 후보</span></td></tr>
+                </tbody>
+              </table>
             </div>
-            <details style="margin-top:14px;" open>
-              <summary>차별점과 마케팅 수단</summary>
-              <div class="detail-body">
-                <table>
-                  <thead>
-                    <tr><th>기업</th><th>강조 포인트</th><th>꼬모가 참고할 점</th><th>데이터 해석</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>매직쉐프Z</td><td>와인/음료/대용량 홈바</td><td>꼬모 홈바 제품은 대용량보다 감성·공간 연출로 차별화</td><td>네이버 공개 베스트 랭킹 기반 노출 신호, 실제 판매량 아님</td></tr>
-                    <tr><td>아이지원</td><td>저가 소형 공간, 리뷰 수</td><td>가격 경쟁 대신 선물성·디자인·브랜드 감성 강조</td><td>네이버 공개 베스트 랭킹 기반 노출 신호, 실제 판매량 아님</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </details>
-            <details style="margin-top:10px;">
-              <summary>관련 상품 HTML 확인 결과</summary>
-              <div class="detail-body">
-                사용자가 제공한 스마트스토어 HTML에는 꼬모 상품 자체 정보는 있었지만, 함께 본 상품·유사 상품·키워드 검색 상품 배열은 모두 비어 있었습니다. 따라서 이 화면의 경쟁 후보는 “꼬모 쇼핑 페이지 관련상품”이 아니라, 현재 수집된 공개 베스트/검색 맥락 데이터에서 꼬모와 관련성이 붙은 후보입니다.
-              </div>
-            </details>
+            <div class="note">경쟁사 실제 판매량은 공개 수집할 수 없어 사용하지 않았습니다. 위 표는 공개 검색 결과 기반 가격·특징 후보입니다.</div>
           </section>
 
-          <!-- 최종 마케팅 제안: 앞선 분석 결과를 실행 방향으로 연결 -->
-          <section id="proposal" class="card">
+          <section class="card">
             <div class="head">
-              <h2>최종 마케팅 제안</h2>
-              <span class="cap">STEP2 콘텐츠 추천으로 연결</span>
+              <h2>캐릭터 관심도</h2>
+              <span class="cap">검색 관심도 추정</span>
             </div>
-            <div class="proposal">
-              <div class="proposal-item"><small>우선 타겟</small><b>40대 남성 중심, 30대 남성·30대 여성 확장</b></div>
-              <div class="proposal-item"><small>핵심 키워드</small><b>미니냉장고, 소형냉장고, 음료냉장고, 술장고</b></div>
-              <div class="proposal-item"><small>적합 캐릭터</small><b>브라운 우선, 샐리 보조</b></div>
-              <div class="proposal-item"><small>강조 가치</small><b>개인 홈바, 음료·화장품 분리 보관, 귀여운 디자인</b></div>
-              <div class="proposal-item"><small>콘텐츠 주제</small><b>책상 옆 미니 홈바, 사무실 간식 보관, 선물용 감성 가전</b></div>
-              <div class="proposal-item"><small>추천 채널</small><b>네이버 쇼핑/블로그, 숏폼 SNS, 오늘의집형 공간 콘텐츠</b></div>
-            </div>
-            <div class="note">근거: CRM 타겟 점수는 40대 남성이 가장 높고, 공개 반응에서는 귀여움/디자인과 홈바/술냉장고 언급이 많으며, 리뷰에서는 사용 편의·디자인·홈바 활용 키워드가 반복됩니다.</div>
+            <div class="tabs" id="characterTabs" role="tablist" aria-label="캐릭터 관심 타겟 선택"></div>
+            <div class="bars" id="lineBars"></div>
+            <div class="note">네이버 데이터랩 검색트렌드 API 기반입니다. 구매 선호도가 아니라 캐릭터 검색 관심도 추정입니다.</div>
           </section>
+        </div>
+      </section>
+
+      <section id="quality" class="card" style="margin-top:14px;">
+        <div class="head">
+          <h2>데이터 품질 상태</h2>
+          <span class="cap">관리자 검증용</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>데이터</th><th>상태</th><th>기준</th><th>관리자 해석</th></tr></thead>
+            <tbody>
+              <tr><td>CRM 타겟</td><td><span class="status good">수집 완료</span></td><td>방문·결제·매출 집계</td><td>현재 구매 신호 판단에 사용</td></tr>
+              <tr><td>검색 수요</td><td><span class="status good">수집 완료</span></td><td>네이버 공개 랭킹 + 데이터랩 보완</td><td>마케팅 키워드 후보로 사용</td></tr>
+              <tr><td>시장 반응</td><td><span class="status warn">표본 주의</span></td><td>공개 웹/리뷰 키워드 빈도</td><td>정확한 감성비율이 아니라 반복 언급 신호</td></tr>
+              <tr><td>유사제품</td><td><span class="status warn">후보</span></td><td>다나와/공개 랭킹</td><td>실제 판매량 아님</td></tr>
+              <tr><td>조회·찜·장바구니</td><td><span class="status bad">제외</span></td><td>관리자 계정 필요</td><td>대시보드 판단 지표에서 제외</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
     </main>
   </div>
 
   <script>
-    const segments = ["10대 여성", "10대 남성", "20대 여성", "20대 남성", "30대 여성", "30대 남성", "40대 여성", "40대 남성", "50대 이상 여성", "50대 이상 남성"];
+    const segments = ["40대 남성", "30대 남성", "30대 여성", "40대 여성", "20대 여성", "50대 이상 남성", "50대 이상 여성", "20대 남성", "10대 여성", "10대 남성"];
 
-    // CRM 스마트스토어 데이터 기반 타겟 조합 관심도
     const segmentInterest = [
       ["40대 남성", 63.8],
-      ["30대 여성", 62.5],
       ["30대 남성", 62.5],
+      ["30대 여성", 62.5],
       ["40대 여성", 58.6],
       ["20대 여성", 36.1],
-      ["50대 이상 남성", 33.2],
+      ["50대 이상 남성", 35.4],
       ["50대 이상 여성", 16.1],
       ["20대 남성", 11.1],
       ["10대 여성", 0.2],
       ["10대 남성", 0.0]
     ];
 
-    // 네이버 공개 냉장고 카테고리 키워드 랭킹, 기준일 2026-07-19
     const searchBySegment = {
-      "10대 여성": [],
-      "10대 남성": [],
-      "20대 여성": [
-        { rank: 1, keyword: "미니냉장고", index: 100, change: 1, status: "UP" },
-        { rank: 2, keyword: "가게나우냉장고", index: 99, change: -1, status: "DOWN" },
-        { rank: 3, keyword: "삼성가전", index: 98, change: 1, status: "UP" },
-        { rank: 4, keyword: "원룸냉장고", index: 97, change: 8, status: "SOAR" },
-        { rank: 5, keyword: "비스포크냉장고", index: 96, change: 8, status: "SOAR" },
-        { rank: 6, keyword: "lg가전", index: 95, change: -1, status: "DOWN" },
-        { rank: 7, keyword: "빌트인냉장고", index: 94, change: 0, status: "NEW" },
-        { rank: 8, keyword: "삼성냉장고4도어", index: 93, change: 9, status: "SOAR" },
-        { rank: 9, keyword: "쿠잉냉장고", index: 92, change: -7, status: "DOWN" },
-        { rank: 10, keyword: "삼성키친핏냉장고", index: 91, change: 0, status: "NEW" }
-      ],
-      "20대 남성": [
-        { rank: 1, keyword: "미니냉장고", index: 100, change: 1, status: "UP" },
-        { rank: 2, keyword: "가게나우냉장고", index: 99, change: -1, status: "DOWN" },
-        { rank: 3, keyword: "삼성비스포크냉장고", index: 98, change: 5, status: "SOAR" },
-        { rank: 4, keyword: "삼성가전", index: 97, change: -1, status: "DOWN" },
-        { rank: 5, keyword: "lg냉장고4도어", index: 96, change: 13, status: "SOAR" },
-        { rank: 6, keyword: "업소용냉장고", index: 95, change: -2, status: "DOWN" },
-        { rank: 7, keyword: "비스포크냉장고", index: 94, change: 0, status: "STABLE" },
-        { rank: 8, keyword: "lg가전", index: 93, change: 4, status: "UP" },
-        { rank: 9, keyword: "소형냉장고", index: 92, change: 4, status: "UP" },
-        { rank: 10, keyword: "비스포크", index: 91, change: 0, status: "NEW" }
+      "40대 남성": [
+        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "개인 공간/사무실" },
+        { rank: 2, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "실용성" },
+        { rank: 3, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "UP", diff: 2, usefulness: "사무실/업무 공간" },
+        { rank: 13, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 11, usefulness: "공간 맞춤 관심" }
       ],
       "30대 여성": [
-        { rank: 1, keyword: "가게나우냉장고", index: 100, change: 0, status: "STABLE" },
-        { rank: 2, keyword: "미니냉장고", index: 99, change: 0, status: "STABLE" },
-        { rank: 3, keyword: "키친핏냉장고", index: 98, change: 0, status: "STABLE" },
-        { rank: 4, keyword: "삼성가전", index: 97, change: 0, status: "STABLE" },
-        { rank: 5, keyword: "삼성키친핏냉장고", index: 96, change: 3, status: "UP" },
-        { rank: 6, keyword: "소형냉장고", index: 95, change: 6, status: "SOAR" },
-        { rank: 7, keyword: "양문형냉장고", index: 94, change: 12, status: "SOAR" },
-        { rank: 8, keyword: "쿠잉냉장고", index: 93, change: -3, status: "DOWN" },
-        { rank: 9, keyword: "삼성냉장고4도어", index: 92, change: 1, status: "UP" },
-        { rank: 10, keyword: "lg냉장고4도어", index: 91, change: -4, status: "DOWN" }
+        { rank: 2, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "자취방/선물" },
+        { rank: 3, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "인테리어" },
+        { rank: 6, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 6, usefulness: "소형 공간" },
+        { rank: 19, keyword: "2도어냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 7, usefulness: "분리 보관" }
       ],
       "30대 남성": [
-        { rank: 1, keyword: "미니냉장고", index: 100, change: 1, status: "UP" },
-        { rank: 2, keyword: "가게나우냉장고", index: 99, change: -1, status: "DOWN" },
-        { rank: 3, keyword: "삼성가전", index: 98, change: 0, status: "STABLE" },
-        { rank: 4, keyword: "소형냉장고", index: 97, change: 4, status: "UP" },
-        { rank: 5, keyword: "lg가전", index: 96, change: 0, status: "STABLE" },
-        { rank: 6, keyword: "삼성키친핏냉장고", index: 95, change: 7, status: "SOAR" },
-        { rank: 7, keyword: "업소용냉장고", index: 94, change: 0, status: "STABLE" },
-        { rank: 8, keyword: "삼성냉장고4도어", index: 93, change: 8, status: "SOAR" },
-        { rank: 9, keyword: "키친핏냉장고", index: 92, change: 3, status: "UP" },
-        { rank: 10, keyword: "lg냉장고4도어", index: 91, change: -6, status: "DOWN" }
+        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "책상 옆" },
+        { rank: 4, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 4, usefulness: "개인 공간" },
+        { rank: 7, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "사무실" },
+        { rank: 9, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "UP", diff: 3, usefulness: "공간 맞춤" }
       ],
       "40대 여성": [
-        { rank: 1, keyword: "미니냉장고", index: 100, change: 1, status: "UP" },
-        { rank: 2, keyword: "가게나우냉장고", index: 99, change: -1, status: "DOWN" },
-        { rank: 3, keyword: "삼성냉장고4도어", index: 98, change: 0, status: "STABLE" },
-        { rank: 4, keyword: "소형냉장고", index: 97, change: 3, status: "UP" },
-        { rank: 5, keyword: "양문형냉장고", index: 96, change: 0, status: "STABLE" },
-        { rank: 6, keyword: "엘지냉장고4도어", index: 95, change: 0, status: "STABLE" },
-        { rank: 7, keyword: "냉장고900리터", index: 94, change: 1, status: "UP" },
-        { rank: 8, keyword: "엘지키친핏냉장고", index: 93, change: 6, status: "SOAR" },
-        { rank: 9, keyword: "키친핏냉장고", index: 92, change: 0, status: "STABLE" },
-        { rank: 10, keyword: "쿠잉냉장고", index: 91, change: 0, status: "STABLE" }
+        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "가정/개인 보관" },
+        { rank: 4, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 3, usefulness: "공간 절약" },
+        { rank: 9, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "인테리어" },
+        { rank: 13, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "UP", diff: 4, usefulness: "사무실/매장" }
       ],
-      "40대 남성": [
-        { rank: 1, keyword: "미니냉장고", index: 100, change: 0, status: "STABLE" },
-        { rank: 2, keyword: "소형냉장고", index: 99, change: 1, status: "UP" },
-        { rank: 3, keyword: "업소용냉장고", index: 98, change: 2, status: "UP" },
-        { rank: 4, keyword: "냉장고900리터", index: 97, change: 5, status: "SOAR" },
-        { rank: 5, keyword: "양문형냉장고", index: 96, change: 2, status: "UP" },
-        { rank: 6, keyword: "삼성냉장고4도어", index: 95, change: 0, status: "STABLE" },
-        { rank: 7, keyword: "lg냉장고4도어", index: 94, change: -3, status: "DOWN" },
-        { rank: 8, keyword: "냉장고500리터", index: 93, change: 10, status: "SOAR" },
-        { rank: 9, keyword: "가게나우냉장고", index: 92, change: -7, status: "DOWN" },
-        { rank: 10, keyword: "엘지냉장고4도어", index: 91, change: 10, status: "SOAR" }
-      ],
-      "50대 이상 여성": [
-        { rank: 1, keyword: "삼성냉장고4도어", index: 100, change: 1, status: "UP" },
-        { rank: 2, keyword: "미니냉장고", index: 99, change: 1, status: "UP" },
-        { rank: 3, keyword: "소형냉장고", index: 98, change: 1, status: "UP" },
-        { rank: 4, keyword: "냉장고900리터", index: 97, change: 3, status: "UP" },
-        { rank: 5, keyword: "엘지냉장고4도어", index: 96, change: 0, status: "STABLE" },
-        { rank: 6, keyword: "lg냉장고4도어", index: 95, change: 2, status: "UP" },
-        { rank: 7, keyword: "양문형냉장고", index: 94, change: -1, status: "DOWN" },
-        { rank: 8, keyword: "삼성냉장고2도어", index: 93, change: 1, status: "UP" },
-        { rank: 9, keyword: "냉장고500리터", index: 92, change: 2, status: "UP" },
-        { rank: 10, keyword: "가게나우냉장고", index: 91, change: -9, status: "DOWN" }
+      "20대 여성": [
+        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "자취방" },
+        { rank: 4, keyword: "원룸냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 8, usefulness: "원룸" },
+        { rank: 19, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 2, usefulness: "소형 공간" }
       ],
       "50대 이상 남성": [
-        { rank: 1, keyword: "소형냉장고", index: 100, change: 0, status: "STABLE" },
-        { rank: 2, keyword: "미니냉장고", index: 99, change: 2, status: "UP" },
-        { rank: 3, keyword: "냉장고900리터", index: 98, change: -1, status: "DOWN" },
-        { rank: 4, keyword: "삼성냉장고4도어", index: 97, change: -1, status: "DOWN" },
-        { rank: 5, keyword: "양문형냉장고", index: 96, change: 0, status: "STABLE" },
-        { rank: 6, keyword: "냉장고500리터", index: 95, change: 1, status: "UP" },
-        { rank: 7, keyword: "업소용냉장고", index: 94, change: 1, status: "UP" },
-        { rank: 8, keyword: "lg냉장고4도어", index: 93, change: -2, status: "DOWN" },
-        { rank: 9, keyword: "삼성냉장고2도어", index: 92, change: 3, status: "UP" },
-        { rank: 10, keyword: "엘지냉장고4도어", index: 91, change: 0, status: "STABLE" }
+        { rank: 1, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "실용성" },
+        { rank: 2, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 2, usefulness: "간편 사용" },
+        { rank: 7, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "업무 공간" },
+        { rank: 12, keyword: "원룸냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 13, usefulness: "작은 공간" }
+      ],
+      "50대 이상 여성": [
+        { rank: 2, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "소형 보관" },
+        { rank: 3, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "가정 보조" },
+        { rank: 16, keyword: "원룸냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 13, usefulness: "작은 공간" }
+      ],
+      "20대 남성": [
+        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "개인 공간" },
+        { rank: 6, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "DOWN", diff: -2, usefulness: "사무실/매장" },
+        { rank: 9, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 4, usefulness: "자취/기숙사" }
+      ],
+      "10대 여성": [
+        { rank: 1, keyword: "미니냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "관심 후보" },
+        { rank: 2, keyword: "화장품냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "뷰티 보관" }
+      ],
+      "10대 남성": [
+        { rank: 1, keyword: "미니냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "관심 후보" },
+        { rank: 2, keyword: "화장품냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "보완 관찰" }
       ]
     };
 
-    const linePreference = [
-      ["브라운", 1746],
-      ["샐리", 838],
-      ["베이직", 817],
-      ["두꺼비", 646],
-      ["크림", 473],
-      ["미니언즈", 396]
-    ];
+    const characterBySegment = {
+      "40대 남성": [["브라운", 64.84], ["BT21", 56.92], ["샐리", 37.36], ["레너드", 19.52]],
+      "30대 여성": [["BT21", 70.64], ["브라운", 65.25], ["샐리", 56.07], ["레너드", 8.6]],
+      "30대 남성": [["브라운", 77.39], ["BT21", 72.19], ["샐리", 48.25], ["레너드", 6.93]],
+      "40대 여성": [["브라운", 63.62], ["BT21", 53.75], ["샐리", 28.96], ["레너드", 16.73]],
+      "20대 여성": [["BT21", 66.43], ["브라운", 62.42], ["샐리", 58.75], ["코니", 5.32]],
+      "50대 이상 남성": [["BT21", 64.69], ["브라운", 58.46], ["샐리", 23], ["코니", 15]],
+      "50대 이상 여성": [["BT21", 54.25], ["브라운", 52.64], ["샐리", 19.27], ["초코", 7.81]],
+      "20대 남성": [["BT21", 63.91], ["브라운", 51.46], ["샐리", 34.48], ["코니", 8.05]],
+      "10대 여성": [["BT21", 61.11], ["브라운", 55.66], ["샐리", 50.9], ["코니", 15]],
+      "10대 남성": [["BT21", 71.18], ["브라운", 42.42], ["샐리", 27.27], ["코니", 13.64]]
+    };
 
     const marketReaction = [
-      ["귀여움/디자인", 42, "positive"],
-      ["홈바/술냉장고", 38, "positive"],
-      ["고장/수리/전원", 28, "negative"],
-      ["후기/내돈내산", 18, "positive"],
-      ["자취/개인공간", 16, "positive"],
-      ["가격", 13, "negative"]
+      ["귀여움/디자인", 40],
+      ["홈바/술냉장고", 34],
+      ["고장/수리/전원", 28],
+      ["후기", 16],
+      ["가격", 11],
+      ["자취/개인공간", 10]
     ];
 
     const reviewReaction = [
-      ["사용 편의", 7, "positive"],
-      ["디자인/귀여움", 6, "positive"],
-      ["홈바/간식/음료", 5, "positive"],
-      ["선물성", 4, "positive"],
-      ["가격 부담", 1, "negative"],
-      ["냉각/냉동", 1, "negative"]
+      ["사용 편의", 7],
+      ["디자인/귀여움", 6],
+      ["홈바/간식/음료", 5],
+      ["선물성", 4],
+      ["가격 부담", 1],
+      ["냉각/냉동", 1]
     ];
 
-    const qs = (selector) => document.querySelector(selector);
-    const qsa = (selector) => [...document.querySelectorAll(selector)];
+    const evidenceSummary = [
+      ["CRM 판매", "2026-06 매출 13,066,700원 / 판매수량 35대", "dashboard_latest_sales_kpis.csv"],
+      ["CRM 타겟", "40대 남성 매출 36,976,000원 / 30대 여성 결제 99명", "crm_smartstore_segment_conversion_summary.csv"],
+      ["검색 수요", "네이버 공개 냉장고 키워드 랭킹 2026-07-19", "naver_best_fridge_keyword_rankings.csv"],
+      ["시장 반응", "귀여움/디자인 40건, 홈바/술냉장고 34건", "dashboard_external_ccomo_reaction_keyword_summary_clean.csv"],
+      ["공식 상품", "샐리 실속형 458,000원 / 공식 리뷰 1건", "dashboard_product_behavior_public_proxy.csv"],
+      ["유사제품", "다나와 공개 검색 기반 가격·특징 후보", "dashboard_context_competitor_price_feature_cards_clean.csv"]
+    ];
+
+    const unavailableItems = [
+      "경쟁사 실제 판매량: 공개 페이지에는 노출 순위·가격·리뷰 수만 있음",
+      "상품 조회수: 공식몰/스마트스토어 공개 페이지에 전체 조회수 없음",
+      "찜 수: 관리자 통계 필요",
+      "장바구니 수/장바구니율: 관리자 통계 필요",
+      "캠페인별 광고 성과: 광고 관리자 리포트 필요",
+      "재구매율: 익명 고객ID 포함 주문 데이터 필요",
+      "구매 전환 경로: 조회→찜→장바구니→구매 퍼널 로그 필요"
+    ];
+
+    const qs = selector => document.querySelector(selector);
+    const qsa = selector => [...document.querySelectorAll(selector)];
 
     function renderBars(selector, rows, options = {}) {
       const max = Math.max(...rows.map(row => Number(row[1])));
       qs(selector).innerHTML = rows.map(([label, value]) => {
-        const width = Math.max(4, value / max * 100);
+        const width = max ? Math.max(4, value / max * 100) : 4;
         return `
           <div class="bar-row">
             <span>${label}</span>
@@ -1081,14 +871,6 @@
           </div>
         `;
       }).join("");
-    }
-
-    function statusLabel(status, change) {
-      if (status === "SOAR") return ["급상승", "soar", `▲ ${Math.abs(change)}`];
-      if (status === "UP") return ["상승", "up", `▲ ${Math.abs(change)}`];
-      if (status === "DOWN") return ["하락", "down", `▼ ${Math.abs(change)}`];
-      if (status === "NEW") return ["신규", "new", "NEW"];
-      return ["유지", "", "－"];
     }
 
     function renderTabs(container, selected, onClick) {
@@ -1103,42 +885,30 @@
     function renderKeywordTable(segment) {
       renderTabs("#searchTabs", segment, renderKeywordTable);
       const rows = searchBySegment[segment] || [];
-      qs("#keywordTable").innerHTML = rows.length ? rows.map(row => {
-        const [label, cls, mark] = statusLabel(row.status, row.change);
-        return `
-          <tr>
-            <td>${row.rank}</td>
-            <td><b>${row.keyword}</b></td>
-            <td>${row.index}</td>
-            <td>${mark}</td>
-            <td><span class="trend ${cls}">${label}</span></td>
-          </tr>
-        `;
-      }).join("") : `
-        <tr><td colspan="5">해당 조합의 네이버 공개 냉장고 키워드 랭킹 데이터 미확보</td></tr>
-      `;
+      qs("#keywordTable").innerHTML = rows.map(row => `
+        <tr>
+          <td>${row.rank}</td>
+          <td><b>${row.keyword}</b></td>
+          <td>${row.source}</td>
+          <td>${formatChange(row.status, row.diff)}</td>
+          <td>${row.usefulness}</td>
+        </tr>
+      `).join("");
+    }
+
+    function formatChange(status, diff) {
+      if (status === "NA") return "보완값";
+      if (status === "STABLE") return "유지";
+      if (status === "NEW") return "신규";
+      if (status === "SOAR") return `급상승 +${diff}`;
+      if (status === "UP") return `상승 +${diff}`;
+      if (status === "DOWN") return `하락 ${diff}`;
+      return status || "-";
     }
 
     function renderCharacterTab(segment) {
       renderTabs("#characterTabs", segment, renderCharacterTab);
-      renderBars("#lineBars", linePreference, { color: "background:linear-gradient(90deg,var(--green),var(--cyan));" });
-    }
-
-    function renderReaction(selector, rows) {
-      const max = Math.max(...rows.map(row => Number(row[1])));
-      qs(selector).innerHTML = rows.map(([label, value, type]) => {
-        const width = Math.max(6, value / max * 100);
-        const color = type === "negative"
-          ? "background:linear-gradient(90deg,var(--orange),var(--red));"
-          : "background:linear-gradient(90deg,var(--green),var(--blue));";
-        return `
-          <div class="bar-row">
-            <span>${label}</span>
-            <div class="track"><i style="--w:${width}%;${color}"></i></div>
-            <span class="value">${value}</span>
-          </div>
-        `;
-      }).join("");
+      renderBars("#lineBars", characterBySegment[segment], { color: "background:linear-gradient(90deg,var(--green),var(--cyan));" });
     }
 
     qsa("[data-scroll]").forEach(button => {
@@ -1149,11 +919,29 @@
       });
     });
 
+    qs("#downloadSummary").addEventListener("click", () => {
+      const csv = [
+        ["구분", "화면 표시 내용", "근거 파일"],
+        ...evidenceSummary
+      ].map(row => row.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\n");
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "meokko-dashboard-evidence-summary.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    qs("#showUnavailable").addEventListener("click", () => {
+      alert("관리자 계정 없이 수집하지 못한 데이터\n\n" + unavailableItems.join("\n"));
+    });
+
     renderBars("#segmentBars", segmentInterest);
     renderKeywordTable("40대 남성");
     renderCharacterTab("40대 남성");
-    renderReaction("#marketReactionBars", marketReaction);
-    renderReaction("#reviewBars", reviewReaction);
+    renderBars("#marketReactionBars", marketReaction);
+    renderBars("#reviewBars", reviewReaction, { color: "background:linear-gradient(90deg,var(--green),var(--blue));" });
   </script>
 </body>
 </html>
