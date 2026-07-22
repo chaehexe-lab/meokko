@@ -3,945 +3,763 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>꼬모 STEP1 관리자 대시보드</title>
+  <meta name="description" content="꼬모 소형 냉장고의 타겟층, 소비자 반응, 경쟁사를 한눈에 보는 마케팅 인사이트 대시보드">
+  <title>꼬모 마켓 인사이트</title>
   <style>
     :root {
-      --bg: #eef6fb;
-      --panel: #fff;
-      --soft: #f7fbff;
-      --ink: #17222b;
-      --muted: #6d7b8b;
-      --line: #dbe7ef;
-      --blue: #4f80ff;
-      --blue-dark: #2e62d9;
-      --green: #18b87d;
-      --cyan: #25c4d8;
-      --red: #e85c5c;
-      --orange: #ffad42;
-      --warn: #fff6df;
-      --shadow: 0 16px 34px rgba(55, 93, 122, .11);
+      --bg: #f4f6f3;
+      --ink: #18201d;
+      --muted: #69736f;
+      --line: #dfe4df;
+      --panel: #ffffff;
+      --green: #225d45;
+      --green-2: #3b8060;
+      --mint: #dff2e7;
+      --lime: #d9ef76;
+      --coral: #ff765f;
+      --coral-soft: #fff0ec;
+      --yellow: #f4c952;
+      --slate: #73817b;
+      --shadow: 0 16px 50px rgba(37, 63, 51, .08);
     }
 
     * { box-sizing: border-box; }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      min-height: 100vh;
+      min-width: 320px;
       color: var(--ink);
-      background: linear-gradient(135deg, #f7fbff 0%, #eaf5f8 100%);
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
-      letter-spacing: 0;
+      background:
+        radial-gradient(circle at 0 0, rgba(217, 239, 118, .20), transparent 28rem),
+        var(--bg);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      word-break: keep-all;
     }
+    button { font: inherit; }
+    a { color: inherit; }
+    .shell { width: min(1320px, calc(100% - 40px)); margin: 0 auto; }
 
-    button, select { font: inherit; }
-
-    .app {
-      width: min(1500px, calc(100vw - 24px));
-      margin: 12px auto;
-      display: grid;
-      grid-template-columns: 204px minmax(0, 1fr);
-      min-height: calc(100vh - 24px);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.9);
-      border-radius: 24px;
-      background: rgba(250,253,255,.88);
-      box-shadow: 0 24px 70px rgba(52, 84, 112, .14);
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(24, 32, 29, .08);
+      background: rgba(244, 246, 243, .88);
+      backdrop-filter: blur(16px);
     }
-
-    aside {
-      padding: 18px 12px;
-      border-right: 1px solid var(--line);
-      background: rgba(255,255,255,.78);
-    }
-
-    .brand {
+    .topbar-inner {
+      min-height: 58px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 0 8px;
-      margin-bottom: 22px;
-      font-weight: 900;
+      justify-content: space-between;
+      gap: 24px;
     }
-
-    .logo {
-      width: 38px;
-      height: 38px;
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 900; letter-spacing: -.03em; }
+    .brand-mark {
+      width: 33px;
+      height: 33px;
       display: grid;
       place-items: center;
       border-radius: 12px;
-      background: linear-gradient(135deg, var(--blue), var(--green));
       color: #fff;
-      font-size: 13px;
-      box-shadow: 0 10px 24px rgba(79,128,255,.24);
+      background: var(--green);
+      font-size: 12px;
+      letter-spacing: -.01em;
     }
-
-    .nav-title {
-      margin: 20px 10px 8px;
-      color: #93a2b0;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .nav { display: grid; gap: 6px; }
-
+    .nav { display: flex; align-items: center; gap: 5px; }
     .nav button {
-      height: 40px;
       border: 0;
-      border-radius: 12px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--muted);
       background: transparent;
-      color: #607282;
-      text-align: left;
-      padding: 0 12px;
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 850;
-    }
-
-    .nav button.active {
-      color: #fff;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      box-shadow: 0 10px 22px rgba(79,128,255,.22);
-    }
-
-    .side-note {
-      margin-top: 22px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--panel);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
-    main {
-      min-width: 0;
-      padding: 20px;
-    }
-
-    .topbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 16px;
-      align-items: end;
-      margin-bottom: 14px;
-    }
-
-    .eyebrow {
-      color: var(--blue-dark);
-      font-size: 12px;
-      font-weight: 950;
-    }
-
-    h1 {
-      margin: 4px 0 0;
-      font-size: 28px;
-      line-height: 1.16;
-    }
-
-    .topbar p {
-      margin: 7px 0 0;
-      color: var(--muted);
       font-size: 13px;
       font-weight: 750;
     }
+    .nav button:hover, .nav button:focus-visible { color: var(--green); background: #fff; outline: none; }
+    .updated { color: var(--muted); font-size: 12px; font-weight: 700; }
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: flex-end;
+    .hero { padding: 30px 0 20px; }
+    .hero-copy { max-width: 760px; }
+    .eyebrow {
+      display: inline-flex;
       align-items: center;
-    }
-
-    .toolbar select,
-    .toolbar button {
-      height: 38px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: #fff;
-      padding: 0 12px;
-      color: #526575;
-      font-size: 12px;
-      font-weight: 850;
-    }
-
-    .toolbar button.primary {
-      color: #fff;
-      border: 0;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(380px, .95fr);
-      gap: 14px;
-      align-items: start;
-    }
-
-    .stack { display: grid; gap: 14px; }
-
-    .card {
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--panel);
-      box-shadow: var(--shadow);
-      padding: 16px;
-    }
-
-    .head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    h2, h3 { margin: 0; line-height: 1.24; }
-    h2 { font-size: 18px; }
-    h3 { font-size: 15px; }
-
-    .cap {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 850;
-      white-space: nowrap;
-    }
-
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 10px;
+      gap: 7px;
       margin-bottom: 14px;
-    }
-
-    .kpi {
-      min-height: 78px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--panel);
-      padding: 12px;
-      display: grid;
-      align-content: center;
-      gap: 5px;
-      box-shadow: var(--shadow);
-    }
-
-    .kpi small,
-    .mini small {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .kpi b {
-      font-size: 22px;
-      line-height: 1.06;
-    }
-
-    .kpi span {
       color: var(--green);
       font-size: 12px;
       font-weight: 900;
+      letter-spacing: .08em;
     }
-
-    .decision {
-      display: grid;
-      grid-template-columns: 220px minmax(0, 1fr);
-      gap: 14px;
-      align-items: stretch;
-    }
-
-    .target-main {
-      border-radius: 18px;
-      padding: 18px;
-      color: #fff;
-      background: linear-gradient(135deg, #2e62d9, #20b7c8);
-      display: grid;
-      align-content: center;
-      gap: 10px;
-    }
-
-    .target-main small {
-      opacity: .86;
-      font-size: 12px;
-      font-weight: 950;
-    }
-
-    .target-main b {
-      font-size: 34px;
-      line-height: 1;
-    }
-
-    .target-main p {
-      margin: 0;
-      font-size: 13px;
-      line-height: 1.55;
-      font-weight: 800;
-      opacity: .92;
-    }
-
-    .decision-panel {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .mini {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px;
-      background: var(--soft);
-      display: grid;
-      gap: 6px;
-    }
-
-    .mini b {
-      font-size: 15px;
-      line-height: 1.38;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .chip,
-    .status {
+    .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 5px rgba(217,239,118,.28); }
+    h1 { margin: 0; max-width: 700px; font-size: clamp(28px, 3.5vw, 40px); line-height: 1.08; letter-spacing: -.05em; }
+    .hero p { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+    .product-filter {
       display: inline-flex;
       align-items: center;
-      min-height: 26px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      color: #17405c;
-      background: #eef6fb;
-      border: 1px solid #d8e9f2;
-      font-size: 12px;
-      font-weight: 850;
-    }
-
-    .status.good { color: #0d6849; background: #e4f9ef; border-color: #c7efd9; }
-    .status.warn { color: #8a5d00; background: var(--warn); border-color: #ffe2a8; }
-    .status.bad { color: #9a3030; background: #fff0f0; border-color: #f8caca; }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-bottom: 12px;
-    }
-
-    .tabs button {
-      min-height: 34px;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 7px 8px 7px 15px;
       border: 1px solid var(--line);
-      border-radius: 999px;
+      border-radius: 14px;
       background: #fff;
-      color: #607282;
-      padding: 0 11px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .tabs button[aria-selected="true"] {
-      color: #fff;
-      border-color: transparent;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
+      box-shadow: 0 8px 28px rgba(37,63,51,.05);
       font-size: 13px;
-      line-height: 1.42;
+      font-weight: 800;
     }
-
-    th, td {
-      padding: 9px 8px;
-      border-top: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
+    .product-filter span { color: var(--muted); font-size: 12px; }
+    .product-filter strong { padding: 8px 12px; border-radius: 9px; color: #fff; background: var(--green); }
+    .insight-banner {
+      position: relative; overflow: hidden; min-height: 154px; display: grid; align-content: center;
+      margin-top: 10px; padding: 22px 34px; border-radius: 20px; color: #fff;
+      background: linear-gradient(120deg, #1f563f 0%, #2f7655 62%, #63a77e 100%);
+      box-shadow: 0 24px 60px rgba(34, 93, 69, .22);
     }
-
-    th {
-      color: #506576;
-      font-size: 12px;
-      font-weight: 950;
-      background: #f7fbff;
-      white-space: nowrap;
+    .insight-banner::after { content: ""; position: absolute; right: -80px; bottom: -150px; width: 330px; height: 330px; border-radius: 50%; background: rgba(255,255,255,.08); }
+    .insight-kicker { justify-self: start; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 12px; font-weight: 900; }
+    .insight-banner h1 { max-width: none; margin: 11px 0 0; font-size: clamp(18px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -.05em; white-space: nowrap; }
+    .insight-banner p { margin: 18px 0 0; color: rgba(255,255,255,.78); font-size: 14px; }
+    .insight-source { justify-self: start; margin-top: 30px; padding: 10px 13px; border-radius: 9px; background: rgba(9,37,123,.28); font-size: 11px; font-weight: 750; }
+    .target-overview { padding: 10px 0 12px; scroll-margin-top: 60px; }
+    .target-section-heading { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 4px 8px; }
+    .target-section-heading span { color: var(--green-2); font-size: 12px; font-weight: 950; }
+    .target-section-heading b { font-size: 16px; }
+    .audience-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
+    .audience-card { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: var(--shadow); }
+    .audience-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+    .audience-type { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 950; }
+    .audience-type i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px var(--mint); }
+    .audience-source { color: var(--muted); font-size: 10px; font-weight: 800; }
+    .audience-summary { min-height: 66px; }
+    .audience-card h2 { margin: 0; font-size: clamp(15px, 1.5vw, 20px); line-height: 1.25; letter-spacing: -.035em; white-space: nowrap; }
+    .audience-card h2 em { color: var(--green); font-style: normal; }
+    .audience-demographics { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+    .audience-demographics .panel-head { margin-bottom: 6px; }
+    .audience-card .gender-chart { min-height: 82px; }
+    .audience-card .gender-donut { width: 78px; }
+    .audience-card .gender-donut::after { width: 48px; font-size: 9px; }
+    .crm-donut { background: conic-gradient(#5276dd 0 58%, #c1c9df 58% 100%); }
+    .crm-donut::after { color: #3659bc; }
+    .customer-card .demographic-grid { margin-top: 12px; }
+    .customer-card .age-bars { gap: 5px; }
+    .crm-periods { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+    .crm-period {
+      padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px;
+      color: var(--muted); background: #fff; cursor: pointer; font-size: 9px; font-weight: 850;
     }
+    .crm-period[aria-pressed="true"] { color: #fff; border-color: #5276dd; background: #5276dd; }
 
-    .table-wrap td { white-space: nowrap; }
-
-    .bars { display: grid; gap: 9px; }
-
-    .bar-row {
+    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 5px; padding-bottom: 8px; }
+    .analysis-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .summary-card {
+      position: relative;
+      min-height: 50px;
       display: grid;
-      grid-template-columns: 110px minmax(0, 1fr) 64px;
+      grid-template-columns: 180px minmax(0, 1fr) 36px;
       align-items: center;
-      gap: 9px;
-      font-size: 13px;
-      font-weight: 850;
-    }
-
-    .bar-row .value {
-      text-align: right;
-      font-size: 14px;
-      font-weight: 950;
-    }
-
-    .track {
-      height: 11px;
-      border-radius: 999px;
-      background: #eaf1f7;
+      gap: 22px;
       overflow: hidden;
-    }
-
-    .track i {
-      display: block;
-      height: 100%;
-      width: var(--w);
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-    }
-
-    .action-list {
-      display: grid;
-      gap: 9px;
-    }
-
-    .action {
-      display: grid;
-      grid-template-columns: 34px minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
+      padding: 7px 14px;
       border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--soft);
-      padding: 10px;
-    }
-
-    .action em {
-      width: 28px;
-      height: 28px;
-      display: grid;
-      place-items: center;
-      border-radius: 9px;
-      background: #e9f2ff;
-      color: var(--blue-dark);
-      font-style: normal;
-      font-weight: 950;
-    }
-
-    .action b { font-size: 14px; }
-    .action span { color: var(--muted); font-size: 12px; font-weight: 800; }
-
-    .note {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.55;
-      font-weight: 750;
-    }
-
-    details {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      overflow: hidden;
+      border-radius: 16px;
       background: var(--panel);
-    }
-
-    details + details { margin-top: 9px; }
-
-    summary {
+      box-shadow: var(--shadow);
       cursor: pointer;
-      list-style: none;
-      padding: 12px 14px;
-      min-height: 46px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      font-weight: 950;
-      color: #203242;
+      text-align: left;
+      transition: transform .24s ease, box-shadow .24s ease;
     }
-
-    summary::-webkit-details-marker { display: none; }
-    summary::after {
-      content: "⌄";
-      color: var(--blue-dark);
-      font-size: 17px;
-      transition: transform .2s ease;
+    .summary-card:hover { transform: translateY(-5px); box-shadow: 0 24px 60px rgba(37,63,51,.13); }
+    .summary-card:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+    .analysis-toggle:focus-visible + .analysis-toggle + .analysis-toggle + .summary-grid .summary-card { outline-offset: 3px; }
+    .summary-card.featured { color: #fff; border-color: transparent; background: var(--green); }
+    .summary-card.keyword-card,
+    .summary-card.keyword-card.featured { color: var(--green); border-color: #c7ddd0; background: #edf6f0; }
+    .summary-card.keyword-card { width: 72%; min-height: 44px; justify-self: center; grid-template-columns: 145px minmax(0, 1fr) 32px; padding: 5px 12px; }
+    .keyword-card .bar-name span { color: var(--green); font-size: 18px; }
+    .keyword-card .arrow,
+    .keyword-card.featured .arrow { color: var(--green); background: rgba(255,255,255,.58); }
+    .bar-name { display: flex; align-items: center; gap: 12px; }
+    .bar-name span { color: var(--green-2); font-size: 12px; font-weight: 950; }
+    .bar-name b { font-size: 15px; }
+    .featured .bar-name span { color: var(--lime); }
+    .bar-summary { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .bar-summary strong { font-size: 15px; line-height: 1.35; letter-spacing: -.025em; }
+    .bar-summary small { color: var(--muted); font-size: 11px; }
+    .featured .bar-summary small { color: rgba(255,255,255,.68); }
+    .rising-keyword { display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border: 1px solid #bad8c7; border-radius: 9px; color: var(--green); background: var(--mint); font-size: 11px; font-weight: 800; }
+    .rising-keyword b { font-size: 14px; }
+    .featured .rising-keyword { color: var(--green); border-color: var(--lime); background: var(--lime); }
+    .sentiment-inline { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .sentiment-inline .mini-sentiment-track { flex: 0 0 auto; width: 54px; aspect-ratio: 1; display: block; border-radius: 50%; background: conic-gradient(var(--coral) 0 51%, var(--yellow) 51% 71%, #a9b4af 71% 100%); box-shadow: inset 0 0 0 12px #fff; }
+    .featured .sentiment-inline .mini-sentiment-track { box-shadow: inset 0 0 0 12px var(--green); }
+    .mini-sentiment-track i { display: none; }
+    .sentiment-inline small { display: block; color: var(--muted); font-size: 10px; font-weight: 850; }
+    .featured .sentiment-inline small { color: rgba(255,255,255,.72); }
+    .arrow {
+      width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%;
+      color: var(--green); background: var(--mint); font-size: 18px; transition: transform .2s ease;
     }
-
-    details[open] summary::after { transform: rotate(180deg); }
-
-    .detail-body {
-      padding: 0 14px 14px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.58;
-      animation: slideDown .2s ease;
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-5px); }
+    .featured .arrow { color: var(--green); background: var(--lime); }
+    .summary-card:hover .arrow { transform: translateY(2px); }
+    .summary-card[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+    .detail-section { display: none; grid-column: 1 / -1; width: 100%; padding: 22px 18px 28px; scroll-margin-top: 70px; border-radius: 15px; }
+    .detail-section.active { display: block; animation: detailIn .28s ease both; }
+    #toggle-target:checked ~ #target,
+    #toggle-keywords:checked ~ #keywords,
+    #toggle-reaction:checked ~ #reaction,
+    #toggle-competitor:checked ~ #competitor { display: block; animation: detailIn .28s ease both; }
+    .detail-section.alt { background: #e9eee9; }
+    @keyframes detailIn {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .section-heading { display: block; margin-bottom: 14px; }
+    .section-index { color: var(--green-2); font-size: 12px; font-weight: 900; letter-spacing: .12em; }
+    .section-heading h2 { margin: 5px 0 0; font-size: 22px; line-height: 1.15; letter-spacing: -.04em; }
+    .section-heading p { display: none; }
+    .panel { border: 1px solid var(--line); border-radius: 26px; background: var(--panel); box-shadow: var(--shadow); }
 
-    @media (max-width: 1120px) {
-      .app { grid-template-columns: 1fr; }
-      aside { display: none; }
-      .grid, .decision, .decision-panel { grid-template-columns: 1fr; }
-      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .target-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(290px, .8fr); gap: 10px; }
+    .target-profile { display: flex; flex-direction: column; min-height: 0; padding: 16px; }
+    .rank-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rank-tab {
+      border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px;
+      color: var(--muted); background: #fff; cursor: pointer; font-size: 12px; font-weight: 850;
     }
+    .rank-tab[aria-selected="true"] { color: #fff; border-color: var(--green); background: var(--green); }
+    .persona-number { margin-top: 24px; color: var(--green-2); font-size: 12px; font-weight: 900; }
+    .persona-title { margin: 6px 0 4px; font-size: 32px; letter-spacing: -.05em; }
+    .persona-score { color: var(--muted); font-size: 13px; }
+    .persona-score strong { color: var(--green); font-size: 17px; }
+    .insight-box { margin-top: 18px; padding: 14px; border-radius: 14px; background: #f1f7f2; }
+    .insight-box small { color: var(--green-2); font-size: 11px; font-weight: 900; }
+    .insight-box p { margin: 8px 0 0; font-size: 15px; font-weight: 750; line-height: 1.55; }
+    .interest-title { margin-top: 18px; color: var(--muted); font-size: 11px; font-weight: 900; }
+    .keyword-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .keyword-list span { padding: 8px 11px; border-radius: 999px; background: var(--mint); color: var(--green); font-size: 12px; font-weight: 800; }
+    .target-rank-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+    .target-rank-item {
+      width: 100%; display: grid; grid-template-columns: 22px 76px minmax(45px, 1fr) 34px;
+      align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid transparent;
+      border-radius: 9px; color: var(--muted); background: #f6f8f6; cursor: pointer; text-align: left;
+    }
+    .target-rank-item:hover { border-color: var(--line); background: #fff; }
+    .target-rank-item[aria-selected="true"] { color: var(--green); border-color: #bad8c7; background: var(--mint); }
+    .target-rank-item .rank { font-weight: 950; }
+    .target-rank-item .name { color: var(--ink); font-size: 11px; font-weight: 850; }
+    .target-rank-item .mini-track { height: 5px; overflow: hidden; border-radius: 999px; background: #e5ebe6; }
+    .target-rank-item .mini-track i { display: block; width: var(--w); height: 100%; border-radius: inherit; background: #9aaba2; }
+    .target-rank-item[aria-selected="true"] .mini-track i { background: var(--green); }
+    .target-rank-item .score { text-align: right; font-size: 10px; font-weight: 900; }
+    .keyword-ranking { display: grid; border-top: 1px solid var(--line); }
+    .keyword-rank-row { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 8px; min-height: 40px; border-bottom: 1px solid var(--line); }
+    .keyword-rank-row .number { color: var(--green-2); font-size: 12px; font-weight: 950; }
+    .keyword-rank-row strong { font-size: 12px; }
+    .keyword-rank-row .change { padding: 5px 8px; border-radius: 999px; color: var(--green); background: var(--mint); font-size: 11px; font-weight: 900; }
+    .keyword-rank-row.fastest { min-height: 52px; margin: 7px 0; padding: 0 10px; border: 1px solid #a9d2ba; border-radius: 10px; background: var(--mint); }
+    .keyword-rank-row.fastest .number { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 7px; color: #fff; background: var(--green); }
+    .keyword-rank-row.fastest strong { color: var(--green); font-size: 14px; }
+    .keyword-rank-row.fastest .change { color: #fff; background: var(--green); }
+    .keyword-insight { margin-top: 12px; padding: 10px 12px; border-radius: 10px; color: #4e5b56; background: #f4f7f4; font-size: 11px; line-height: 1.5; }
+    .target-leaders { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
+    .leader-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; min-height: 58px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .leader-card .leader-rank { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 9px; color: #fff; background: var(--green); font-size: 12px; font-weight: 950; }
+    .leader-card:nth-child(2) .leader-rank { color: var(--green); background: var(--mint); }
+    .leader-card small { display: block; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .leader-card strong { display: block; margin-top: 2px; font-size: 16px; }
+    .leader-card .leader-score { color: var(--green); font-size: 13px; font-weight: 950; }
+    .second-target-summary { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; align-items: center; gap: 18px; min-height: 64px; margin-bottom: 10px; padding: 11px 15px; border: 1px solid #bad8c7; border-radius: 12px; background: #fff; }
+    .second-target-summary .target-order { color: var(--green-2); font-size: 11px; font-weight: 950; letter-spacing: .06em; }
+    .second-target-summary > strong { font-size: 17px; letter-spacing: -.025em; }
+    .second-target { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+    .second-target small { color: var(--green-2); font-size: 10px; font-weight: 900; }
+    .second-target strong { font-size: 13px; }
+    .second-target .badge { padding: 4px 7px; border-radius: 999px; color: var(--muted); background: #f1f4f2; font-size: 10px; font-weight: 800; }
+    .keyword-picker { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .keyword-picker select { min-width: 112px; height: 30px; padding: 0 26px 0 9px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: #fff; font: inherit; font-size: 11px; font-weight: 850; }
+    .target-dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .compact-panel { min-width: 0; padding: 16px; }
+    .demographic-grid { display: grid; grid-template-columns: .78fr 1.22fr; align-items: center; gap: 18px; }
+    .demographic-part + .demographic-part { padding-left: 18px; border-left: 1px solid var(--line); }
+    .mini-title { margin-bottom: 8px; color: var(--muted); font-size: 10px; font-weight: 900; }
+    .gender-chart { min-height: 134px; display: grid; place-items: center; }
+    .gender-donut { width: 126px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(var(--green) 0 64%, #b7c4be 64% 100%); }
+    .gender-donut::after { content: attr(data-label); width: 78px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--green); font-size: 13px; font-weight: 950; }
+    .gender-legend { display: flex; justify-content: center; gap: 14px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .gender-legend span { display: flex; align-items: center; gap: 5px; }
+    .gender-legend i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    .gender-legend span:last-child i { background: #b7c4be; }
+    .age-bars { display: grid; gap: 5px; margin-top: 4px; }
+    .age-row { display: grid; grid-template-columns: 38px 1fr 32px; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .age-row .track { height: 7px; }
+    .age-row .track i { background: var(--green-2); }
 
-    @media (max-width: 640px) {
-      .app { width: 100%; margin: 0; border-radius: 0; }
-      main { padding: 14px; }
-      .topbar { grid-template-columns: 1fr; }
-      .toolbar { justify-content: start; }
-      h1 { font-size: 24px; }
-      .kpis { grid-template-columns: 1fr; }
-      .bar-row { grid-template-columns: 86px minmax(0, 1fr) 52px; }
-      .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
-      .tabs button { flex: 0 0 auto; }
-      .action { grid-template-columns: 30px minmax(0, 1fr); }
-      .action .status { grid-column: 2; justify-self: start; }
+    .chart-panel { min-width: 0; padding: 16px; }
+    .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .panel-head h3 { margin: 0; font-size: 15px; letter-spacing: -.02em; }
+    .panel-head span { color: var(--muted); font-size: 11px; font-weight: 750; }
+    .bars { display: grid; gap: 11px; }
+    .bar-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 55px; align-items: center; gap: 13px; font-size: 12px; font-weight: 800; }
+    .bar-label.active { color: var(--green); font-weight: 950; }
+    .track { position: relative; height: 9px; overflow: hidden; border-radius: 999px; background: #edf0ed; }
+    .track i { display: block; width: var(--w); height: 100%; border-radius: inherit; background: #a8b6af; transition: width .55s cubic-bezier(.2,.8,.2,1); }
+    .bar-row.active .track i { background: linear-gradient(90deg, var(--green), #76aa6b); }
+    .bar-value { text-align: right; color: var(--muted); }
+    .bar-row.active .bar-value { color: var(--green); font-weight: 950; }
+    .chart-note { display: none; }
+
+    .reaction-layout { display: grid; grid-template-columns: .78fr 1.22fr; gap: 16px; }
+    .sentiment-total { padding: 28px; }
+    .donut-wrap { min-height: 235px; display: grid; place-items: center; }
+    .donut {
+      width: 164px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%;
+      background: conic-gradient(var(--coral) 0 51%, var(--yellow) 51% 71%, #a9b4af 71% 100%);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.03);
+    }
+    .donut-inner {
+      width: 104px; aspect-ratio: 1; display: grid; place-content: center; text-align: center;
+      border-radius: 50%; background: #fff; box-shadow: 0 8px 30px rgba(37,63,51,.08);
+    }
+    .donut-inner small { color: var(--muted); font-size: 11px; font-weight: 800; }
+    .donut-inner b { margin-top: 2px; color: var(--coral); font-size: 32px; line-height: 1; }
+    .sentiment-legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .legend-item { padding: 12px; border-radius: 14px; background: #f6f8f6; }
+    .legend-item small { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; }
+    .legend-item small::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+    .legend-item b { display: block; margin-top: 6px; font-size: 18px; }
+
+    .reaction-detail { padding: 28px; }
+    .sentiment-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .sentiment-tab {
+      min-width: 0; min-height: 86px; display: grid; place-content: center; gap: 3px;
+      border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+      color: var(--muted); background: #fff; cursor: pointer; font-size: 13px; font-weight: 850;
+    }
+    .sentiment-tab span { font-size: 12px; }
+    .sentiment-tab b { font-size: 25px; line-height: 1; }
+    .sentiment-tab[aria-selected="true"] { color: #fff; border-color: var(--tab-color); background: var(--tab-color); }
+    .reaction-callout { display: none; }
+    .reaction-callout small { color: var(--muted); font-size: 11px; font-weight: 900; }
+    .reaction-callout h3 { margin: 7px 0 0; font-size: 23px; letter-spacing: -.03em; }
+    .reaction-keywords { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 22px; }
+    .reaction-keywords span { padding: 9px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 12px; font-weight: 800; }
+    .reaction-bars { display: grid; gap: 13px; }
+    .reaction-bar { display: grid; grid-template-columns: 110px 1fr 42px; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .reaction-bar .track { height: 10px; }
+    .reaction-bar .track i { background: var(--tab-color); }
+    .quote { display: none; }
+    .source-note { margin: 10px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+
+    .competitor-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 2px 0 14px; }
+    .competitor-toolbar strong { font-size: 14px; }
+    .competitor-toolbar select { min-width: 210px; height: 40px; padding: 0 38px 0 13px; border: 1px solid #b9d5c5; border-radius: 10px; color: var(--green); background: #fff; font: inherit; font-size: 12px; font-weight: 900; }
+    .competitor-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .product-card { display: flex; min-width: 0; flex-direction: column; overflow: hidden; }
+    .product-card img { width: 100%; height: 180px; object-fit: contain; padding: 14px; background: #f4f6f4; }
+    .product-copy { display: flex; flex: 1; flex-direction: column; padding: 18px; }
+    .brand-chip { align-self: flex-start; padding: 7px 10px; border-radius: 999px; color: var(--green); background: var(--mint); font-size: 11px; font-weight: 900; }
+    .product-copy h3 { margin: 13px 0 5px; font-size: 17px; line-height: 1.35; }
+    .price { color: var(--green); font-size: 21px; font-weight: 950; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 17px; }
+    .tags span { padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 11px; font-weight: 750; }
+    .position { margin-top: auto; padding-top: 16px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .position strong { color: var(--ink); }
+    .accordions { margin-top: 16px; }
+    details { border: 1px solid var(--line); border-radius: 18px; background: #fff; overflow: hidden; }
+    details + details { margin-top: 10px; }
+    summary { display: flex; justify-content: space-between; align-items: center; padding: 19px 22px; cursor: pointer; list-style: none; font-size: 14px; font-weight: 900; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--green); font-size: 22px; font-weight: 500; }
+    details[open] summary::after { content: "−"; }
+    .detail-body { padding: 0 22px 22px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 13px; }
+    table { width: 100%; border-collapse: collapse; min-width: 780px; font-size: 12px; }
+    th, td { padding: 13px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; line-height: 1.55; }
+    th { color: var(--green); background: #f1f6f2; font-size: 11px; }
+    tr:last-child td { border-bottom: 0; }
+
+    footer { display: none; }
+    footer .shell { display: flex; justify-content: space-between; gap: 24px; border-top: 1px solid var(--line); padding-top: 25px; }
+
+    @media (max-width: 980px) {
+      .updated { display: none; }
+      .section-heading { grid-template-columns: 1fr; gap: 16px; }
+      .target-layout { grid-template-columns: 1fr; }
+      .target-profile { min-height: auto; }
+      .interest-title { margin-top: 28px; }
+      .competitor-grid { grid-template-columns: 1fr; }
+      .customer-card .demographic-grid { grid-template-columns: .75fr 1.25fr; }
+      .customer-card .demographic-part + .demographic-part { padding: 0 0 0 16px; border-top: 0; border-left: 1px solid var(--line); }
+    }
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 24px, 1320px); }
+      .topbar-inner { min-height: 54px; }
+      .nav { display: none; }
+      .hero { padding-top: 48px; }
+      .insight-banner { min-height: 148px; margin-top: 8px; padding: 20px 22px; border-radius: 18px; }
+      .insight-banner h1 { font-size: clamp(18px, 4.4vw, 28px); }
+      .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .audience-card { padding: 12px; }
+      .customer-card .demographic-grid { grid-template-columns: .75fr 1.25fr; }
+      .customer-card .demographic-part + .demographic-part { padding: 0 0 0 12px; border-top: 0; border-left: 1px solid var(--line); }
+      .summary-grid { grid-template-columns: 1fr; overflow: visible; padding-bottom: 6px; }
+      .summary-card { grid-template-columns: 120px minmax(0, 1fr) 32px; gap: 8px; }
+      .summary-card.keyword-card { width: 88%; grid-template-columns: 112px minmax(0, 1fr) 30px; }
+      .detail-section { padding: 62px 0; }
+      .panel, .summary-card { border-radius: 20px; }
+      .target-profile, .chart-panel, .sentiment-total, .reaction-detail { padding: 21px; }
+      .bar-row { grid-template-columns: 78px 1fr 45px; gap: 8px; }
+      .target-rank-list { grid-template-columns: 1fr; }
+      .target-rank-item { grid-template-columns: 24px 82px 1fr 38px; gap: 7px; }
+      .target-leaders { grid-template-columns: 1fr; }
+      .second-target-summary { grid-template-columns: 1fr; gap: 6px; }
+      .second-target-summary .rising-keyword { justify-self: start; }
+      .keyword-picker { margin-left: auto; }
+      .target-dashboard-grid { grid-template-columns: 1fr; }
+      .demographic-grid { grid-template-columns: .75fr 1.25fr; }
+      .demographic-part + .demographic-part { padding: 0 0 0 12px; border-top: 0; border-left: 1px solid var(--line); }
+      .reaction-layout { grid-template-columns: 1fr; }
+      .sentiment-tabs { overflow-x: auto; }
+      .sentiment-tab { min-width: 86px; }
+      .reaction-bar { grid-template-columns: 88px 1fr 36px; gap: 8px; }
+      .product-card { grid-template-columns: 1fr; }
+      .product-card img { height: 210px; min-height: 0; }
+      footer .shell { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside>
-      <div class="brand"><span class="logo">ME</span><span>Meokko Admin</span></div>
-      <div class="nav-title">DASHBOARD</div>
-      <div class="nav">
-        <button class="active" data-scroll="overview">오늘의 판단</button>
-        <button data-scroll="target">타겟 근거</button>
-        <button data-scroll="search">검색 수요</button>
-        <button data-scroll="reaction">시장 반응</button>
-        <button data-scroll="product">상품·경쟁</button>
-        <button data-scroll="quality">데이터 품질</button>
-      </div>
-      <div class="side-note">
-        내부 CRM과 외부 검색/리뷰 데이터를 분리 표기합니다. 추정 데이터는 노란 상태로 표시합니다.
-      </div>
-    </aside>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand"><span class="brand-mark">ME</span><span>Meokko Insight</span></div>
+      <nav class="nav" aria-label="분석 영역 바로가기">
+        <button type="button" data-scroll="target">타겟층</button>
+        <button type="button" data-scroll="reaction">반응</button>
+        <button type="button" data-scroll="competitor">경쟁사</button>
+      </nav>
+      <div class="updated">최근 분석 · 2026.07.19</div>
+    </div>
+  </header>
 
-    <main>
-      <header class="topbar">
-        <div>
-          <div class="eyebrow">STEP1 시장·소비자 분석</div>
-          <h1>공개 데이터 + CRM 기반 마케팅 판단 화면</h1>
-          <p>관리자 계정 없이 확보 가능한 데이터만 사용해 타겟, 메시지, 유사제품 후보를 확인합니다.</p>
-        </div>
-        <div class="toolbar" aria-label="대시보드 관리 도구">
-          <select aria-label="조회 기간">
-            <option>최근 CRM 전체 기간</option>
-            <option>최근 3개월</option>
-            <option>최근 1개월</option>
-          </select>
-          <button type="button" id="downloadSummary">근거 CSV 다운로드</button>
-          <button type="button" id="showUnavailable" class="primary">수집불가 항목 보기</button>
-        </div>
-      </header>
+  <main>
+    <section class="insight-banner shell">
+      <div class="insight-kicker">타겟층 종합 인사이트</div>
+      <h1>집중해야 할 최종 타겟층은 20대 여성입니다.</h1>
+    </section>
 
-      <section class="kpis" aria-label="운영 핵심 지표">
-        <div class="kpi"><small>최근 매출</small><b>13,066,700원</b><span>2026-06 · 전월 대비 +84%</span></div>
-        <div class="kpi"><small>최근 판매수량</small><b>35대</b><span>전월 22대</span></div>
-        <div class="kpi"><small>평균 판매단가</small><b>373,334원</b><span>전월 대비 +15.6%</span></div>
-        <div class="kpi"><small>최근 CS</small><b>12건</b><span>2026-07 · 냉장 11건</span></div>
-        <div class="kpi"><small>수집 기준</small><b>공개+CRM</b><span>조회·찜·장바구니 제외</span></div>
-      </section>
-
-      <section id="overview" class="card">
-        <div class="head">
-          <h2>오늘의 판단</h2>
-          <span class="cap">CRM 구매 신호 + 공개 검색·반응</span>
-        </div>
-        <div class="decision">
-          <div class="target-main">
-            <small>우선 콘텐츠 방향</small>
-            <b>홈바·음료 보관</b>
-            <p>공개 키워드 10개, 추천어 102개에서 반복 확인. CRM에서는 30~40대 남성, 40대 여성 구매 신호와 맞물립니다.</p>
+    <section id="target" class="target-overview shell">
+      <div class="target-section-heading"><span>01</span><b>타겟층 분석</b></div>
+      <div class="audience-grid">
+        <article class="audience-card prospect-card">
+          <div class="audience-head"><div class="audience-type"><i></i>잠재고객</div><span class="audience-source">네이버 쇼핑 클릭 데이터</span></div>
+          <div class="audience-summary">
+            <h2>잠재 타겟층은 <em>20대 여성</em>입니다.</h2>
           </div>
-          <div class="decision-panel">
-            <div class="mini"><small>누구에게</small><b>40대 남성 매출형, 30대 남성 전환형, 30대 여성 결제형</b></div>
-            <div class="mini"><small>무엇을 강조</small><b>개인 공간, 음료·간식 보관, 사용 편의</b></div>
-            <div class="mini"><small>어느 채널</small><b>네이버 쇼핑/블로그 + 공간 연출 콘텐츠</b></div>
-            <div class="mini"><small>메시지</small><b>내 자리에서 바로 쓰는 미니 홈바</b></div>
-            <div class="mini"><small>주의</small><b>CRM 구매 신호와 외부 검색 관심도는 분리 해석</b></div>
-            <div class="mini"><small>다음 액션</small><b>홈바/사무실 콘텐츠 A/B 테스트 설계</b></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="grid" style="margin-top:14px;">
-        <div class="stack">
-          <section id="target" class="card">
-            <div class="head">
-              <h2>타겟 선정 근거</h2>
-              <span class="cap">CRM 스마트스토어 방문·결제·매출</span>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>순위</th><th>타겟</th><th>방문</th><th>결제</th><th>매출</th><th>전환율</th><th>객단가</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>1</td><td><b>40대 남성</b></td><td>2,548</td><td>86</td><td>36,976,000원</td><td>3.38%</td><td>429,953원</td></tr>
-                  <tr><td>2</td><td><b>30대 남성</b></td><td>1,959</td><td>86</td><td>32,764,100원</td><td>4.39%</td><td>380,978원</td></tr>
-                  <tr><td>3</td><td><b>30대 여성</b></td><td>2,725</td><td>99</td><td>19,201,200원</td><td>3.63%</td><td>193,952원</td></tr>
-                  <tr><td>4</td><td>40대 여성</td><td>2,544</td><td>87</td><td>23,018,300원</td><td>3.42%</td><td>264,578원</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="note">순위는 CRM 방문·결제·매출을 종합한 현재 구매 신호입니다. 잠재 고객성, 광고 반응 가능성, 재구매 가능성은 별도 데이터가 필요합니다.</div>
-            <details>
-              <summary>전체 연령대·성별 데이터 보기 · 10개 조합</summary>
-              <div class="detail-body"><div class="bars" id="segmentBars"></div></div>
-            </details>
-          </section>
-
-          <section id="search" class="card">
-            <div class="head">
-              <h2>검색 수요</h2>
-              <span class="cap">네이버 공개 랭킹 · 마케팅 활용 키워드만 필터링</span>
-            </div>
-            <div class="tabs" id="searchTabs" role="tablist" aria-label="검색 수요 타겟 선택"></div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>네이버 순위</th><th>키워드</th><th>출처</th><th>순위 변화</th><th>마케팅 연결</th></tr></thead>
-                <tbody id="keywordTable"></tbody>
-              </table>
-            </div>
-            <div class="note">대형 냉장고/브랜드 키워드는 제외했습니다. 10대는 공개 랭킹 미제공으로 네이버 데이터랩 검색트렌드 보완값을 사용하며, 다른 탭과 직접 비교하지 않습니다.</div>
-          </section>
-
-          <section id="reaction" class="card">
-            <div class="head">
-              <h2>시장 반응과 실행 포인트</h2>
-              <span class="cap">공개 웹·리뷰 키워드 빈도</span>
-            </div>
-            <div class="action-list">
-              <div class="action"><em>1</em><div><b>디자인만 말하지 말고 사용 장면을 함께 보여주기</b><br><span>귀여움/디자인 40건, 홈바/술냉장고 34건</span></div><span class="status good">활용</span></div>
-              <div class="action"><em>2</em><div><b>전원·수리·가격 질문은 FAQ 소재로 분리</b><br><span>고장/수리/전원 28건, 가격 11건</span></div><span class="status warn">주의</span></div>
-              <div class="action"><em>3</em><div><b>리뷰 표본은 적어 방향성 참고로만 사용</b><br><span>공식 리뷰: 사용 편의 7건, 디자인/귀여움 6건</span></div><span class="status warn">표본 부족</span></div>
-            </div>
-            <details style="margin-top:10px;">
-              <summary>키워드 빈도 그래프 보기</summary>
-              <div class="detail-body">
-                <h3>공개 웹 언급</h3>
-                <div class="bars" id="marketReactionBars" style="margin:10px 0 14px;"></div>
-                <h3>상품 리뷰 키워드</h3>
-                <div class="bars" id="reviewBars" style="margin-top:10px;"></div>
+          <div class="audience-demographics">
+            <div class="panel-head"><h3>잠재고객 타겟 비율</h3><span>소형 냉장고 클릭 기준</span></div>
+            <div class="demographic-grid">
+              <div class="demographic-part">
+                <div class="mini-title">성별 비율</div>
+                <div class="gender-chart"><div class="gender-donut" data-label="여성 64%" role="img" aria-label="여성 64%, 남성 36%"></div></div>
+                <div class="gender-legend"><span><i></i>여성 64%</span><span><i></i>남성 36%</span></div>
               </div>
-            </details>
-          </section>
+              <div class="demographic-part">
+                <div class="mini-title">연령대 비율</div>
+                <div class="age-bars">
+                  <div class="age-row"><span>10대</span><div class="track"><i style="--w:14%"></i></div><b>14%</b></div>
+                  <div class="age-row"><span>20대</span><div class="track"><i style="--w:38%"></i></div><b>38%</b></div>
+                  <div class="age-row"><span>30대</span><div class="track"><i style="--w:27%"></i></div><b>27%</b></div>
+                  <div class="age-row"><span>40대</span><div class="track"><i style="--w:15%"></i></div><b>15%</b></div>
+                  <div class="age-row"><span>50대+</span><div class="track"><i style="--w:6%"></i></div><b>6%</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="audience-card customer-card">
+          <div class="audience-head"><div class="audience-type"><i></i>기존고객</div><span class="audience-source">CRM 실제 구매 데이터</span></div>
+          <div class="audience-summary">
+            <h2 id="crmCustomerTitle">최근 3개월 주요 구매고객층은 <em>20대 여성</em>입니다.</h2>
+            <div class="crm-periods" id="crmPeriodTabs" aria-label="CRM 분석 기간 선택">
+              <button class="crm-period" type="button" data-period="3m" aria-pressed="true">3개월</button>
+              <button class="crm-period" type="button" data-period="6m" aria-pressed="false">6개월</button>
+              <button class="crm-period" type="button" data-period="12m" aria-pressed="false">12개월</button>
+              <button class="crm-period" type="button" data-period="all" aria-pressed="false">전체누적</button>
+            </div>
+          </div>
+          <div class="audience-demographics">
+            <div class="panel-head"><h3>기존고객 타겟 비율</h3><span id="crmPeriodCaption">최근 3개월 실제 결제 기준</span></div>
+            <div class="demographic-grid">
+              <div class="demographic-part">
+                <div class="mini-title">성별 비율</div>
+                <div class="gender-chart"><div class="gender-donut crm-donut" id="crmGenderDonut" data-label="여성 62%" role="img" aria-label="여성 62%, 남성 38%"></div></div>
+                <div class="gender-legend" id="crmGenderLegend"><span><i></i>여성 62%</span><span><i></i>남성 38%</span></div>
+              </div>
+              <div class="demographic-part">
+                <div class="mini-title">연령대 비율</div>
+                <div class="age-bars" id="crmAgeBars"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <input class="analysis-toggle" type="checkbox" id="toggle-keywords">
+    <input class="analysis-toggle" type="checkbox" id="toggle-reaction">
+    <input class="analysis-toggle" type="checkbox" id="toggle-competitor">
+
+    <section class="summary-grid shell" aria-label="핵심 분석 요약">
+      <label class="summary-card keyword-card" for="toggle-keywords" data-scroll="keywords" aria-expanded="false" tabindex="0">
+        <div class="bar-name"><span>+</span><b>관심 키워드</b></div>
+        <div class="bar-summary"><strong>타겟층별 관심 키워드 순위</strong></div>
+        <span class="arrow">⌄</span>
+      </label>
+
+      <label class="summary-card" for="toggle-reaction" data-scroll="reaction" aria-expanded="false" tabindex="0">
+        <div class="bar-name"><span>02</span><b>반응 분석</b></div>
+        <div class="bar-summary">
+          <strong>긍정 반응이 51%입니다.</strong>
+          <span class="sentiment-inline"><span class="mini-sentiment-track" aria-label="긍정 51%, 중립 20%, 부정 29%"><i></i><i></i><i></i></span><small>긍정 51 · 중립 20 · 부정 29</small></span>
         </div>
+        <span class="arrow">⌄</span>
+      </label>
 
-        <div class="stack">
-          <section class="card">
-            <div class="head">
-              <h2>캠페인 후보</h2>
-              <span class="cap">수집 데이터 기반 가설</span>
-            </div>
-            <div class="action-list">
-              <div class="action"><em>A</em><div><b>홈바·음료 보관 장면</b><br><span>공개 키워드 10개 + 추천어 102개</span></div><span class="status good">우선</span></div>
-              <div class="action"><em>B</em><div><b>소형/1인 공간 장면</b><br><span>공개 키워드 8개 + 추천어 112개</span></div><span class="status">보조</span></div>
-              <div class="action"><em>C</em><div><b>화장품 보관 장면</b><br><span>공개 키워드 2개 + 추천어 17개</span></div><span class="status">테스트</span></div>
-            </div>
-          </section>
+      <label class="summary-card" for="toggle-competitor" data-scroll="competitor" aria-expanded="false" tabindex="0">
+        <div class="bar-name"><span>03</span><b>경쟁사 분석</b></div>
+        <div class="bar-summary"><strong>경쟁사가 대용량·저가 실용성을 앞세운다면, 꼬모냉장고는 감성적인 디자인과 공간 활용성을 강조해야 합니다.</strong></div>
+        <span class="arrow">⌄</span>
+      </label>
+    </section>
 
-          <section id="product" class="card">
-            <div class="head">
-              <h2>상품 포지션</h2>
-              <span class="cap">공식몰 공개 상품 데이터</span>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>항목</th><th>꼬모 샐리 실속형</th><th>근거</th></tr></thead>
-                <tbody>
-                  <tr><td>공식 가격</td><td>458,000원</td><td>공식몰/저장 HTML</td></tr>
-                  <tr><td>공식 평점·리뷰</td><td>평점 5 · 리뷰 1</td><td>공식몰 JSON-LD</td></tr>
-                  <tr><td>공식 리뷰 게시판</td><td>매칭 리뷰 3건 · 조회수 합 3,731</td><td>공식 리뷰 공개 페이지</td></tr>
-                  <tr><td>상품 포지션</td><td>음료와 화장품을 분리 보관하는 캐릭터 미니 냉장고</td><td>상품명·메타 키워드</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="note">상품 조회수, 찜 수, 장바구니율은 공개 데이터로 수집되지 않아 표시하지 않았습니다.</div>
-          </section>
-
-          <section id="competitor" class="card">
-            <div class="head">
-              <h2>공개 가격대·유사제품 후보</h2>
-              <span class="cap">다나와 공개 검색 · 실제 판매량 아님</span>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>맥락</th><th>후보 수</th><th>중앙 가격</th><th>가격 범위</th><th>대표 특징</th><th>해석</th></tr></thead>
-                <tbody>
-                  <tr><td><b>소형/1인 공간</b></td><td>61개</td><td>226,140원</td><td>30,140~2,104,070원</td><td>원룸/사무실, 냉장+냉동</td><td><span class="status warn">가격 후보</span></td></tr>
-                  <tr><td><b>홈바/음료 보관</b></td><td>30개</td><td>270,000원</td><td>58,220~443,380원</td><td>홈바/음료, 저소음</td><td><span class="status warn">맥락 후보</span></td></tr>
-                  <tr><td><b>화장품 보관</b></td><td>17개</td><td>113,120원</td><td>48,140~419,690원</td><td>화장품/뷰티, 개인 공간</td><td><span class="status warn">용도 후보</span></td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="note">경쟁사 실제 판매량은 공개 수집할 수 없어 사용하지 않았습니다. 위 표는 공개 검색 결과 기반 가격·특징 후보입니다.</div>
-          </section>
-
-          <section class="card">
-            <div class="head">
-              <h2>캐릭터 관심도</h2>
-              <span class="cap">검색 관심도 추정</span>
-            </div>
-            <div class="tabs" id="characterTabs" role="tablist" aria-label="캐릭터 관심 타겟 선택"></div>
-            <div class="bars" id="lineBars"></div>
-            <div class="note">네이버 데이터랩 검색트렌드 API 기반입니다. 구매 선호도가 아니라 캐릭터 검색 관심도 추정입니다.</div>
-          </section>
+    <section id="keywords" class="detail-section alt">
+      <div class="shell">
+        <div class="panel compact-panel">
+          <div class="panel-head"><h3>관심 키워드 순위</h3><label class="keyword-picker">타겟 <select id="keywordTargetSelect" aria-label="키워드를 확인할 타겟 선택"></select></label></div>
+          <div class="keyword-ranking" id="keywordRanking"></div>
+          <div class="keyword-insight" id="personaInsight">뷰티 루틴과 개인 공간을 연결한 제품 메시지에 가장 민감하게 반응합니다.</div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="quality" class="card" style="margin-top:14px;">
-        <div class="head">
-          <h2>데이터 품질 상태</h2>
-          <span class="cap">관리자 검증용</span>
+    <section id="reaction" class="detail-section">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">02 · REACTION ANALYSIS</span><h2>긍·부정 반응 분석</h2></div>
+          <p>시장 언급과 리뷰 문맥을 긍정·중립·부정으로 나눴습니다. 감정 탭을 선택해 대표 키워드와 실제 반응 예시를 확인해보세요.</p>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>데이터</th><th>상태</th><th>기준</th><th>관리자 해석</th></tr></thead>
-            <tbody>
-              <tr><td>CRM 타겟</td><td><span class="status good">수집 완료</span></td><td>방문·결제·매출 집계</td><td>현재 구매 신호 판단에 사용</td></tr>
-              <tr><td>검색 수요</td><td><span class="status good">수집 완료</span></td><td>네이버 공개 랭킹 + 데이터랩 보완</td><td>마케팅 키워드 후보로 사용</td></tr>
-              <tr><td>시장 반응</td><td><span class="status warn">표본 주의</span></td><td>공개 웹/리뷰 키워드 빈도</td><td>정확한 감성비율이 아니라 반복 언급 신호</td></tr>
-              <tr><td>유사제품</td><td><span class="status warn">후보</span></td><td>다나와/공개 랭킹</td><td>실제 판매량 아님</td></tr>
-              <tr><td>조회·찜·장바구니</td><td><span class="status bad">제외</span></td><td>관리자 계정 필요</td><td>대시보드 판단 지표에서 제외</td></tr>
-            </tbody>
-          </table>
+        <div class="reaction-layout">
+          <article class="panel sentiment-total">
+            <div class="panel-head"><h3>전체 감정 비중</h3><span>최근 30일</span></div>
+            <div class="donut-wrap"><div class="donut" role="img" aria-label="긍정 51%, 중립 20%, 부정 29%"><div class="donut-inner"><small>가장 큰 반응</small><b>51%</b><small>긍정</small></div></div></div>
+            <div class="sentiment-legend">
+              <div class="legend-item" style="--c:var(--coral)"><small>긍정</small><b>51%</b></div>
+              <div class="legend-item" style="--c:var(--yellow)"><small>중립</small><b>20%</b></div>
+              <div class="legend-item" style="--c:#a9b4af"><small>부정</small><b>29%</b></div>
+            </div>
+          </article>
+          <article class="panel reaction-detail" style="--tab-color:var(--coral)">
+            <div class="sentiment-tabs" id="sentimentTabs" role="tablist" aria-label="감정 유형 선택"></div>
+            <div class="reaction-callout" id="reactionCallout"><small id="reactionCaption">긍정 반응 요약</small><h3 id="reactionTitle">디자인과 활용성이 좋은 평가를 이끌었습니다.</h3></div>
+            <div class="reaction-keywords" id="reactionKeywords"></div>
+            <div class="reaction-bars" id="reactionBars"></div>
+            <div class="quote" id="reactionQuote">“방에 두기 부담스럽지 않고, 화장품과 음료를 나눠 보관할 수 있어 좋아요.”</div>
+          </article>
         </div>
-      </section>
-    </main>
-  </div>
+        <p class="source-note">출처 · 광고·판매글을 제외하고 실사용 후기를 포함한 네이버 블로그 및 공개 카페 언급</p>
+      </div>
+    </section>
+
+    <section id="competitor" class="detail-section alt">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">03 · COMPETITOR ANALYSIS</span><h2>경쟁사 분석</h2></div>
+          <p>기존 대시보드의 공개 베스트·관련 맥락 데이터를 그대로 가져왔습니다. 꼬모는 가격이나 용량보다 감성적인 공간 연출에서 차별화 여지가 큽니다.</p>
+        </div>
+        <div class="competitor-toolbar">
+          <select id="competitorType" aria-label="꼬모냉장고 종류 선택">
+            <option value="character">꼬모냉장고 브라운&amp;샐리</option>
+            <option value="homebar">꼬모냉장고 홈바</option>
+            <option value="beauty">꼬모냉장고 뷰티</option>
+          </select>
+        </div>
+        <div class="competitor-grid" id="competitorGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell"><span>Meokko Market Insight · Local Prototype</span><span>본 화면의 일부 수치는 화면 구성을 위한 예시 데이터입니다.</span></div></footer>
 
   <script>
-    const segments = ["40대 남성", "30대 남성", "30대 여성", "40대 여성", "20대 여성", "50대 이상 남성", "50대 이상 여성", "20대 남성", "10대 여성", "10대 남성"];
-
-    const segmentInterest = [
-      ["40대 남성", 63.8],
-      ["30대 남성", 62.5],
-      ["30대 여성", 62.5],
-      ["40대 여성", 58.6],
-      ["20대 여성", 36.1],
-      ["50대 이상 남성", 35.4],
-      ["50대 이상 여성", 16.1],
-      ["20대 남성", 11.1],
-      ["10대 여성", 0.2],
-      ["10대 남성", 0.0]
+    const targets = [
+      { rank: 1, name: "20대 여성", score: 88.4, insight: "뷰티 루틴과 개인 공간을 연결한 제품 메시지에 가장 민감하게 반응합니다.", keywords: [["화장품 냉장고", "+18"], ["미니 냉장고", "+12"], ["원룸 인테리어", "+9"], ["파스텔 가전", "+7"], ["음료 냉장고", "+4"]] },
+      { rank: 2, name: "30대 여성", score: 76.2, insight: "간식과 음료를 분리 보관하려는 실용 수요가 두드러집니다.", keywords: [["음료수 냉장고", "+14"], ["간식 보관", "+11"], ["홈카페", "+8"], ["저소음 냉장고", "+6"], ["주방 보조 냉장고", "+3"]] },
+      { rank: 3, name: "20대 남성", score: 68.7, insight: "자취방과 게임 공간에 두는 세컨드 냉장고 수요가 높습니다.", keywords: [["자취 냉장고", "+15"], ["방 냉장고", "+10"], ["맥주 냉장고", "+8"], ["소형 가전", "+5"], ["저소음", "+2"]] },
+      { rank: 4, name: "30대 남성", score: 61.5, insight: "홈오피스와 취미 공간에서 음료를 가까이 보관하려는 관심이 높습니다.", keywords: [["사무실 냉장고", "+12"], ["홈바", "+9"], ["음료 보관", "+7"], ["컴팩트 가전", "+4"], ["맥주 보관", "+2"]] },
+      { rank: 5, name: "40대 여성", score: 55.8, insight: "주방의 보조 수납과 가족 간식 보관 용도로 탐색합니다.", keywords: [["보조 냉장고", "+10"], ["간식 냉장고", "+8"], ["김치 외 보관", "+5"], ["저전력 냉장고", "+3"], ["소형 주방가전", "+1"]] },
+      { rank: 6, name: "40대 남성", score: 44.6, insight: "서재와 사무 공간의 음료 보관용 제품으로 관심을 보입니다.", keywords: [["사무실 냉장고", "+8"], ["음료 냉장고", "+6"], ["홈바 냉장고", "+4"], ["저소음", "+3"], ["소비전력", "+1"]] },
+      { rank: 7, name: "50대+ 여성", score: 35.2, insight: "보관 편의와 전력 효율을 중심으로 제품을 비교합니다.", keywords: [["소형 냉장고", "+7"], ["전기 절약", "+5"], ["보조 냉장고", "+4"], ["간편 보관", "+2"], ["설치 크기", "+1"]] },
+      { rank: 8, name: "50대+ 남성", score: 28.4, insight: "사무실이나 취미 공간용 보조 냉장고로 탐색합니다.", keywords: [["사무실 냉장고", "+6"], ["미니 냉장고", "+4"], ["음료 보관", "+3"], ["작은 냉장고", "+2"], ["저전력", "+1"]] },
+      { rank: 9, name: "10대 여성", score: 18.6, insight: "화장품 보관과 방 꾸미기 콘텐츠를 통해 제품을 탐색합니다.", keywords: [["화장품 보관", "+8"], ["방 꾸미기", "+6"], ["미니 냉장고", "+4"], ["파스텔 가전", "+3"], ["간식 보관", "+1"]] },
+      { rank: 10, name: "10대 남성", score: 14.2, insight: "게임 공간의 음료와 간식 보관 용도로 관심을 보입니다.", keywords: [["방 냉장고", "+6"], ["게임방 냉장고", "+5"], ["음료 보관", "+3"], ["미니 가전", "+2"], ["간식 냉장고", "+1"]] }
     ];
 
-    const searchBySegment = {
-      "40대 남성": [
-        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "개인 공간/사무실" },
-        { rank: 2, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "실용성" },
-        { rank: 3, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "UP", diff: 2, usefulness: "사무실/업무 공간" },
-        { rank: 13, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 11, usefulness: "공간 맞춤 관심" }
+    const sentiments = {
+      positive: {
+        label: "긍정", percent: 51, color: "var(--coral)", bg: "var(--coral-soft)",
+        title: "디자인과 활용성이 좋은 평가를 이끌었습니다.",
+        keywords: ["예쁜 디자인", "공간 활용", "화장품 보관", "선물하기 좋음"],
+        bars: [["디자인", 42], ["활용성", 36], ["보관 편의", 29], ["선물성", 18]],
+        quote: "“방에 두기 부담스럽지 않고, 화장품과 음료를 나눠 보관할 수 있어 좋아요.”"
+      },
+      neutral: {
+        label: "중립", percent: 20, color: "var(--yellow)", bg: "#fff8de",
+        title: "크기와 용도를 확인하는 탐색형 반응이 많았습니다.",
+        keywords: ["31L 크기", "설치 공간", "소비전력", "배송 일정"],
+        bars: [["크기 문의", 31], ["설치 조건", 25], ["전력 확인", 22], ["배송 문의", 16]],
+        quote: "“침대 옆에 두려고 하는데 실제 크기와 소음이 어느 정도인지 궁금해요.”"
+      },
+      negative: {
+        label: "부정", percent: 29, color: "#7d8a84", bg: "#eef1ef",
+        title: "가격과 소음, 용량에 대한 우려가 남아 있습니다.",
+        keywords: ["가격 부담", "작동 소음", "수납 용량", "전원 관리"],
+        bars: [["가격", 34], ["소음", 28], ["용량", 23], ["전원", 15]],
+        quote: "“디자인은 마음에 들지만 일반 미니 냉장고보다 가격대가 높아 고민돼요.”"
+      }
+    };
+
+    const crmPeriods = {
+      "3m": { label: "최근 3개월", target: "20대 여성", female: 62, ages: [["20대", 39], ["30대", 31], ["40대", 19], ["50대+", 11]] },
+      "6m": { label: "최근 6개월", target: "20대 여성", female: 60, ages: [["20대", 35], ["30대", 34], ["40대", 20], ["50대+", 11]] },
+      "12m": { label: "최근 12개월", target: "30대 여성", female: 58, ages: [["20대", 29], ["30대", 40], ["40대", 20], ["50대+", 11]] },
+      all: { label: "전체 누적", target: "30대 여성", female: 56, ages: [["20대", 24], ["30대", 43], ["40대", 21], ["50대+", 12]] }
+    };
+
+    const competitorProducts = {
+      homebar: [
+        { brand: "꼬모냉장고", name: "꼬모냉장고 홈바 크림 31L", price: "443,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/medium/202606/4fe1347fb23b46abed0f7f5d9dbf3773.jpg", tags: ["감성 디자인", "음료 보관", "홈바"], direction: "개인 공간에 어울리는 컬러와 감성적인 홈바 연출을 강조" },
+        { brand: "매직쉐프Z", name: "와인셀러 34병 대용량 음료 냉장고", price: "539,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["대용량", "와인셀러", "술냉장고"], direction: "와인·주류 보관과 홈바 공간 연출을 강조" },
+        { brand: "아이지원", name: "가정용 미니 냉장고 소형 스탠드", price: "139,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["컴팩트", "수납 많음", "서브냉장고"], direction: "작은 공간에서의 수납력과 실용성을 강조" }
       ],
-      "30대 여성": [
-        { rank: 2, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "자취방/선물" },
-        { rank: 3, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "인테리어" },
-        { rank: 6, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 6, usefulness: "소형 공간" },
-        { rank: 19, keyword: "2도어냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 7, usefulness: "분리 보관" }
+      beauty: [
+        { brand: "꼬모냉장고", name: "꼬모냉장고 뷰티", price: "173,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/medium/202501/715b622f0e096794660eea0f84f7fd74.jpg", tags: ["감성 디자인", "화장품 보관", "뷰티 루틴"], direction: "화장대에 어울리는 디자인과 전문적인 화장품 보관을 강조" },
+        { brand: "Cooluli", name: "뷰티 스킨케어 미니 냉장고 10L", price: "189,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["귀여움", "화장품 보관", "저소음"], direction: "파스텔 디자인과 매일의 스킨케어 루틴을 강조" },
+        { brand: "AstroAI", name: "화장품 보관 미니 냉온장고 6L", price: "89,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["컴팩트", "휴대성", "화장품 보관"], direction: "작은 크기와 이동이 쉬운 뷰티 보관함을 강조" }
       ],
-      "30대 남성": [
-        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "책상 옆" },
-        { rank: 4, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 4, usefulness: "개인 공간" },
-        { rank: 7, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "사무실" },
-        { rank: 9, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "UP", diff: 3, usefulness: "공간 맞춤" }
-      ],
-      "40대 여성": [
-        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "가정/개인 보관" },
-        { rank: 4, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 3, usefulness: "공간 절약" },
-        { rank: 9, keyword: "키친핏냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "인테리어" },
-        { rank: 13, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "UP", diff: 4, usefulness: "사무실/매장" }
-      ],
-      "20대 여성": [
-        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "자취방" },
-        { rank: 4, keyword: "원룸냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 8, usefulness: "원룸" },
-        { rank: 19, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 2, usefulness: "소형 공간" }
-      ],
-      "50대 이상 남성": [
-        { rank: 1, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "STABLE", diff: 0, usefulness: "실용성" },
-        { rank: 2, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 2, usefulness: "간편 사용" },
-        { rank: 7, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "업무 공간" },
-        { rank: 12, keyword: "원룸냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 13, usefulness: "작은 공간" }
-      ],
-      "50대 이상 여성": [
-        { rank: 2, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "소형 보관" },
-        { rank: 3, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "가정 보조" },
-        { rank: 16, keyword: "원룸냉장고", source: "네이버 공개랭킹", status: "SOAR", diff: 13, usefulness: "작은 공간" }
-      ],
-      "20대 남성": [
-        { rank: 1, keyword: "미니냉장고", source: "네이버 공개랭킹", status: "UP", diff: 1, usefulness: "개인 공간" },
-        { rank: 6, keyword: "업소용냉장고", source: "네이버 공개랭킹", status: "DOWN", diff: -2, usefulness: "사무실/매장" },
-        { rank: 9, keyword: "소형냉장고", source: "네이버 공개랭킹", status: "UP", diff: 4, usefulness: "자취/기숙사" }
-      ],
-      "10대 여성": [
-        { rank: 1, keyword: "미니냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "관심 후보" },
-        { rank: 2, keyword: "화장품냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "뷰티 보관" }
-      ],
-      "10대 남성": [
-        { rank: 1, keyword: "미니냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "관심 후보" },
-        { rank: 2, keyword: "화장품냉장고", source: "네이버 검색트렌드 보완", status: "NA", diff: null, usefulness: "보완 관찰" }
+      character: [
+        { brand: "꼬모냉장고", name: "꼬모냉장고 브라운&샐리 31L", price: "498,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/big/202606/85cf958c24979dd854a7461206b4c053.jpg", tags: ["캐릭터 디자인", "넉넉한 수납", "개인 냉장고"], direction: "라인프렌즈 캐릭터와 나만의 공간을 꾸미는 소장 가치를 강조" },
+        { brand: "Midea", name: "헬로키티 캐릭터 미니 냉장고", price: "219,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["귀여움", "캐릭터", "선물용"], direction: "강한 캐릭터 인지도와 선물용 제품 이미지를 강조" },
+        { brand: "Coca-Cola", name: "코카콜라 레트로 미니 냉온장고", price: "129,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["레트로", "음료 보관", "인테리어"], direction: "브랜드 상징성과 레트로 인테리어 소품 활용을 강조" }
       ]
     };
-
-    const characterBySegment = {
-      "40대 남성": [["브라운", 64.84], ["BT21", 56.92], ["샐리", 37.36], ["레너드", 19.52]],
-      "30대 여성": [["BT21", 70.64], ["브라운", 65.25], ["샐리", 56.07], ["레너드", 8.6]],
-      "30대 남성": [["브라운", 77.39], ["BT21", 72.19], ["샐리", 48.25], ["레너드", 6.93]],
-      "40대 여성": [["브라운", 63.62], ["BT21", 53.75], ["샐리", 28.96], ["레너드", 16.73]],
-      "20대 여성": [["BT21", 66.43], ["브라운", 62.42], ["샐리", 58.75], ["코니", 5.32]],
-      "50대 이상 남성": [["BT21", 64.69], ["브라운", 58.46], ["샐리", 23], ["코니", 15]],
-      "50대 이상 여성": [["BT21", 54.25], ["브라운", 52.64], ["샐리", 19.27], ["초코", 7.81]],
-      "20대 남성": [["BT21", 63.91], ["브라운", 51.46], ["샐리", 34.48], ["코니", 8.05]],
-      "10대 여성": [["BT21", 61.11], ["브라운", 55.66], ["샐리", 50.9], ["코니", 15]],
-      "10대 남성": [["BT21", 71.18], ["브라운", 42.42], ["샐리", 27.27], ["코니", 13.64]]
-    };
-
-    const marketReaction = [
-      ["귀여움/디자인", 40],
-      ["홈바/술냉장고", 34],
-      ["고장/수리/전원", 28],
-      ["후기", 16],
-      ["가격", 11],
-      ["자취/개인공간", 10]
-    ];
-
-    const reviewReaction = [
-      ["사용 편의", 7],
-      ["디자인/귀여움", 6],
-      ["홈바/간식/음료", 5],
-      ["선물성", 4],
-      ["가격 부담", 1],
-      ["냉각/냉동", 1]
-    ];
-
-    const evidenceSummary = [
-      ["CRM 판매", "2026-06 매출 13,066,700원 / 판매수량 35대", "dashboard_latest_sales_kpis.csv"],
-      ["CRM 타겟", "40대 남성 매출 36,976,000원 / 30대 여성 결제 99명", "crm_smartstore_segment_conversion_summary.csv"],
-      ["검색 수요", "네이버 공개 냉장고 키워드 랭킹 2026-07-19", "naver_best_fridge_keyword_rankings.csv"],
-      ["시장 반응", "귀여움/디자인 40건, 홈바/술냉장고 34건", "dashboard_external_ccomo_reaction_keyword_summary_clean.csv"],
-      ["공식 상품", "샐리 실속형 458,000원 / 공식 리뷰 1건", "dashboard_product_behavior_public_proxy.csv"],
-      ["유사제품", "다나와 공개 검색 기반 가격·특징 후보", "dashboard_context_competitor_price_feature_cards_clean.csv"]
-    ];
-
-    const unavailableItems = [
-      "경쟁사 실제 판매량: 공개 페이지에는 노출 순위·가격·리뷰 수만 있음",
-      "상품 조회수: 공식몰/스마트스토어 공개 페이지에 전체 조회수 없음",
-      "찜 수: 관리자 통계 필요",
-      "장바구니 수/장바구니율: 관리자 통계 필요",
-      "캠페인별 광고 성과: 광고 관리자 리포트 필요",
-      "재구매율: 익명 고객ID 포함 주문 데이터 필요",
-      "구매 전환 경로: 조회→찜→장바구니→구매 퍼널 로그 필요"
-    ];
 
     const qs = selector => document.querySelector(selector);
     const qsa = selector => [...document.querySelectorAll(selector)];
 
-    function renderBars(selector, rows, options = {}) {
-      const max = Math.max(...rows.map(row => Number(row[1])));
-      qs(selector).innerHTML = rows.map(([label, value]) => {
-        const width = max ? Math.max(4, value / max * 100) : 4;
-        return `
-          <div class="bar-row">
-            <span>${label}</span>
-            <div class="track"><i style="--w:${width}%;${options.color || ""}"></i></div>
-            <span class="value">${Number(value).toLocaleString("ko-KR")}</span>
+    function syncAnalysis(id, expanded, shouldScroll = false) {
+      document.getElementById(id)?.classList.toggle("active", expanded);
+      const card = qs(`.summary-card[data-scroll="${id}"]`);
+      card?.classList.toggle("featured", expanded);
+      card?.setAttribute("aria-expanded", String(expanded));
+      if (expanded && shouldScroll) document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    qsa(".summary-card").forEach(card => {
+      const detail = document.getElementById(card.dataset.scroll);
+      if (detail) card.insertAdjacentElement("afterend", detail);
+    });
+
+    qsa(".analysis-toggle").forEach(input => input.addEventListener("change", () => {
+      syncAnalysis(input.id.replace("toggle-", ""), input.checked);
+    }));
+    qsa(".summary-card").forEach(card => card.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        const input = document.getElementById(card.getAttribute("for"));
+        input.checked = !input.checked;
+        input.dispatchEvent(new Event("change"));
+      }
+    }));
+    qsa(".nav [data-scroll]").forEach(button => button.addEventListener("click", () => {
+      const id = button.dataset.scroll;
+      if (id === "target") {
+        document.getElementById("target")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      const input = document.getElementById(`toggle-${id}`);
+      input.checked = true;
+      syncAnalysis(id, true, true);
+    }));
+
+    function renderTarget(selectedIndex = 0) {
+      const selected = targets[selectedIndex];
+      qs("#keywordRanking").innerHTML = selected.keywords.map(([keyword, change], index) => `
+        <div class="keyword-rank-row ${index === 0 ? "fastest" : ""}"><span class="number">${index + 1}</span><strong>${keyword}</strong><span class="change">${index === 0 ? "급상승" : "▲"} ${change}</span></div>
+      `).join("");
+      qs("#personaInsight").textContent = selected.insight;
+    }
+
+    qs("#keywordTargetSelect").innerHTML = targets.map((target, index) => `<option value="${index}">${target.name}</option>`).join("");
+    qs("#keywordTargetSelect").addEventListener("change", event => renderTarget(Number(event.target.value)));
+
+    function renderCrmPeriod(key = "3m") {
+      const data = crmPeriods[key];
+      const male = 100 - data.female;
+      qs("#crmCustomerTitle").innerHTML = `${data.label} 주요 구매고객층은 <em>${data.target}</em>입니다.`;
+      qs("#crmPeriodCaption").textContent = `${data.label} 실제 결제 기준`;
+      const donut = qs("#crmGenderDonut");
+      donut.dataset.label = `여성 ${data.female}%`;
+      donut.setAttribute("aria-label", `여성 ${data.female}%, 남성 ${male}%`);
+      donut.style.background = `conic-gradient(#5276dd 0 ${data.female}%, #c1c9df ${data.female}% 100%)`;
+      qs("#crmGenderLegend").innerHTML = `<span><i></i>여성 ${data.female}%</span><span><i></i>남성 ${male}%</span>`;
+      qs("#crmAgeBars").innerHTML = data.ages.map(([label, value]) => `<div class="age-row"><span>${label}</span><div class="track"><i style="--w:${value}%"></i></div><b>${value}%</b></div>`).join("");
+      qsa(".crm-period").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.period === key)));
+    }
+
+    qsa(".crm-period").forEach(button => button.addEventListener("click", () => renderCrmPeriod(button.dataset.period)));
+
+    function renderCompetitors(type = "character") {
+      qs("#competitorGrid").innerHTML = competitorProducts[type].map(product => `
+        <article class="panel product-card">
+          <img src="${product.image}" alt="${product.brand} ${product.name}" loading="lazy">
+          <div class="product-copy">
+            <span class="brand-chip">${product.brand}</span>
+            <h3>${product.name}</h3>
+            <div class="price">${product.price}</div>
+            <div class="tags">${product.tags.map(tag => `<span>${tag}</span>`).join("")}</div>
+            <div class="position"><strong>마케팅 방향</strong><br>${product.direction}</div>
           </div>
-        `;
-      }).join("");
-    }
-
-    function renderTabs(container, selected, onClick) {
-      qs(container).innerHTML = segments.map(segment => `
-        <button type="button" role="tab" aria-selected="${segment === selected}" data-segment="${segment}">${segment}</button>
-      `).join("");
-      qsa(`${container} button`).forEach(button => {
-        button.addEventListener("click", () => onClick(button.dataset.segment));
-      });
-    }
-
-    function renderKeywordTable(segment) {
-      renderTabs("#searchTabs", segment, renderKeywordTable);
-      const rows = searchBySegment[segment] || [];
-      qs("#keywordTable").innerHTML = rows.map(row => `
-        <tr>
-          <td>${row.rank}</td>
-          <td><b>${row.keyword}</b></td>
-          <td>${row.source}</td>
-          <td>${formatChange(row.status, row.diff)}</td>
-          <td>${row.usefulness}</td>
-        </tr>
+        </article>
       `).join("");
     }
 
-    function formatChange(status, diff) {
-      if (status === "NA") return "보완값";
-      if (status === "STABLE") return "유지";
-      if (status === "NEW") return "신규";
-      if (status === "SOAR") return `급상승 +${diff}`;
-      if (status === "UP") return `상승 +${diff}`;
-      if (status === "DOWN") return `하락 ${diff}`;
-      return status || "-";
+    qs("#competitorType").addEventListener("change", event => renderCompetitors(event.target.value));
+
+    function renderSentiment(key = "positive") {
+      const data = sentiments[key];
+      const detail = qs(".reaction-detail");
+      detail.style.setProperty("--tab-color", data.color);
+      qs("#sentimentTabs").innerHTML = Object.entries(sentiments).map(([id, item]) => `<button class="sentiment-tab" type="button" role="tab" style="--tab-color:${item.color}" aria-selected="${id === key}" data-sentiment="${id}"><span>${item.label}</span><b>${item.percent}%</b></button>`).join("");
+      qs("#reactionCallout").style.background = data.bg;
+      qs("#reactionCaption").textContent = `${data.label} 반응 요약`;
+      qs("#reactionTitle").textContent = data.title;
+      qs("#reactionKeywords").innerHTML = data.keywords.map(keyword => `<span># ${keyword}</span>`).join("");
+      const max = Math.max(...data.bars.map(row => row[1]));
+      qs("#reactionBars").innerHTML = data.bars.map(([label, value]) => `<div class="reaction-bar"><span>${label}</span><div class="track"><i style="--w:${value / max * 100}%"></i></div><strong>${value}</strong></div>`).join("");
+      qs("#reactionQuote").textContent = data.quote;
+      qsa("[data-sentiment]").forEach(button => button.addEventListener("click", () => renderSentiment(button.dataset.sentiment)));
     }
 
-    function renderCharacterTab(segment) {
-      renderTabs("#characterTabs", segment, renderCharacterTab);
-      renderBars("#lineBars", characterBySegment[segment], { color: "background:linear-gradient(90deg,var(--green),var(--cyan));" });
-    }
-
-    qsa("[data-scroll]").forEach(button => {
-      button.addEventListener("click", () => {
-        qsa("[data-scroll]").forEach(item => item.classList.remove("active"));
-        button.classList.add("active");
-        qs("#" + button.dataset.scroll).scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    });
-
-    qs("#downloadSummary").addEventListener("click", () => {
-      const csv = [
-        ["구분", "화면 표시 내용", "근거 파일"],
-        ...evidenceSummary
-      ].map(row => row.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\n");
-      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "meokko-dashboard-evidence-summary.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    qs("#showUnavailable").addEventListener("click", () => {
-      alert("관리자 계정 없이 수집하지 못한 데이터\n\n" + unavailableItems.join("\n"));
-    });
-
-    renderBars("#segmentBars", segmentInterest);
-    renderKeywordTable("40대 남성");
-    renderCharacterTab("40대 남성");
-    renderBars("#marketReactionBars", marketReaction);
-    renderBars("#reviewBars", reviewReaction, { color: "background:linear-gradient(90deg,var(--green),var(--blue));" });
+    renderTarget();
+    renderCrmPeriod();
+    renderCompetitors();
+    renderSentiment();
   </script>
 </body>
 </html>
