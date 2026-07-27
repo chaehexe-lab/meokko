@@ -120,7 +120,44 @@
     .insight-kicker { justify-self: start; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 12px; font-weight: 900; }
     .insight-banner h1 { max-width: none; margin: 11px 0 0; font-size: clamp(18px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -.05em; white-space: nowrap; }
     .insight-banner p { margin: 18px 0 0; color: rgba(255,255,255,.78); font-size: 14px; }
+    .ai-insight-status { justify-self: start; margin-top: 10px; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 850; }
     .insight-source { justify-self: start; margin-top: 30px; padding: 10px 13px; border-radius: 9px; background: rgba(9,37,123,.28); font-size: 11px; font-weight: 750; }
+    .step2-action {
+      margin-top: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .step2-action-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
+    .step2-action-head b { font-size: 15px; letter-spacing: -.02em; }
+    .step2-action-head span { color: var(--muted); font-size: 11px; font-weight: 800; }
+    .step2-strategy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .step2-strategy {
+      position: relative;
+      min-height: 96px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .step2-strategy:hover { transform: translateY(-2px); border-color: #bad8c7; }
+    .step2-strategy[aria-checked="true"] { transform: scale(1.01); border-color: var(--green); background: var(--mint); box-shadow: 0 14px 30px rgba(34, 93, 69, .12); }
+    .step2-strategy[aria-checked="true"]::after { content: "✓"; position: absolute; top: 12px; right: 12px; font-weight: 950; }
+    .step2-strategy input { position: absolute; opacity: 0; pointer-events: none; }
+    .step2-strategy small { color: var(--green-2); font-size: 11px; font-weight: 950; }
+    .step2-strategy strong { display: block; margin-top: 8px; font-size: 16px; }
+    .step2-strategy span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.45; font-weight: 750; }
+    .step2-action-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+    .step2-mini-tools { display: flex; gap: 6px; }
+    .step2-mini-tools button, .step2-submit { border: 0; border-radius: 999px; font: inherit; font-size: 11px; cursor: pointer; }
+    .step2-mini-tools button { padding: 8px 11px; color: var(--muted); background: #f1f4f2; }
+    .step2-submit { min-height: 38px; padding: 0 18px; color: #fff; background: var(--green); }
+    .step2-submit:disabled { cursor: not-allowed; opacity: .46; }
+    .step2-selected-note { color: var(--muted); font-size: 11px; font-weight: 800; }
     .target-overview { padding: 10px 0 12px; scroll-margin-top: 60px; }
     .target-section-heading { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 4px 8px; }
     .target-section-heading span { color: var(--green-2); font-size: 12px; font-weight: 950; }
@@ -461,6 +498,9 @@
       .hero { padding-top: 48px; }
       .insight-banner { min-height: 148px; margin-top: 8px; padding: 20px 22px; border-radius: 18px; }
       .insight-banner h1 { font-size: clamp(18px, 4.4vw, 28px); }
+      .step2-strategy-grid { grid-template-columns: 1fr; }
+      .step2-action-bottom { align-items: stretch; flex-direction: column; }
+      .step2-submit { width: 100%; }
       .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .audience-card { padding: 12px; }
       .customer-card .demographic-grid { grid-template-columns: .75fr 1.25fr; }
@@ -513,6 +553,42 @@
     <section class="insight-banner shell">
       <div class="insight-kicker">타겟층 종합 인사이트</div>
       <h1 id="overallInsight">집중해야 할 최종 타겟층을 분석하고 있습니다.</h1>
+      <p id="aiInsightSummary">타겟층, 반응, 경쟁사 데이터를 종합해 오늘의 마케팅 방향을 정리합니다.</p>
+      <div class="ai-insight-status" id="aiInsightStatus">연결된 데이터를 확인하고 있습니다.</div>
+    </section>
+
+    <section class="step2-action shell" aria-label="STEP2 콘텐츠 추천 연결">
+      <div class="step2-action-head">
+        <div><b>STEP2 연결 액션</b><span> · 선택한 전략과 현재 분석 결과를 콘텐츠 추천 화면으로 전달</span></div>
+        <span class="step2-selected-note" id="step2SelectedNote">선택 대기</span>
+      </div>
+      <div class="step2-strategy-grid">
+        <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
+          <input class="step2-checkbox" type="checkbox" value="강화">
+          <small>강화</small>
+          <strong>잘 먹히는 강점 확대</strong>
+          <span id="step2StrengthText">긍정 반응과 핵심 키워드를 콘텐츠 소재로 연결합니다.</span>
+        </label>
+        <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
+          <input class="step2-checkbox" type="checkbox" value="공략">
+          <small>공략</small>
+          <strong>우선 타겟 집중</strong>
+          <span id="step2TargetText">잠재고객과 기존고객 기준으로 우선 타겟 메시지를 만듭니다.</span>
+        </label>
+        <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
+          <input class="step2-checkbox" type="checkbox" value="해소">
+          <small>해소</small>
+          <strong>구매 전 불안 낮추기</strong>
+          <span id="step2BarrierText">부정·우려 키워드를 상세페이지와 광고 문구에서 먼저 설명합니다.</span>
+        </label>
+      </div>
+      <div class="step2-action-bottom">
+        <div class="step2-mini-tools">
+          <button type="button" id="step2SelectAll">전체 선택</button>
+          <button type="button" id="step2ClearAll">전체 해제</button>
+        </div>
+        <button class="step2-submit" type="button" id="step2Submit" disabled>선택한 전략으로 콘텐츠 추천 생성하기</button>
+      </div>
     </section>
 
     <section id="target" class="target-overview shell">
@@ -799,6 +875,7 @@
             </div>`).join("");
         connectedSources.add(data.source);
         updateSourceNotice();
+        updateStep2Action();
       } catch {
         if (card.dataset.activeGender !== gender) return;
         list.innerHTML = `<div class="age-keyword-status">키워드 데이터를 불러오지 못했습니다.</div>`;
@@ -835,7 +912,10 @@
       loadAgeKeyword(group, gender);
     }
 
+    let activeCrmPeriod = "3m";
+
     function renderCrmPeriod(key = "3m") {
+      activeCrmPeriod = key;
       const data = crmPeriods[key];
       const male = data.male ?? 100 - data.female;
       qs("#crmCustomerTitle").innerHTML = `${data.label} 주요 구매고객층은 <em>${data.target}</em>입니다.`;
@@ -849,7 +929,10 @@
       qsa(".crm-period").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.period === key)));
     }
 
-    qsa(".crm-period").forEach(button => button.addEventListener("click", () => renderCrmPeriod(button.dataset.period)));
+    qsa(".crm-period").forEach(button => button.addEventListener("click", () => {
+      renderCrmPeriod(button.dataset.period);
+      updateStep2Action();
+    }));
 
     function renderCompetitors(type = "character") {
       qs("#competitorGrid").innerHTML = competitorProducts[type].map(product => `
@@ -866,7 +949,10 @@
       `).join("");
     }
 
-    qs("#competitorType").addEventListener("change", event => renderCompetitors(event.target.value));
+    qs("#competitorType").addEventListener("change", event => {
+      renderCompetitors(event.target.value);
+      updateStep2Action();
+    });
 
     function renderSentiment(key = "positive") {
       const data = sentiments[key];
@@ -903,6 +989,187 @@
       }
     }
 
+    function collectDashboardInsightPayload() {
+      const activeCrm = crmPeriods[activeCrmPeriod] || crmPeriods["3m"];
+      const activeCompetitorType = qs("#competitorType")?.value || "character";
+      const [topSentimentKey, topSentiment] = Object.entries(sentiments).sort(([, a], [, b]) => b.percent - a.percent)[0];
+      const targetKeywordCard = qs(".age-keyword-card.is-target") || qs(".age-keyword-card");
+      const keywordRanking = [...(targetKeywordCard?.querySelectorAll(".age-keyword-row strong") || [])]
+        .map((element, index) => ({ rank: index + 1, keyword: element.textContent.trim() }));
+      const prospectCustomer = livePotentialTarget || targets[0]?.name || "잠재 고객";
+      const existingCustomer = liveCrmTarget || activeCrm?.target || "기존 고객";
+
+      return {
+        product: "꼬모냉장고",
+        generatedAt: new Date().toISOString(),
+        insightRulesInput: {
+          existingCustomer,
+          prospectCustomer,
+          isSameCustomer: existingCustomer === prospectCustomer,
+          keywordRank1: keywordRanking[0]?.keyword || targets[0]?.keywords?.[0]?.[0] || "핵심 키워드",
+          keywordRanking,
+          topSentiment: {
+            key: topSentimentKey,
+            type: topSentiment.label,
+            percent: topSentiment.percent,
+            keywordRank1: topSentiment.keywords?.[0],
+            keywordRanking: topSentiment.keywords?.map((keyword, index) => ({ rank: index + 1, keyword })) || []
+          },
+          sentimentRatios: Object.entries(sentiments).map(([key, item]) => ({ key, label: item.label, percent: item.percent }))
+        },
+        crm: {
+          source: "CRM 실제 구매 데이터",
+          period: activeCrm?.label,
+          target: existingCustomer,
+          femaleRate: activeCrm?.female,
+          ages: activeCrm?.ages
+        },
+        prospect: {
+          source: "네이버 쇼핑 클릭 데이터",
+          target: prospectCustomer
+        },
+        reaction: {
+          source: "공개 웹 반응 분석",
+          sentiments: Object.fromEntries(Object.entries(sentiments).map(([key, item]) => [key, {
+            label: item.label,
+            percent: item.percent,
+            title: item.title,
+            keywords: item.keywords,
+            topCauses: item.bars
+          }]))
+        },
+        competitor: {
+          source: "경쟁사 분석 영역",
+          type: activeCompetitorType,
+          products: (competitorProducts[activeCompetitorType] || []).map(product => ({
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            tags: product.tags,
+            difference: product.difference,
+            direction: product.direction
+          }))
+        },
+        step2SelectedStrategies: qsa(".step2-checkbox:checked").map(input => input.value)
+      };
+    }
+
+    function getSelectedStep2Strategies() {
+      return qsa(".step2-checkbox:checked").map(input => input.value);
+    }
+
+    function updateStep2Action() {
+      const payload = collectDashboardInsightPayload();
+      const topSentiment = payload.insightRulesInput.topSentiment;
+      const negativeKeyword = payload.reaction.sentiments.negative.keywords?.[0] || "구매 불안";
+      qs("#step2StrengthText").textContent = `${topSentiment.keywordRank1 || "긍정 반응"}과 ${payload.insightRulesInput.keywordRank1} 키워드를 콘텐츠 소재로 사용합니다.`;
+      qs("#step2TargetText").textContent = `${payload.insightRulesInput.prospectCustomer}에게 맞는 메시지와 사용 장면을 만듭니다.`;
+      qs("#step2BarrierText").textContent = `${negativeKeyword} 우려를 먼저 설명하는 상세페이지·광고 문구를 만듭니다.`;
+
+      const selected = getSelectedStep2Strategies();
+      qsa(".step2-strategy").forEach(card => {
+        const input = card.querySelector(".step2-checkbox");
+        card.setAttribute("aria-checked", String(input.checked));
+      });
+      qs("#step2SelectedNote").textContent = selected.length ? `${selected.join(" · ")} 선택됨` : "선택 대기";
+      qs("#step2Submit").disabled = selected.length === 0;
+    }
+
+    qsa(".step2-strategy").forEach(card => {
+      const input = card.querySelector(".step2-checkbox");
+      card.addEventListener("click", event => {
+        if (event.target === input) return;
+        event.preventDefault();
+        input.checked = !input.checked;
+        updateStep2Action();
+      });
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          input.checked = !input.checked;
+          updateStep2Action();
+        }
+      });
+      input.addEventListener("change", updateStep2Action);
+    });
+
+    qs("#step2SelectAll").addEventListener("click", () => {
+      qsa(".step2-checkbox").forEach(input => { input.checked = true; });
+      updateStep2Action();
+    });
+
+    qs("#step2ClearAll").addEventListener("click", () => {
+      qsa(".step2-checkbox").forEach(input => { input.checked = false; });
+      updateStep2Action();
+    });
+
+    qs("#step2Submit").addEventListener("click", () => {
+      const selectedStrategies = getSelectedStep2Strategies();
+      if (!selectedStrategies.length) return;
+      sessionStorage.setItem("meokko:step2-input", JSON.stringify({
+        createdAt: new Date().toISOString(),
+        selectedStrategies,
+        dashboardData: collectDashboardInsightPayload()
+      }));
+      window.location.href = `step2.html?strategies=${encodeURIComponent(selectedStrategies.join(","))}`;
+    });
+
+    const aiInsightCacheKey = "meokko:daily-ai-insight:v5";
+
+    function getTodayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    }
+
+    function applyAiInsight(insight) {
+      if (!insight || typeof insight !== "object") return;
+      if (insight.headline) qs("#overallInsight").textContent = insight.headline;
+      if (insight.summary) qs("#aiInsightSummary").textContent = insight.summary;
+    }
+
+    function buildFallbackInsight(payload) {
+      const rules = payload.insightRulesInput;
+      const sentimentKeyword = rules.topSentiment.keywordRank1 || "긍정 반응";
+      const headline = rules.isSameCustomer
+        ? `꼬모냉장고는 ${rules.existingCustomer}을 핵심 타겟으로, ${rules.keywordRank1}과 ${sentimentKeyword} 중심의 마케팅 집중이 필요합니다.`
+        : `기존 고객 ${rules.existingCustomer}을 유지하면서, 잠재 고객 ${rules.prospectCustomer}의 ${rules.keywordRank1} 니즈와 ${sentimentKeyword} 강점을 반영한 확장이 필요합니다.`;
+      return { headline };
+    }
+
+    async function generateAiInsight() {
+      const payload = collectDashboardInsightPayload();
+      const status = qs("#aiInsightStatus");
+      status.textContent = "오늘의 종합 인사이트를 갱신하고 있습니다.";
+      try {
+        const response = await fetch(`${API_BASE}/api/insight`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const contentType = response.headers.get("content-type") || "";
+        if (!response.ok || !contentType.includes("application/json")) throw new Error("AI 인사이트 서버 미연결");
+        const result = await response.json();
+        applyAiInsight(result.insight);
+        localStorage.setItem(aiInsightCacheKey, JSON.stringify({ date: getTodayKey(), model: result.model || "AI", insight: result.insight }));
+        status.textContent = `오늘 인사이트 갱신 완료 · ${result.model || "AI"}`;
+      } catch {
+        applyAiInsight(buildFallbackInsight(payload));
+        status.textContent = "연결된 데이터 기준 종합 인사이트";
+      }
+    }
+
+    function initDailyAiInsight() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(aiInsightCacheKey) || "null");
+        if (cached?.date === getTodayKey() && cached.insight) {
+          applyAiInsight(cached.insight);
+          qs("#aiInsightStatus").textContent = `오늘 인사이트 적용됨 · ${cached.model || "AI"}`;
+          return;
+        }
+      } catch {}
+      generateAiInsight();
+    }
+
     async function loadMarket() {
       const response = await fetch(`${API_BASE}/api/dashboard/market`, { cache: "no-store" });
       const data = await response.json();
@@ -932,6 +1199,7 @@
       qs("#dataUpdated").textContent = `최근 분석 · ${new Date(data.fetchedAt).toLocaleDateString("ko-KR")}`;
       updateSourceNotice();
       updateOverallInsight();
+      updateStep2Action();
     }
 
     async function loadCrm() {
@@ -944,6 +1212,7 @@
       connectedSources.add(`CRM: ${data.latestMonth}까지`);
       updateSourceNotice();
       updateOverallInsight();
+      updateStep2Action();
     }
 
     async function loadReaction() {
@@ -982,6 +1251,7 @@
       renderSentiment(topKey);
       connectedSources.add(`${data.source} ${data.counts.analyzed}건`);
       updateSourceNotice();
+      updateStep2Action();
     }
 
     loadAgeKeywords();
@@ -989,6 +1259,7 @@
     renderCompetitors();
     renderSentiment();
     updateSourceNotice();
+    updateStep2Action();
 
     Promise.allSettled([loadMarket(), loadCrm(), loadReaction()]).then(results => {
       const failures = results.filter(result => result.status === "rejected");
@@ -997,6 +1268,7 @@
         connectedSources.add(`연결 실패 ${failures.length}개`);
         updateSourceNotice();
       }
+      initDailyAiInsight();
     });
   </script>
 </body>
