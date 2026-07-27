@@ -169,11 +169,22 @@
       border: 1px solid #cfe0d6; border-radius: 16px;
       background: #fff; box-shadow: var(--shadow);
     }
+    .age-keyword-card.is-target {
+      border: 2px solid var(--green);
+      background: linear-gradient(180deg, #f5fbf7 0%, #fff 44%);
+      box-shadow: 0 18px 48px rgba(34, 93, 69, .18), 0 0 0 4px rgba(217, 239, 118, .34);
+    }
     .age-keyword-card-head {
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
       margin-bottom: 10px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
     }
+    .age-keyword-title { display: flex; align-items: center; gap: 6px; min-width: 0; }
     .age-keyword-card h3 { margin: 0; color: var(--green); font-size: 15px; letter-spacing: -.02em; }
+    .target-keyword-badge {
+      display: none; padding: 4px 6px; border-radius: 999px;
+      color: var(--green); background: var(--lime); font-size: 8px; font-weight: 950; white-space: nowrap;
+    }
+    .age-keyword-card.is-target .target-keyword-badge { display: inline-flex; }
     .keyword-gender-tabs { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: #eef2ef; }
     .keyword-gender-tab {
       min-width: 32px; height: 24px; padding: 0 6px; border: 0; border-radius: 6px;
@@ -181,6 +192,7 @@
     }
     .keyword-gender-tab:hover { color: var(--green); }
     .keyword-gender-tab[aria-pressed="true"] { color: #fff; background: var(--green); }
+    .age-keyword-card.is-target .keyword-gender-tab[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--lime); }
     .keyword-gender-tab:focus-visible { outline: 2px solid var(--lime); outline-offset: 1px; }
     .age-keyword-list { display: grid; gap: 5px; }
     .age-keyword-row {
@@ -750,7 +762,7 @@
       return `
         <article class="age-keyword-card" data-keyword-age="${group.age}">
           <div class="age-keyword-card-head">
-            <h3>${group.label}</h3>
+            <div class="age-keyword-title"><h3>${group.label}</h3><span class="target-keyword-badge">핵심 타겟</span></div>
             <div class="keyword-gender-tabs" role="group" aria-label="${group.label} 성별 선택">
               <button class="keyword-gender-tab" type="button" data-gender="" aria-pressed="true">전체</button>
               <button class="keyword-gender-tab" type="button" data-gender="f" aria-pressed="false">여성</button>
@@ -764,12 +776,14 @@
     async function loadAgeKeyword(group, gender = "") {
       const card = qs(`[data-keyword-age="${group.age}"]`);
       const list = card.querySelector(".age-keyword-list");
+      card.dataset.activeGender = gender;
       list.innerHTML = `<div class="age-keyword-status">검색 추이를 불러오는 중입니다.</div>`;
       try {
         const genderQuery = gender ? `&gender=${gender}` : "";
         const response = await fetch(`/api/dashboard/keywords?age=${group.age}${genderQuery}`, { cache: "no-store" });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "관심 키워드를 불러오지 못했습니다.");
+        if (card.dataset.activeGender !== gender) return;
         list.innerHTML = data.keywords.slice(0, 5).map((item, index) => `
             <div class="age-keyword-row">
               <span class="number">${index + 1}</span>
@@ -779,6 +793,7 @@
         connectedSources.add(data.source);
         updateSourceNotice();
       } catch {
+        if (card.dataset.activeGender !== gender) return;
         list.innerHTML = `<div class="age-keyword-status">키워드 데이터를 불러오지 못했습니다.</div>`;
       }
     }
@@ -796,6 +811,23 @@
       card.querySelectorAll(".keyword-gender-tab").forEach(tab => tab.setAttribute("aria-pressed", String(tab === button)));
       loadAgeKeyword(group, button.dataset.gender);
     });
+
+    function highlightTargetKeywordCard(targetName) {
+      const match = targetName.match(/(\d+)대(?:\+)?\s*(여성|남성)?/);
+      if (!match) return;
+      const numericAge = Number(match[1]);
+      const age = numericAge >= 50 ? "50plus" : match[1];
+      const gender = match[2] === "여성" ? "f" : match[2] === "남성" ? "m" : "";
+      const group = keywordAgeGroups.find(item => item.age === age);
+      qsa(".age-keyword-card").forEach(card => card.classList.remove("is-target"));
+      const card = qs(`[data-keyword-age="${age}"]`);
+      if (!card || !group) return;
+      card.classList.add("is-target");
+      card.querySelectorAll(".keyword-gender-tab").forEach(tab => {
+        tab.setAttribute("aria-pressed", String(tab.dataset.gender === gender));
+      });
+      loadAgeKeyword(group, gender);
+    }
 
     function renderCrmPeriod(key = "3m") {
       const data = crmPeriods[key];
@@ -871,6 +903,7 @@
       if (!response.ok) throw new Error(data.error || "잠재고객 데이터를 불러오지 못했습니다.");
 
       livePotentialTarget = data.target;
+      highlightTargetKeywordCard(data.target);
       const existingIndex = targets.findIndex(target => target.name === data.target);
       if (existingIndex > 0) [targets[0], targets[existingIndex]] = [targets[existingIndex], targets[0]];
       else if (existingIndex < 0) targets[0].name = data.target;
