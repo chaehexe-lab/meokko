@@ -62,15 +62,24 @@ function buildPrompt(payload) {
         "1. keywordRanking의 1위 키워드는 반드시 headline 문장에 자연스럽게 포함한다.",
         "2. sentimentRatios에서 가장 높은 비율의 감성을 기준으로 작성한다.",
         "3. 선택된 감성의 keywordRanking 1위도 반드시 headline 문장에 포함한다.",
-        "4. existingCustomer와 prospectCustomer가 같으면 반드시 existingCustomer 값을 글자 그대로 한 번 쓰고 기존 고객 중심 강화 전략으로 작성한다.",
-        "5. existingCustomer와 prospectCustomer가 다르면 반드시 existingCustomer 값과 prospectCustomer 값을 각각 글자 그대로 문장에 포함하고, 기존 고객 전략은 유지하면서 잠재 고객으로 확장하는 방향으로 작성한다.",
-        "6. 긍정이 가장 높으면 강점 강화 중심으로 작성한다.",
-        "7. 부정이 가장 높으면 강점은 유지하되 부정 1위 키워드의 불안 요소를 개선/해소하는 방향으로 작성한다.",
-        "8. 중립이 가장 높으면 활용성과 차별점을 전달하는 방향으로 작성한다.",
-        "9. 1~2문장으로 작성한다.",
-        "10. 설명, 근거 나열, 마크다운은 출력하지 않는다.",
-        "11. 문장은 '~마케팅이 필요합니다', '~확장하는 것이 효과적입니다', '~전달하는 전략이 필요합니다' 중 하나의 톤으로 끝낸다.",
-        "12. 새로운 사용 상황, 채널, 효과, 성과를 만들지 않는다.",
+        "4. existingCustomer와 prospectCustomer가 같으면 반드시 existingCustomer 값을 글자 그대로 한 번 쓰고, keywordRank1과 반응 키워드를 활용해 핵심 타깃 집중 문장으로 작성한다.",
+        "5. existingCustomer와 prospectCustomer가 다르면 반드시 existingCustomer 값, existingCustomerCenterStrategy 값, prospectCustomer 값, keywordRank1 값을 포함한다.",
+        "6. 기존 고객과 잠재 고객이 다르면 반드시 '기존고객인 [existingCustomer]의 '[existingCustomerCenterStrategy]' 중심 전략을 유지하면서, [prospectCustomer]의 '[keywordRank1] ...' 니즈를 반영...' 구조로 작성한다.",
+        "7. 긍정이 가장 높으면 강점 강화 중심으로 작성한다.",
+        "8. 부정이 가장 높으면 keywordRank1과 positiveKeywordRank1의 강점은 유지하면서 negativeKeywordRank1 등 주요 불만 요소를 개선하는 방향으로 작성한다.",
+        "9. 중립이 가장 높으면 keywordRank1과 positiveKeywordRank1의 활용성과 차별점을 전달하는 방향으로 작성한다.",
+        "10. 1~2문장으로 작성한다.",
+        "11. 설명, 근거 나열, 마크다운은 출력하지 않는다.",
+        "12. 문장은 '~마케팅이 필요합니다', '~확장하는 것이 효과적입니다', '~전달하는 전략이 필요합니다' 중 하나의 톤으로 끝낸다.",
+        "13. 새로운 사용 상황, 채널, 효과, 성과를 만들지 않는다.",
+        "",
+        "# 문장 예시 구조",
+        "기존 고객과 잠재 고객이 같은 경우/긍정: 꼬모냉장고의 핵심 고객은 '[existingCustomer]'이며, '[keywordRank1] 및 [topSentiment.keywordRank1]'으로의 마케팅 집중이 필요합니다.",
+        "기존 고객과 잠재 고객이 같은 경우/부정: [existingCustomer]을 핵심 타깃으로 하되, '[keywordRank1]'과 '[positiveKeywordRank1]'의 강점은 유지하면서 [negativeKeywordRank1] 등 주요 불만 요소를 개선하는 마케팅이 필요합니다.",
+        "기존 고객과 잠재 고객이 같은 경우/중립: [existingCustomer]을 핵심 타깃으로, '[keywordRank1]'과 '[positiveKeywordRank1]'의 활용성과 차별점을 효과적으로 전달하는 마케팅이 필요합니다.",
+        "기존 고객과 잠재 고객이 다른 경우/긍정: 기존고객인 [existingCustomer]의 '[existingCustomerCenterStrategy]' 중심 전략을 유지하면서, [prospectCustomer]의 '[keywordRank1]·[topSentiment.keywordRank1]' 니즈를 반영한 마케팅으로 확장하는 것이 효과적입니다.",
+        "기존 고객과 잠재 고객이 다른 경우/부정: [existingCustomer]의 '[existingCustomerCenterStrategy]' 중심 전략을 유지하면서, [prospectCustomer]의 '[keywordRank1]' 니즈를 반영하되, [negativeKeywordRank1] 등 주요 불만 요소를 개선한 마케팅으로 확장하는 것이 효과적입니다.",
+        "기존 고객과 잠재 고객이 다른 경우/중립: [existingCustomer]의 '[existingCustomerCenterStrategy]' 중심 전략을 유지하면서, [prospectCustomer]의 '[keywordRank1]' 니즈를 이해할 수 있도록 활용성과 차별점을 전달하는 마케팅으로 확장하는 것이 효과적입니다.",
         "",
         "# 출력 형식",
         "반드시 다음 키만 가진 JSON 객체로 답해: headline.",
@@ -80,7 +89,7 @@ function buildPrompt(payload) {
         "dashboardData.insightRulesInput.keywordRank1은 전체 키워드 순위 1위다.",
         "dashboardData.insightRulesInput.topSentiment.type은 가장 높은 감성이다.",
         "dashboardData.insightRulesInput.topSentiment.keywordRank1은 선택된 감성의 1위 키워드다.",
-        "dashboardData.insightRulesInput.existingCustomer와 prospectCustomer는 수정하거나 합쳐 쓰지 말고 그대로 사용한다.",
+        "dashboardData.insightRulesInput.existingCustomer, existingCustomerCenterStrategy, prospectCustomer는 수정하거나 합쳐 쓰지 말고 그대로 사용한다.",
         "",
         "dashboardData:",
         JSON.stringify(payload)
@@ -139,26 +148,29 @@ function enforceInsightRules(payload, insight) {
   if (!rules) return insight;
 
   const existingCustomer = rules.existingCustomer;
+  const existingCustomerCenterStrategy = rules.existingCustomerCenterStrategy || "기존 고객";
   const prospectCustomer = rules.prospectCustomer;
   const keywordRank1 = rules.keywordRank1;
   const sentimentType = rules.topSentiment?.type;
   const sentimentKeyword = rules.topSentiment?.keywordRank1;
+  const positiveKeyword = rules.positiveKeywordRank1 || sentimentKeyword;
+  const negativeKeyword = rules.negativeKeywordRank1 || sentimentKeyword;
   let corrected;
 
   if (rules.isSameCustomer) {
     if (sentimentType === "부정" || sentimentType === "부정/우려") {
-      corrected = `꼬모냉장고는 ${existingCustomer}을 핵심 타깃으로 하되, ${keywordRank1} 니즈를 유지하면서 ${sentimentKeyword} 등 구매 불안 요소를 해소하는 마케팅이 필요합니다.`;
+      corrected = `${existingCustomer}을 핵심 타깃으로 하되, '${keywordRank1}'과 '${positiveKeyword}'의 강점은 유지하면서 ${negativeKeyword} 등 주요 불만 요소를 개선하는 마케팅이 필요합니다.`;
     } else if (sentimentType === "중립") {
-      corrected = `꼬모냉장고는 ${existingCustomer}을 핵심 타깃으로, ${keywordRank1}과 ${sentimentKeyword}의 차별점을 효과적으로 전달하는 마케팅이 필요합니다.`;
+      corrected = `${existingCustomer}을 핵심 타깃으로, '${keywordRank1}'과 '${positiveKeyword}'의 활용성과 차별점을 효과적으로 전달하는 마케팅이 필요합니다.`;
     } else {
-      corrected = `꼬모냉장고의 핵심 고객은 ${existingCustomer}이며, ${keywordRank1} 및 ${sentimentKeyword} 중심의 마케팅 집중이 필요합니다.`;
+      corrected = `꼬모냉장고의 핵심 고객은 '${existingCustomer}'이며, '${keywordRank1} 및 ${sentimentKeyword}'으로의 마케팅 집중이 필요합니다.`;
     }
   } else if (sentimentType === "부정" || sentimentType === "부정/우려") {
-    corrected = `꼬모냉장고는 기존 고객인 ${existingCustomer}의 전략을 유지하면서, 잠재 고객인 ${prospectCustomer}의 ${keywordRank1} 니즈를 반영하되 ${sentimentKeyword} 등 구매 불안 요소를 해소한 마케팅으로 확장하는 것이 효과적입니다.`;
+    corrected = `${existingCustomer}의 '${existingCustomerCenterStrategy}' 중심 전략을 유지하면서, ${prospectCustomer}의 '${keywordRank1}' 니즈를 반영하되, ${negativeKeyword} 등 주요 불만 요소를 개선한 마케팅으로 확장하는 것이 효과적입니다.`;
   } else if (sentimentType === "중립") {
-    corrected = `꼬모냉장고는 기존 고객인 ${existingCustomer}의 전략을 유지하면서, 잠재 고객인 ${prospectCustomer}에게 ${keywordRank1}과 ${sentimentKeyword}의 차별점을 전달하는 마케팅으로 확장하는 것이 효과적입니다.`;
+    corrected = `${existingCustomer}의 '${existingCustomerCenterStrategy}' 중심 전략을 유지하면서, ${prospectCustomer}의 '${keywordRank1}' 니즈를 이해할 수 있도록 활용성과 차별점을 전달하는 마케팅으로 확장하는 것이 효과적입니다.`;
   } else {
-    corrected = `꼬모냉장고는 기존 고객인 ${existingCustomer}의 전략을 유지하면서, 잠재 고객인 ${prospectCustomer}의 ${keywordRank1} 니즈와 ${sentimentKeyword} 강점을 반영한 마케팅으로 확장하는 것이 효과적입니다.`;
+    corrected = `기존고객인 ${existingCustomer}의 '${existingCustomerCenterStrategy}' 중심 전략을 유지하면서, ${prospectCustomer}의 '${keywordRank1}·${sentimentKeyword}' 니즈를 반영한 마케팅으로 확장하는 것이 효과적입니다.`;
   }
 
   return { ...insight, headline: corrected };

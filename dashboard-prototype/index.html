@@ -1252,6 +1252,12 @@
       selectAgeRow("crmAgeBars", ageLabel);
     }
 
+    function getCustomerCenterStrategy(customerName) {
+      const normalizedName = String(customerName || "").replace(/\s+/g, "");
+      const matchedTarget = targets.find(target => String(target.name || "").replace(/\s+/g, "") === normalizedName);
+      return matchedTarget?.keywords?.[0]?.[0] || "기존 고객";
+    }
+
     function collectDashboardInsightPayload() {
       const activeCrm = crmPeriods[activeCrmPeriod] || crmPeriods["3m"];
       const activeCompetitorType = qs("#competitorType")?.value || "character";
@@ -1262,12 +1268,14 @@
         .map((element, index) => ({ rank: index + 1, keyword: element.textContent.trim() }));
       const prospectCustomer = livePotentialTarget || targets[0]?.name || "잠재 고객";
       const existingCustomer = liveCrmTarget || activeCrm?.target || "기존 고객";
+      const existingCustomerCenterStrategy = getCustomerCenterStrategy(existingCustomer);
 
       return {
         product: "꼬모냉장고",
         generatedAt: new Date().toISOString(),
         insightRulesInput: {
           existingCustomer,
+          existingCustomerCenterStrategy,
           prospectCustomer,
           isSameCustomer: existingCustomer === prospectCustomer,
           keywordRank1: keywordRanking[0]?.keyword || targets[0]?.keywords?.[0]?.[0] || "핵심 키워드",
@@ -1279,6 +1287,9 @@
             keywordRank1: topSentiment.keywords?.[0],
             keywordRanking: topSentiment.keywords?.map((keyword, index) => ({ rank: index + 1, keyword })) || []
           },
+          positiveKeywordRank1: sentiments.positive.keywords?.[0],
+          neutralKeywordRank1: sentiments.neutral.keywords?.[0],
+          negativeKeywordRank1: sentiments.negative.keywords?.[0],
           sentimentRatios: Object.entries(sentiments).map(([key, item]) => ({ key, label: item.label, percent: item.percent }))
         },
         crm: {
@@ -1391,7 +1402,7 @@
       window.location.href = `step2.html?strategies=${encodeURIComponent(selectedStrategies.join(","))}`;
     });
 
-    const aiInsightCacheKey = "meokko:daily-ai-insight:v5";
+    const aiInsightCacheKey = "meokko:daily-ai-insight:v6";
 
     function getTodayKey() {
       const now = new Date();
@@ -1402,15 +1413,6 @@
       if (!insight || typeof insight !== "object") return;
       if (insight.headline) qs("#overallInsight").textContent = insight.headline;
       if (insight.summary) qs("#aiInsightSummary").textContent = insight.summary;
-    }
-
-    function buildFallbackInsight(payload) {
-      const rules = payload.insightRulesInput;
-      const sentimentKeyword = rules.topSentiment.keywordRank1 || "긍정 반응";
-      const headline = rules.isSameCustomer
-        ? `꼬모냉장고는 ${rules.existingCustomer}을 핵심 타겟으로, ${rules.keywordRank1}과 ${sentimentKeyword} 중심의 마케팅 집중이 필요합니다.`
-        : `기존 고객 ${rules.existingCustomer}을 유지하면서, 잠재 고객 ${rules.prospectCustomer}의 ${rules.keywordRank1} 니즈와 ${sentimentKeyword} 강점을 반영한 확장이 필요합니다.`;
-      return { headline };
     }
 
     async function generateAiInsight() {
@@ -1429,9 +1431,8 @@
         applyAiInsight(result.insight);
         localStorage.setItem(aiInsightCacheKey, JSON.stringify({ date: getTodayKey(), model: result.model || "AI", insight: result.insight }));
         status.textContent = `오늘 인사이트 갱신 완료 · ${result.model || "AI"}`;
-      } catch {
-        applyAiInsight(buildFallbackInsight(payload));
-        status.textContent = "연결된 데이터 기준 종합 인사이트";
+      } catch (error) {
+        status.textContent = `AI 자동 갱신 실패 · ${error.message}`;
       }
     }
 
