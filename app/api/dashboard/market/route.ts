@@ -62,7 +62,15 @@ export async function GET(request: Request) {
       credential,
     );
     const agePoints = ageResult.data.results?.[0]?.data || [];
-    const analysisDate = agePoints.map((point) => point.period).sort().at(-1);
+    const dailyTotals = agePoints.reduce<Record<string, number>>((totals, point) => {
+      totals[point.period] = (totals[point.period] || 0) + Number(point.ratio || 0);
+      return totals;
+    }, {});
+    const analysisDate = Object.entries(dailyTotals)
+      .filter(([, total]) => total > 0)
+      .map(([date]) => date)
+      .sort()
+      .at(-1);
     if (!analysisDate) throw new Error("네이버 쇼핑에서 최근 일별 클릭 데이터를 아직 제공하지 않았습니다.");
     const period = { startDate: analysisDate, endDate: analysisDate, timeUnit: "date" };
     const ageShares = toShares(sumGroups(pointsForDate(agePoints, analysisDate)));
