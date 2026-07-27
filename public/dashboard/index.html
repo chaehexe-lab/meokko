@@ -169,10 +169,19 @@
       border: 1px solid #cfe0d6; border-radius: 16px;
       background: #fff; box-shadow: var(--shadow);
     }
-    .age-keyword-card h3 {
-      margin: 0 0 10px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
-      color: var(--green); font-size: 15px; letter-spacing: -.02em;
+    .age-keyword-card-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-bottom: 10px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
     }
+    .age-keyword-card h3 { margin: 0; color: var(--green); font-size: 15px; letter-spacing: -.02em; }
+    .keyword-gender-tabs { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: #eef2ef; }
+    .keyword-gender-tab {
+      min-width: 32px; height: 24px; padding: 0 6px; border: 0; border-radius: 6px;
+      color: var(--muted); background: transparent; cursor: pointer; font-size: 9px; font-weight: 850;
+    }
+    .keyword-gender-tab:hover { color: var(--green); }
+    .keyword-gender-tab[aria-pressed="true"] { color: #fff; background: var(--green); }
+    .keyword-gender-tab:focus-visible { outline: 2px solid var(--lime); outline-offset: 1px; }
     .age-keyword-list { display: grid; gap: 5px; }
     .age-keyword-row {
       min-height: 34px; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto;
@@ -738,30 +747,55 @@
               <span class="change">${item.change > 0 ? "▲" : item.change < 0 ? "▼" : "−"} ${Math.abs(item.change)}%</span>
             </div>`).join("")
         : `<div class="age-keyword-status">검색 추이를 불러오는 중입니다.</div>`;
-      return `<article class="age-keyword-card" data-keyword-age="${group.age}"><h3>${group.label}</h3><div class="age-keyword-list">${content}</div></article>`;
+      return `
+        <article class="age-keyword-card" data-keyword-age="${group.age}">
+          <div class="age-keyword-card-head">
+            <h3>${group.label}</h3>
+            <div class="keyword-gender-tabs" role="group" aria-label="${group.label} 성별 선택">
+              <button class="keyword-gender-tab" type="button" data-gender="" aria-pressed="true">전체</button>
+              <button class="keyword-gender-tab" type="button" data-gender="f" aria-pressed="false">여성</button>
+              <button class="keyword-gender-tab" type="button" data-gender="m" aria-pressed="false">남성</button>
+            </div>
+          </div>
+          <div class="age-keyword-list">${content}</div>
+        </article>`;
     }
 
-    async function loadAgeKeywords() {
-      qs("#ageKeywordGrid").innerHTML = keywordAgeGroups.map(group => renderAgeKeywordCard(group)).join("");
-      await Promise.all(keywordAgeGroups.map(async group => {
-        const card = qs(`[data-keyword-age="${group.age}"] .age-keyword-list`);
-        try {
-          const response = await fetch(`/api/dashboard/keywords?age=${group.age}`, { cache: "no-store" });
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.error || "관심 키워드를 불러오지 못했습니다.");
-          card.innerHTML = data.keywords.slice(0, 5).map((item, index) => `
+    async function loadAgeKeyword(group, gender = "") {
+      const card = qs(`[data-keyword-age="${group.age}"]`);
+      const list = card.querySelector(".age-keyword-list");
+      list.innerHTML = `<div class="age-keyword-status">검색 추이를 불러오는 중입니다.</div>`;
+      try {
+        const genderQuery = gender ? `&gender=${gender}` : "";
+        const response = await fetch(`/api/dashboard/keywords?age=${group.age}${genderQuery}`, { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "관심 키워드를 불러오지 못했습니다.");
+        list.innerHTML = data.keywords.slice(0, 5).map((item, index) => `
             <div class="age-keyword-row">
               <span class="number">${index + 1}</span>
               <strong title="${item.keyword}">${item.keyword}</strong>
               <span class="change">${item.change > 0 ? "▲" : item.change < 0 ? "▼" : "−"} ${Math.abs(item.change)}%</span>
             </div>`).join("");
-          connectedSources.add(data.source);
-          updateSourceNotice();
-        } catch {
-          card.innerHTML = `<div class="age-keyword-status">키워드 데이터를 불러오지 못했습니다.</div>`;
-        }
-      }));
+        connectedSources.add(data.source);
+        updateSourceNotice();
+      } catch {
+        list.innerHTML = `<div class="age-keyword-status">키워드 데이터를 불러오지 못했습니다.</div>`;
+      }
     }
+
+    async function loadAgeKeywords() {
+      qs("#ageKeywordGrid").innerHTML = keywordAgeGroups.map(group => renderAgeKeywordCard(group)).join("");
+      await Promise.all(keywordAgeGroups.map(group => loadAgeKeyword(group)));
+    }
+
+    qs("#ageKeywordGrid").addEventListener("click", event => {
+      const button = event.target.closest(".keyword-gender-tab");
+      if (!button) return;
+      const card = button.closest(".age-keyword-card");
+      const group = keywordAgeGroups.find(item => item.age === card.dataset.keywordAge);
+      card.querySelectorAll(".keyword-gender-tab").forEach(tab => tab.setAttribute("aria-pressed", String(tab === button)));
+      loadAgeKeyword(group, button.dataset.gender);
+    });
 
     function renderCrmPeriod(key = "3m") {
       const data = crmPeriods[key];
