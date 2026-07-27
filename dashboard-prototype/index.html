@@ -150,6 +150,68 @@
     }
     .crm-period[aria-pressed="true"] { color: #fff; border-color: #5276dd; background: #5276dd; }
 
+    .keyword-overview { padding: 8px 0 14px; scroll-margin-top: 68px; }
+    .keyword-overview-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      min-height: 42px; padding: 0 4px 9px;
+    }
+    .keyword-overview-head div { display: flex; align-items: center; gap: 12px; }
+    .keyword-overview-head span { color: var(--green-2); font-size: 12px; font-weight: 950; }
+    .keyword-overview-head h2 { margin: 0; font-size: 16px; letter-spacing: -.025em; }
+    .keyword-overview-head small { color: var(--muted); font-size: 10px; font-weight: 750; }
+    .age-keyword-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(190px, 1fr));
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 4px 10px;
+    }
+    .age-keyword-card {
+      min-width: 0; overflow: hidden; padding: 14px;
+      border: 1px solid #cfe0d6; border-radius: 16px;
+      background: #fff; box-shadow: var(--shadow);
+    }
+    .age-keyword-card.is-target {
+      border: 2px solid var(--green);
+      background: linear-gradient(180deg, #f5fbf7 0%, #fff 44%);
+      box-shadow: 0 18px 48px rgba(34, 93, 69, .18), 0 0 0 4px rgba(217, 239, 118, .34);
+    }
+    .age-keyword-card-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-bottom: 10px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
+    }
+    .age-keyword-title { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .age-keyword-card h3 { margin: 0; color: var(--green); font-size: 15px; letter-spacing: -.02em; }
+    .target-keyword-badge {
+      display: none; padding: 4px 6px; border-radius: 999px;
+      color: var(--green); background: var(--lime); font-size: 8px; font-weight: 950; white-space: nowrap;
+    }
+    .age-keyword-card.is-target .target-keyword-badge { display: inline-flex; }
+    .keyword-gender-tabs { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: #eef2ef; }
+    .keyword-gender-tab {
+      min-width: 32px; height: 24px; padding: 0 6px; border: 0; border-radius: 6px;
+      color: var(--muted); background: transparent; cursor: pointer; font-size: 9px; font-weight: 850;
+    }
+    .keyword-gender-tab:hover { color: var(--green); }
+    .keyword-gender-tab[aria-pressed="true"] { color: #fff; background: var(--green); }
+    .age-keyword-card.is-target .keyword-gender-tab[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--lime); }
+    .keyword-gender-tab:focus-visible { outline: 2px solid var(--lime); outline-offset: 1px; }
+    .age-keyword-list { display: grid; gap: 5px; }
+    .age-keyword-row {
+      min-height: 34px; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto;
+      align-items: center; gap: 7px; padding: 0 7px; border-radius: 9px;
+      color: var(--muted); background: #f6f8f6;
+    }
+    .age-keyword-row .number { color: var(--green-2); font-size: 10px; font-weight: 950; }
+    .age-keyword-row strong { overflow: hidden; color: var(--ink); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .age-keyword-row .change { font-size: 9px; font-weight: 900; white-space: nowrap; }
+    .age-keyword-row:first-child { color: var(--green); background: var(--mint); }
+    .age-keyword-row:first-child .number {
+      width: 20px; height: 20px; display: grid; place-items: center;
+      border-radius: 6px; color: #fff; background: var(--green);
+    }
+    .age-keyword-status { min-height: 34px; display: grid; place-items: center; color: var(--muted); font-size: 10px; }
+
     .summary-grid { display: grid; grid-template-columns: 1fr; gap: 5px; padding-bottom: 8px; }
     .analysis-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     .summary-card {
@@ -406,6 +468,7 @@
       .summary-grid { grid-template-columns: 1fr; overflow: visible; padding-bottom: 6px; }
       .summary-card { grid-template-columns: 120px minmax(0, 1fr) 32px; gap: 8px; }
       .summary-card.keyword-card { width: 88%; grid-template-columns: 112px minmax(0, 1fr) 30px; }
+      .age-keyword-grid { grid-template-columns: repeat(6, minmax(190px, 1fr)); }
       .detail-section { padding: 62px 0; }
       .panel, .summary-card { border-radius: 20px; }
       .target-profile, .chart-panel, .sentiment-total, .reaction-detail { padding: 21px; }
@@ -442,14 +505,14 @@
         <button type="button" data-scroll="reaction">반응</button>
         <button type="button" data-scroll="competitor">경쟁사</button>
       </nav>
-      <div class="updated">최근 분석 · 2026.07.19</div>
+      <div class="updated" id="dataUpdated">실데이터 연결 중</div>
     </div>
   </header>
 
   <main>
     <section class="insight-banner shell">
       <div class="insight-kicker">타겟층 종합 인사이트</div>
-      <h1>집중해야 할 최종 타겟층은 20대 여성입니다.</h1>
+      <h1 id="overallInsight">집중해야 할 최종 타겟층을 분석하고 있습니다.</h1>
     </section>
 
     <section id="target" class="target-overview shell">
@@ -458,25 +521,19 @@
         <article class="audience-card prospect-card">
           <div class="audience-head"><div class="audience-type"><i></i>잠재고객</div><span class="audience-source">네이버 쇼핑 클릭 데이터</span></div>
           <div class="audience-summary">
-            <h2>잠재 타겟층은 <em>20대 여성</em>입니다.</h2>
+            <h2 id="prospectTargetTitle">잠재 타겟층을 분석하고 있습니다.</h2>
           </div>
           <div class="audience-demographics">
-            <div class="panel-head"><h3>잠재고객 타겟 비율</h3><span>소형 냉장고 클릭 기준</span></div>
+            <div class="panel-head"><h3>잠재고객 타겟 비율</h3><span id="prospectDataCaption">소형 냉장고 상대 클릭 기준</span></div>
             <div class="demographic-grid">
               <div class="demographic-part">
-                <div class="mini-title">성별 비율</div>
-                <div class="gender-chart"><div class="gender-donut" data-label="여성 64%" role="img" aria-label="여성 64%, 남성 36%"></div></div>
-                <div class="gender-legend"><span><i></i>여성 64%</span><span><i></i>남성 36%</span></div>
+                <div class="mini-title" id="prospectGenderTitle">타겟 연령대 성별 클릭 비중</div>
+                <div class="gender-chart"><div class="gender-donut" id="prospectGenderDonut" data-label="분석 중" role="img" aria-label="성별 클릭 비중 분석 중"></div></div>
+                <div class="gender-legend" id="prospectGenderLegend"><span><i></i>여성 -</span><span><i></i>남성 -</span></div>
               </div>
               <div class="demographic-part">
                 <div class="mini-title">연령대 비율</div>
-                <div class="age-bars">
-                  <div class="age-row"><span>10대</span><div class="track"><i style="--w:14%"></i></div><b>14%</b></div>
-                  <div class="age-row"><span>20대</span><div class="track"><i style="--w:38%"></i></div><b>38%</b></div>
-                  <div class="age-row"><span>30대</span><div class="track"><i style="--w:27%"></i></div><b>27%</b></div>
-                  <div class="age-row"><span>40대</span><div class="track"><i style="--w:15%"></i></div><b>15%</b></div>
-                  <div class="age-row"><span>50대+</span><div class="track"><i style="--w:6%"></i></div><b>6%</b></div>
-                </div>
+                <div class="age-bars" id="prospectAgeBars"></div>
               </div>
             </div>
           </div>
@@ -511,22 +568,23 @@
       </div>
     </section>
 
-    <input class="analysis-toggle" type="checkbox" id="toggle-keywords">
+    <section id="keywords" class="keyword-overview shell" aria-labelledby="keywordOverviewTitle">
+      <div class="keyword-overview-head">
+        <div><span>+</span><h2 id="keywordOverviewTitle">연령대별 관심 키워드 순위</h2></div>
+        <small>최근 12개월 검색 추이</small>
+      </div>
+      <div class="age-keyword-grid" id="ageKeywordGrid"></div>
+    </section>
+
     <input class="analysis-toggle" type="checkbox" id="toggle-reaction">
     <input class="analysis-toggle" type="checkbox" id="toggle-competitor">
 
     <section class="summary-grid shell" aria-label="핵심 분석 요약">
-      <label class="summary-card keyword-card" for="toggle-keywords" data-scroll="keywords" aria-expanded="false" tabindex="0">
-        <div class="bar-name"><span>+</span><b>관심 키워드</b></div>
-        <div class="bar-summary"><strong>타겟층별 관심 키워드 순위</strong></div>
-        <span class="arrow">⌄</span>
-      </label>
-
       <label class="summary-card" for="toggle-reaction" data-scroll="reaction" aria-expanded="false" tabindex="0">
         <div class="bar-name"><span>02</span><b>반응 분석</b></div>
         <div class="bar-summary">
-          <strong>긍정 반응이 51%입니다.</strong>
-          <span class="sentiment-inline"><span class="mini-sentiment-track" aria-label="긍정 51%, 중립 20%, 부정 29%"><i></i><i></i><i></i></span><small>긍정 51 · 중립 20 · 부정 29</small></span>
+          <strong id="reactionSummaryTitle">온라인 반응을 분석하고 있습니다.</strong>
+          <span class="sentiment-inline"><span class="mini-sentiment-track" id="reactionMiniTrack" aria-label="온라인 반응 분석 중"><i></i><i></i><i></i></span><small id="reactionSummaryValues">긍정 - · 중립 - · 부정 -</small></span>
         </div>
         <span class="arrow">⌄</span>
       </label>
@@ -538,16 +596,6 @@
       </label>
     </section>
 
-    <section id="keywords" class="detail-section alt">
-      <div class="shell">
-        <div class="panel compact-panel">
-          <div class="panel-head"><h3>관심 키워드 순위</h3><label class="keyword-picker">타겟 <select id="keywordTargetSelect" aria-label="키워드를 확인할 타겟 선택"></select></label></div>
-          <div class="keyword-ranking" id="keywordRanking"></div>
-          <div class="keyword-insight" id="personaInsight">뷰티 루틴과 개인 공간을 연결한 제품 메시지에 가장 민감하게 반응합니다.</div>
-        </div>
-      </div>
-    </section>
-
     <section id="reaction" class="detail-section">
       <div class="shell">
         <div class="section-heading">
@@ -557,8 +605,8 @@
         <div class="reaction-layout">
           <article class="panel sentiment-total">
             <div class="panel-head"><h3>전체 감정 비중</h3><span>최근 30일</span></div>
-            <div class="donut-wrap"><div class="donut" role="img" aria-label="긍정 51%, 중립 20%, 부정 29%"><div class="donut-inner"><small>가장 큰 반응</small><b>51%</b><small>긍정</small></div></div></div>
-            <div class="sentiment-legend">
+            <div class="donut-wrap"><div class="donut" id="reactionDonut" role="img" aria-label="온라인 반응 분석 중"><div class="donut-inner"><small>가장 큰 반응</small><b id="reactionTopPercent">-</b><small id="reactionTopLabel">분석 중</small></div></div></div>
+            <div class="sentiment-legend" id="reactionLegend">
               <div class="legend-item" style="--c:var(--coral)"><small>긍정</small><b>51%</b></div>
               <div class="legend-item" style="--c:var(--yellow)"><small>중립</small><b>20%</b></div>
               <div class="legend-item" style="--c:#a9b4af"><small>부정</small><b>29%</b></div>
@@ -580,7 +628,7 @@
       <div class="shell">
         <div class="section-heading">
           <div><span class="section-index">03 · COMPETITOR ANALYSIS</span><h2>경쟁사 분석</h2></div>
-          <p>기존 대시보드의 공개 베스트·관련 맥락 데이터를 그대로 가져왔습니다. 꼬모는 가격이나 용량보다 감성적인 공간 연출에서 차별화 여지가 큽니다.</p>
+          <p>네이버 쇼핑의 자동 HTML 수집이 허용되는 경우 갱신하며, 접근이 차단되면 마지막으로 확인한 연관상품 정보를 표시합니다.</p>
         </div>
         <div class="competitor-toolbar">
           <select id="competitorType" aria-label="꼬모냉장고 종류 선택">
@@ -594,10 +642,14 @@
     </section>
   </main>
 
-  <footer><div class="shell"><span>Meokko Market Insight · Local Prototype</span><span>본 화면의 일부 수치는 화면 구성을 위한 예시 데이터입니다.</span></div></footer>
+  <footer><div class="shell"><span>Meokko Market Insight</span><span id="dataSourceNotice">네이버 API 및 CRM 집계 데이터를 연결하고 있습니다.</span></div></footer>
 
   <script>
-    const targets = [
+    const API_BASE = location.hostname === "chaehexe-lab.github.io"
+      ? "https://ccomo-market-ai.aisprintteam2.chatgpt.site"
+      : "";
+
+    let targets = [
       { rank: 1, name: "20대 여성", score: 88.4, insight: "뷰티 루틴과 개인 공간을 연결한 제품 메시지에 가장 민감하게 반응합니다.", keywords: [["화장품 냉장고", "+18"], ["미니 냉장고", "+12"], ["원룸 인테리어", "+9"], ["파스텔 가전", "+7"], ["음료 냉장고", "+4"]] },
       { rank: 2, name: "30대 여성", score: 76.2, insight: "간식과 음료를 분리 보관하려는 실용 수요가 두드러집니다.", keywords: [["음료수 냉장고", "+14"], ["간식 보관", "+11"], ["홈카페", "+8"], ["저소음 냉장고", "+6"], ["주방 보조 냉장고", "+3"]] },
       { rank: 3, name: "20대 남성", score: 68.7, insight: "자취방과 게임 공간에 두는 세컨드 냉장고 수요가 높습니다.", keywords: [["자취 냉장고", "+15"], ["방 냉장고", "+10"], ["맥주 냉장고", "+8"], ["소형 가전", "+5"], ["저소음", "+2"]] },
@@ -610,7 +662,7 @@
       { rank: 10, name: "10대 남성", score: 14.2, insight: "게임 공간의 음료와 간식 보관 용도로 관심을 보입니다.", keywords: [["방 냉장고", "+6"], ["게임방 냉장고", "+5"], ["음료 보관", "+3"], ["미니 가전", "+2"], ["간식 냉장고", "+1"]] }
     ];
 
-    const sentiments = {
+    let sentiments = {
       positive: {
         label: "긍정", percent: 51, color: "var(--coral)", bg: "var(--coral-soft)",
         title: "디자인과 활용성이 좋은 평가를 이끌었습니다.",
@@ -634,14 +686,14 @@
       }
     };
 
-    const crmPeriods = {
+    let crmPeriods = {
       "3m": { label: "최근 3개월", target: "20대 여성", female: 62, ages: [["20대", 39], ["30대", 31], ["40대", 19], ["50대+", 11]] },
       "6m": { label: "최근 6개월", target: "20대 여성", female: 60, ages: [["20대", 35], ["30대", 34], ["40대", 20], ["50대+", 11]] },
       "12m": { label: "최근 12개월", target: "30대 여성", female: 58, ages: [["20대", 29], ["30대", 40], ["40대", 20], ["50대+", 11]] },
       all: { label: "전체 누적", target: "30대 여성", female: 56, ages: [["20대", 24], ["30대", 43], ["40대", 21], ["50대+", 12]] }
     };
 
-    const competitorProducts = {
+    let competitorProducts = {
       homebar: [
         { brand: "꼬모냉장고", name: "꼬모냉장고 홈바 크림 31L", price: "443,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/medium/202606/4fe1347fb23b46abed0f7f5d9dbf3773.jpg", tags: ["감성 디자인", "음료 보관", "홈바"], direction: "개인 공간에 어울리는 컬러와 감성적인 홈바 연출을 강조" },
         { brand: "매직쉐프Z", name: "와인셀러 34병 대용량 음료 냉장고", price: "539,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["대용량", "와인셀러", "술냉장고"], direction: "와인·주류 보관과 홈바 공간 연출을 강조" },
@@ -697,22 +749,97 @@
       syncAnalysis(id, true, true);
     }));
 
-    function renderTarget(selectedIndex = 0) {
-      const selected = targets[selectedIndex];
-      qs("#keywordRanking").innerHTML = selected.keywords.map(([keyword, change], index) => `
-        <div class="keyword-rank-row ${index === 0 ? "fastest" : ""}"><span class="number">${index + 1}</span><strong>${keyword}</strong><span class="change">${index === 0 ? "급상승" : "▲"} ${change}</span></div>
-      `).join("");
-      qs("#personaInsight").textContent = selected.insight;
+    const keywordAgeGroups = [
+      { age: "20", label: "20대" },
+      { age: "30", label: "30대" },
+      { age: "40", label: "40대" },
+      { age: "50", label: "50대" },
+      { age: "60", label: "60대" }
+    ];
+
+    function renderAgeKeywordCard(group, keywords = null) {
+      const content = keywords
+        ? keywords.map((item, index) => `
+            <div class="age-keyword-row">
+              <span class="number">${index + 1}</span>
+              <strong title="${item.keyword}">${item.keyword}</strong>
+              <span class="change">${item.change > 0 ? "▲" : item.change < 0 ? "▼" : "−"} ${Math.abs(item.change)}%</span>
+            </div>`).join("")
+        : `<div class="age-keyword-status">검색 추이를 불러오는 중입니다.</div>`;
+      return `
+        <article class="age-keyword-card" data-keyword-age="${group.age}">
+          <div class="age-keyword-card-head">
+            <div class="age-keyword-title"><h3>${group.label}</h3><span class="target-keyword-badge">핵심 타겟</span></div>
+            <div class="keyword-gender-tabs" role="group" aria-label="${group.label} 성별 선택">
+              <button class="keyword-gender-tab" type="button" data-gender="" aria-pressed="true">전체</button>
+              <button class="keyword-gender-tab" type="button" data-gender="f" aria-pressed="false">여성</button>
+              <button class="keyword-gender-tab" type="button" data-gender="m" aria-pressed="false">남성</button>
+            </div>
+          </div>
+          <div class="age-keyword-list">${content}</div>
+        </article>`;
     }
 
-    qs("#keywordTargetSelect").innerHTML = targets.map((target, index) => `<option value="${index}">${target.name}</option>`).join("");
-    qs("#keywordTargetSelect").addEventListener("change", event => renderTarget(Number(event.target.value)));
+    async function loadAgeKeyword(group, gender = "") {
+      const card = qs(`[data-keyword-age="${group.age}"]`);
+      const list = card.querySelector(".age-keyword-list");
+      card.dataset.activeGender = gender;
+      list.innerHTML = `<div class="age-keyword-status">검색 추이를 불러오는 중입니다.</div>`;
+      try {
+        const genderQuery = gender ? `&gender=${gender}` : "";
+        const response = await fetch(`${API_BASE}/api/dashboard/keywords?age=${group.age}${genderQuery}`, { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "관심 키워드를 불러오지 못했습니다.");
+        if (card.dataset.activeGender !== gender) return;
+        list.innerHTML = data.keywords.slice(0, 5).map((item, index) => `
+            <div class="age-keyword-row">
+              <span class="number">${index + 1}</span>
+              <strong title="${item.keyword}">${item.keyword}</strong>
+              <span class="change">${item.change > 0 ? "▲" : item.change < 0 ? "▼" : "−"} ${Math.abs(item.change)}%</span>
+            </div>`).join("");
+        connectedSources.add(data.source);
+        updateSourceNotice();
+      } catch {
+        if (card.dataset.activeGender !== gender) return;
+        list.innerHTML = `<div class="age-keyword-status">키워드 데이터를 불러오지 못했습니다.</div>`;
+      }
+    }
+
+    async function loadAgeKeywords() {
+      qs("#ageKeywordGrid").innerHTML = keywordAgeGroups.map(group => renderAgeKeywordCard(group)).join("");
+      await Promise.all(keywordAgeGroups.map(group => loadAgeKeyword(group)));
+    }
+
+    qs("#ageKeywordGrid").addEventListener("click", event => {
+      const button = event.target.closest(".keyword-gender-tab");
+      if (!button) return;
+      const card = button.closest(".age-keyword-card");
+      const group = keywordAgeGroups.find(item => item.age === card.dataset.keywordAge);
+      card.querySelectorAll(".keyword-gender-tab").forEach(tab => tab.setAttribute("aria-pressed", String(tab === button)));
+      loadAgeKeyword(group, button.dataset.gender);
+    });
+
+    function highlightTargetKeywordCard(targetName) {
+      const match = targetName.match(/(\d+)대(?:\+)?\s*(여성|남성)?/);
+      if (!match) return;
+      const age = match[1];
+      const gender = match[2] === "여성" ? "f" : match[2] === "남성" ? "m" : "";
+      const group = keywordAgeGroups.find(item => item.age === age);
+      qsa(".age-keyword-card").forEach(card => card.classList.remove("is-target"));
+      const card = qs(`[data-keyword-age="${age}"]`);
+      if (!card || !group) return;
+      card.classList.add("is-target");
+      card.querySelectorAll(".keyword-gender-tab").forEach(tab => {
+        tab.setAttribute("aria-pressed", String(tab.dataset.gender === gender));
+      });
+      loadAgeKeyword(group, gender);
+    }
 
     function renderCrmPeriod(key = "3m") {
       const data = crmPeriods[key];
-      const male = 100 - data.female;
+      const male = data.male ?? 100 - data.female;
       qs("#crmCustomerTitle").innerHTML = `${data.label} 주요 구매고객층은 <em>${data.target}</em>입니다.`;
-      qs("#crmPeriodCaption").textContent = `${data.label} 실제 결제 기준`;
+      qs("#crmPeriodCaption").textContent = `${data.from}~${data.to} 월별 결제고객수 기준`;
       const donut = qs("#crmGenderDonut");
       donut.dataset.label = `여성 ${data.female}%`;
       donut.setAttribute("aria-label", `여성 ${data.female}%, 남성 ${male}%`);
@@ -756,10 +883,121 @@
       qsa("[data-sentiment]").forEach(button => button.addEventListener("click", () => renderSentiment(button.dataset.sentiment)));
     }
 
-    renderTarget();
+    const connectedSources = new Set(["경쟁사: 마지막 확인값"]);
+    let livePotentialTarget = "";
+    let liveCrmTarget = "";
+
+    function updateSourceNotice() {
+      qs("#dataSourceNotice").textContent = [...connectedSources].join(" · ");
+    }
+
+    function updateOverallInsight() {
+      if (livePotentialTarget && liveCrmTarget) {
+        qs("#overallInsight").textContent = livePotentialTarget === liveCrmTarget
+          ? `잠재고객과 기존고객 모두 ${livePotentialTarget}에 집중해야 합니다.`
+          : `신규 유입은 ${livePotentialTarget}, 기존고객 유지는 ${liveCrmTarget}에 집중해야 합니다.`;
+      } else if (livePotentialTarget) {
+        qs("#overallInsight").textContent = `집중해야 할 잠재 타겟층은 ${livePotentialTarget}입니다.`;
+      } else if (liveCrmTarget) {
+        qs("#overallInsight").textContent = `최근 기존 구매고객의 주 고객층은 ${liveCrmTarget}입니다.`;
+      }
+    }
+
+    async function loadMarket() {
+      const response = await fetch(`${API_BASE}/api/dashboard/market`, { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "잠재고객 데이터를 불러오지 못했습니다.");
+
+      livePotentialTarget = data.target;
+      highlightTargetKeywordCard(data.target);
+      const existingIndex = targets.findIndex(target => target.name === data.target);
+      if (existingIndex > 0) [targets[0], targets[existingIndex]] = [targets[existingIndex], targets[0]];
+      else if (existingIndex < 0) targets[0].name = data.target;
+      qs("#prospectTargetTitle").innerHTML = `잠재 타겟층은 <em>${data.target}</em>입니다.`;
+      qs("#prospectDataCaption").textContent = `${data.period.startDate.slice(0, 7)}~${data.period.endDate.slice(0, 7)} 상대 클릭 기준`;
+      qs("#prospectGenderTitle").textContent = `${data.topAge}대 성별 클릭 비중`;
+      const female = data.targetGenderShares.female;
+      const male = data.targetGenderShares.male;
+      const donut = qs("#prospectGenderDonut");
+      donut.dataset.label = `여성 ${female}%`;
+      donut.setAttribute("aria-label", `여성 ${female}%, 남성 ${male}%`);
+      donut.style.background = `conic-gradient(var(--green) 0 ${female}%, #b7c4be ${female}% 100%)`;
+      qs("#prospectGenderLegend").innerHTML = `<span><i></i>여성 ${female}%</span><span><i></i>남성 ${male}%</span>`;
+      qs("#prospectAgeBars").innerHTML = data.ages
+        .filter(item => item.value > 0)
+        .map(item => `<div class="age-row"><span>${item.label}</span><div class="track"><i style="--w:${item.value}%"></i></div><b>${item.value}%</b></div>`)
+        .join("");
+
+      connectedSources.add(data.source);
+      qs("#dataUpdated").textContent = `최근 분석 · ${new Date(data.fetchedAt).toLocaleDateString("ko-KR")}`;
+      updateSourceNotice();
+      updateOverallInsight();
+    }
+
+    async function loadCrm() {
+      const response = await fetch(`${API_BASE}/api/dashboard/crm`, { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "CRM 데이터를 불러오지 못했습니다.");
+      crmPeriods = data.periods;
+      liveCrmTarget = crmPeriods["3m"].target;
+      renderCrmPeriod("3m");
+      connectedSources.add(`CRM: ${data.latestMonth}까지`);
+      updateSourceNotice();
+      updateOverallInsight();
+    }
+
+    async function loadReaction() {
+      const response = await fetch(`${API_BASE}/api/dashboard/reaction`, { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "온라인 반응을 불러오지 못했습니다.");
+
+      const labels = { positive: "긍정", neutral: "중립", negative: "부정" };
+      Object.entries(data.sentiments).forEach(([key, item]) => {
+        sentiments[key].percent = item.percent;
+        sentiments[key].keywords = item.themes.length ? item.themes.map(theme => theme.label) : ["분석 자료 부족"];
+        sentiments[key].bars = item.themes.length ? item.themes.map(theme => [theme.label, theme.count]) : [["분석 자료 부족", 1]];
+        sentiments[key].quote = item.example?.excerpt ? `“${item.example.excerpt}”` : "표시할 대표 반응이 없습니다.";
+      });
+
+      const positive = sentiments.positive.percent;
+      const neutral = sentiments.neutral.percent;
+      const negative = sentiments.negative.percent;
+      const topKey = ["positive", "neutral", "negative"].sort((a, b) => sentiments[b].percent - sentiments[a].percent)[0];
+      const topLabel = labels[topKey];
+      const topPercent = sentiments[topKey].percent;
+      const background = `conic-gradient(var(--coral) 0 ${positive}%, var(--yellow) ${positive}% ${positive + neutral}%, #a9b4af ${positive + neutral}% 100%)`;
+
+      qs("#reactionSummaryTitle").textContent = `${topLabel} 반응이 ${topPercent}%입니다.`;
+      qs("#reactionSummaryValues").textContent = `긍정 ${positive} · 중립 ${neutral} · 부정 ${negative}`;
+      qs("#reactionMiniTrack").style.background = background;
+      qs("#reactionMiniTrack").setAttribute("aria-label", `긍정 ${positive}%, 중립 ${neutral}%, 부정 ${negative}%`);
+      qs("#reactionDonut").style.background = background;
+      qs("#reactionDonut").setAttribute("aria-label", `긍정 ${positive}%, 중립 ${neutral}%, 부정 ${negative}%`);
+      qs("#reactionTopPercent").textContent = `${topPercent}%`;
+      qs("#reactionTopLabel").textContent = topLabel;
+      qs("#reactionLegend").innerHTML = `
+        <div class="legend-item" style="--c:var(--coral)"><small>긍정</small><b>${positive}%</b></div>
+        <div class="legend-item" style="--c:var(--yellow)"><small>중립</small><b>${neutral}%</b></div>
+        <div class="legend-item" style="--c:#a9b4af"><small>부정</small><b>${negative}%</b></div>`;
+      renderSentiment(topKey);
+      connectedSources.add(`${data.source} ${data.counts.analyzed}건`);
+      updateSourceNotice();
+    }
+
+    loadAgeKeywords();
     renderCrmPeriod();
     renderCompetitors();
     renderSentiment();
+    updateSourceNotice();
+
+    Promise.allSettled([loadMarket(), loadCrm(), loadReaction()]).then(results => {
+      const failures = results.filter(result => result.status === "rejected");
+      if (failures.length) {
+        qs("#dataUpdated").textContent = `일부 데이터 연결 실패 · 마지막 정상값 표시`;
+        connectedSources.add(`연결 실패 ${failures.length}개`);
+        updateSourceNotice();
+      }
+    });
   </script>
 </body>
 </html>
