@@ -754,10 +754,12 @@
           <div><span class="section-index">03 · COMPETITOR ANALYSIS</span><h2>경쟁사 분석</h2></div>
           <p>네이버 쇼핑의 자동 HTML 수집이 허용되는 경우 갱신하며, 접근이 차단되면 마지막으로 확인한 연관상품 정보를 표시합니다.</p>
         </div>
-        <div class="competitor-picker" aria-label="경쟁사 비교 제품군 선택">
-          <label class="competitor-choice"><input type="checkbox" class="competitor-filter" value="character">샐리&amp;브라운</label>
-          <label class="competitor-choice"><input type="checkbox" class="competitor-filter" value="homebar">홈바</label>
-          <label class="competitor-choice"><input type="checkbox" class="competitor-filter" value="beauty">뷰티</label>
+        <div class="competitor-toolbar">
+          <select id="competitorType" aria-label="경쟁사 비교 제품군 선택">
+            <option value="character">샐리&amp;브라운</option>
+            <option value="homebar">홈바</option>
+            <option value="beauty">뷰티</option>
+          </select>
         </div>
         <div class="competitor-stack" id="competitorGrid"></div>
       </div>
@@ -1093,15 +1095,9 @@
       `;
     }
 
-    function renderCompetitors() {
-      const categoryOrder = qsa(".competitor-filter:checked").map(input => input.value);
-      if (!categoryOrder.length) {
-        qs("#competitorGrid").innerHTML = `<div class="competitor-empty">비교할 제품군을 선택하면 해당 카테고리의 꼬모 제품과 경쟁 제품이 표시됩니다.</div>`;
-        return;
-      }
-      qs("#competitorGrid").innerHTML = categoryOrder.map(type => {
-        const meta = competitorCategoryMeta[type];
-        return `
+    function renderCompetitors(type = "character") {
+      const meta = competitorCategoryMeta[type];
+      qs("#competitorGrid").innerHTML = `
           <section class="competitor-category" aria-label="${meta.title} 경쟁 제품 비교">
             <div class="competitor-category-head">
               <div>
@@ -1115,13 +1111,12 @@
             </div>
           </section>
         `;
-      }).join("");
     }
 
-    qsa(".competitor-filter").forEach(input => input.addEventListener("change", () => {
-      renderCompetitors();
+    qs("#competitorType").addEventListener("change", event => {
+      renderCompetitors(event.target.value);
       updateStep2Action();
-    }));
+    });
 
     function renderSentiment(key = "positive") {
       const data = sentiments[key];
@@ -1238,9 +1233,8 @@
 
     function collectDashboardInsightPayload() {
       const activeCrm = crmPeriods[activeCrmPeriod] || crmPeriods["3m"];
-      const selectedCompetitorTypes = qsa(".competitor-filter:checked").map(input => input.value);
-      const competitorTypes = selectedCompetitorTypes.length ? selectedCompetitorTypes : Object.keys(competitorProducts);
-      const activeCompetitorType = competitorTypes[0] || "character";
+      const activeCompetitorType = qs("#competitorType")?.value || "character";
+      const competitorTypes = [activeCompetitorType];
       const [topSentimentKey, topSentiment] = Object.entries(sentiments).sort(([, a], [, b]) => b.percent - a.percent)[0];
       const targetKeywordCard = qs(".age-keyword-card.is-target") || qs(".age-keyword-card");
       const keywordRanking = [...(targetKeywordCard?.querySelectorAll(".age-keyword-row strong") || [])]
