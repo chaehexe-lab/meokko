@@ -1034,7 +1034,7 @@
       qsa("[data-sentiment]").forEach(button => button.addEventListener("click", () => renderSentiment(button.dataset.sentiment)));
     }
 
-    const aiInsightCacheKey = "meokko:daily-ai-insight:v3";
+    const aiInsightCacheKey = "meokko:daily-ai-insight:v4";
 
     function getTodayKey() {
       const now = new Date();
@@ -1057,13 +1057,14 @@
       const [topSentimentKey, topSentiment] = topSentimentEntry;
       const prospectTopAge = [...prospectInsight.age].sort((a, b) => b.value - a.value)[0];
       const prospectTopGender = [...prospectInsight.gender].sort((a, b) => b.value - a.value)[0];
+      const prospectCustomer = `${prospectTopAge.age} ${prospectTopGender.gender}`;
       return {
         product: "꼬모냉장고",
         generatedAt: new Date().toISOString(),
         insightRulesInput: {
           existingCustomer: activeCrm.target,
-          prospectCustomer: activeTarget.name,
-          isSameCustomer: activeCrm.target === activeTarget.name,
+          prospectCustomer,
+          isSameCustomer: activeCrm.target === prospectCustomer,
           keywordRank1: activeTarget.keywords?.[0]?.[0],
           keywordRanking: activeTarget.keywords?.map(([keyword], index) => ({ rank: index + 1, keyword })) || [],
           topSentiment: {
