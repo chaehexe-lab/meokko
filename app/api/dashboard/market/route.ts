@@ -60,24 +60,37 @@ export async function GET(request: Request) {
     const ageShares = toShares(sumGroups(ageResult.data.results?.[0]?.data || []));
     const topAge = topEntry(ageShares, "20");
 
-    const [genderResult, targetGenderResult] = await Promise.all([
+    const [genderResult, ...ageGenderResults] = await Promise.all([
       naverPost<TrendResponse>(
         "/shopping/v1/category/keyword/gender",
         "/v1/datalab/shopping/category/keyword/gender",
         base,
         credential,
       ),
-      naverPost<TrendResponse>(
-        "/shopping/v1/category/keyword/gender",
-        "/v1/datalab/shopping/category/keyword/gender",
-        { ...base, ages: [topAge] },
-        credential,
+      ...AGE_GROUPS.map((age) =>
+        naverPost<TrendResponse>(
+          "/shopping/v1/category/keyword/gender",
+          "/v1/datalab/shopping/category/keyword/gender",
+          { ...base, ages: [age] },
+          credential,
+        ),
       ),
     ]);
 
     const genderShares = toShares(sumGroups(genderResult.data.results?.[0]?.data || []));
-    const targetGenderShares = toShares(sumGroups(targetGenderResult.data.results?.[0]?.data || []));
-    const targetGender = topEntry(targetGenderShares, "f");
+    const genderByAge = Object.fromEntries(
+      AGE_GROUPS.map((age, index) => {
+        const shares = toShares(sumGroups(ageGenderResults[index].data.results?.[0]?.data || []));
+        const female = shares.f || 0;
+        const male = shares.m || 0;
+        return [
+          age === "60" ? "60대+" : `${age}대`,
+          { female, male },
+        ];
+      }),
+    );
+    const targetGenderShares = genderByAge[topAge === "60" ? "60대+" : `${topAge}대`];
+    const targetGender = targetGenderShares.female >= targetGenderShares.male ? "f" : "m";
     const target = `${topAge}대 ${targetGender === "f" ? "여성" : "남성"}`;
 
     return NextResponse.json(
@@ -87,14 +100,12 @@ export async function GET(request: Request) {
         target,
         topAge,
         targetGender,
-        targetGenderShares: {
-          female: targetGenderShares.f || 0,
-          male: targetGenderShares.m || 0,
-        },
+        targetGenderShares,
         gender: {
           female: genderShares.f || 0,
           male: genderShares.m || 0,
         },
+        genderByAge,
         ages: AGE_GROUPS.map((group) => ({
           label: group === "60" ? "60대+" : `${group}대`,
           value: ageShares[group] || 0,

@@ -34,7 +34,14 @@
           "60대+",
           7
         ]
-      ]
+      ],
+      "genderByAge": {
+        "20대": { "female": 83, "male": 17, "femaleCount": 10, "maleCount": 2 },
+        "30대": { "female": 50, "male": 50, "femaleCount": 14, "maleCount": 14 },
+        "40대": { "female": 44, "male": 56, "femaleCount": 12, "maleCount": 15 },
+        "50대": { "female": 50, "male": 50, "femaleCount": 6, "maleCount": 6 },
+        "60대+": { "female": 50, "male": 50, "femaleCount": 3, "maleCount": 3 }
+      }
     },
     "6m": {
       "label": "최근 6개월",
@@ -66,7 +73,14 @@
           "60대+",
           4
         ]
-      ]
+      ],
+      "genderByAge": {
+        "20대": { "female": 77, "male": 23, "femaleCount": 17, "maleCount": 5 },
+        "30대": { "female": 52, "male": 48, "femaleCount": 27, "maleCount": 25 },
+        "40대": { "female": 46, "male": 54, "femaleCount": 30, "maleCount": 35 },
+        "50대": { "female": 45, "male": 55, "femaleCount": 10, "maleCount": 12 },
+        "60대+": { "female": 43, "male": 57, "femaleCount": 3, "maleCount": 4 }
+      }
     },
     "12m": {
       "label": "최근 12개월",
@@ -98,7 +112,14 @@
           "60대+",
           3
         ]
-      ]
+      ],
+      "genderByAge": {
+        "20대": { "female": 82, "male": 18, "femaleCount": 31, "maleCount": 7 },
+        "30대": { "female": 52, "male": 48, "femaleCount": 66, "maleCount": 60 },
+        "40대": { "female": 50, "male": 50, "femaleCount": 59, "maleCount": 58 },
+        "50대": { "female": 45, "male": 55, "femaleCount": 20, "maleCount": 24 },
+        "60대+": { "female": 27, "male": 73, "femaleCount": 3, "maleCount": 8 }
+      }
     },
     "all": {
       "label": "전체 누적",
@@ -130,7 +151,14 @@
           "60대+",
           4
         ]
-      ]
+      ],
+      "genderByAge": {
+        "20대": { "female": 83, "male": 17, "femaleCount": 49, "maleCount": 10 },
+        "30대": { "female": 54, "male": 46, "femaleCount": 99, "maleCount": 86 },
+        "40대": { "female": 50, "male": 50, "femaleCount": 87, "maleCount": 86 },
+        "50대": { "female": 39, "male": 61, "femaleCount": 24, "maleCount": 38 },
+        "60대+": { "female": 30, "male": 70, "femaleCount": 6, "maleCount": 14 }
+      }
     }
   }
 }
