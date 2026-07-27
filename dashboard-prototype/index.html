@@ -187,7 +187,13 @@
     }
     .crm-period[aria-pressed="true"] { color: #fff; border-color: #5276dd; background: #5276dd; }
 
-    .keyword-overview { padding: 8px 0 14px; scroll-margin-top: 68px; }
+    .keyword-overview {
+      width: min(980px, calc(100% - 40px));
+      margin-right: auto;
+      margin-left: auto;
+      padding: 8px 0 14px;
+      scroll-margin-top: 68px;
+    }
     .keyword-overview-head {
       display: flex; align-items: center; justify-content: space-between; gap: 14px;
       min-height: 42px; padding: 0 4px 9px;
@@ -390,7 +396,26 @@
     .gender-legend i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
     .gender-legend span:last-child i { background: #b7c4be; }
     .age-bars { display: grid; gap: 5px; margin-top: 4px; }
-    .age-row { display: grid; grid-template-columns: 38px 1fr 32px; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .age-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 38px 1fr 32px;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 4px;
+      border: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: left;
+    }
+    button.age-row { cursor: pointer; }
+    button.age-row:hover,
+    button.age-row[aria-pressed="true"] { color: var(--green); background: #eef8f2; }
+    button.age-row:focus-visible { outline: 2px solid var(--lime); outline-offset: 1px; }
     .age-row .track { height: 7px; }
     .age-row .track i { background: var(--green-2); }
 
@@ -630,7 +655,7 @@
             <div class="panel-head"><h3>기존고객 타겟 비율</h3><span id="crmPeriodCaption">최근 3개월 실제 결제 기준</span></div>
             <div class="demographic-grid">
               <div class="demographic-part">
-                <div class="mini-title">성별 비율</div>
+                <div class="mini-title" id="crmGenderTitle">성별 비율</div>
                 <div class="gender-chart"><div class="gender-donut crm-donut" id="crmGenderDonut" data-label="여성 62%" role="img" aria-label="여성 62%, 남성 38%"></div></div>
                 <div class="gender-legend" id="crmGenderLegend"><span><i></i>여성 62%</span><span><i></i>남성 38%</span></div>
               </div>
@@ -920,12 +945,9 @@
       const male = data.male ?? 100 - data.female;
       qs("#crmCustomerTitle").innerHTML = `${data.label} 주요 구매고객층은 <em>${data.target}</em>입니다.`;
       qs("#crmPeriodCaption").textContent = `${data.from}~${data.to} 월별 결제고객수 기준`;
-      const donut = qs("#crmGenderDonut");
-      donut.dataset.label = `여성 ${data.female}%`;
-      donut.setAttribute("aria-label", `여성 ${data.female}%, 남성 ${male}%`);
-      donut.style.background = `conic-gradient(#5276dd 0 ${data.female}%, #c1c9df ${data.female}% 100%)`;
-      qs("#crmGenderLegend").innerHTML = `<span><i></i>여성 ${data.female}%</span><span><i></i>남성 ${male}%</span>`;
-      qs("#crmAgeBars").innerHTML = data.ages.map(([label, value]) => `<div class="age-row"><span>${label}</span><div class="track"><i style="--w:${value}%"></i></div><b>${value}%</b></div>`).join("");
+      renderGenderDonut({ donutId: "crmGenderDonut", legendId: "crmGenderLegend", titleId: "crmGenderTitle", female: data.female, male, title: "전체 성별 비율", color: "#5276dd" });
+      qs("#crmAgeBars").innerHTML = data.ages.map(([label, value]) => `<button class="age-row" type="button" data-age="${label}" aria-pressed="false"><span>${label}</span><div class="track"><i style="--w:${value}%"></i></div><b>${value}%</b></button>`).join("");
+      qsa("#crmAgeBars .age-row").forEach(row => row.addEventListener("click", () => updateCrmGenderByAge(data, row.dataset.age)));
       qsa(".crm-period").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.period === key)));
     }
 
@@ -935,7 +957,8 @@
     }));
 
     function renderCompetitors(type = "character") {
-      qs("#competitorGrid").innerHTML = competitorProducts[type].map(product => `
+      const products = competitorProducts[type] || competitorProducts.character || [];
+      qs("#competitorGrid").innerHTML = products.map(product => `
         <article class="panel product-card">
           <img src="${product.image}" alt="${product.brand} ${product.name}" loading="lazy">
           <div class="product-copy">
@@ -972,6 +995,7 @@
     const connectedSources = new Set(["경쟁사: 마지막 확인값"]);
     let livePotentialTarget = "";
     let liveCrmTarget = "";
+    let liveMarketData = null;
 
     function updateSourceNotice() {
       qs("#dataSourceNotice").textContent = [...connectedSources].join(" · ");
@@ -987,6 +1011,83 @@
       } else if (liveCrmTarget) {
         qs("#overallInsight").textContent = `최근 기존 구매고객의 주 고객층은 ${liveCrmTarget}입니다.`;
       }
+    }
+
+    function normalizeAgeKey(label) {
+      return String(label || "").replace("대+", "").replace(/[^0-9]/g, "");
+    }
+
+    function readGenderPair(value) {
+      if (!value) return null;
+      const female = Number(value.female ?? value.f ?? value.women ?? value.F);
+      const male = Number(value.male ?? value.m ?? value.men ?? value.M);
+      if (Number.isFinite(female) && Number.isFinite(male)) return { female, male };
+      return null;
+    }
+
+    function getAgeGenderShare(data, ageLabel) {
+      const ageKey = normalizeAgeKey(ageLabel);
+      const maps = [data?.genderByAge, data?.ageGenderShares, data?.genderSharesByAge];
+      for (const map of maps) {
+        if (!map) continue;
+        const pair = readGenderPair(map[ageLabel] || map[`${ageKey}대`] || map[ageKey]);
+        if (pair) return { ...pair, isAgeSpecific: true };
+      }
+      const segments = Array.isArray(data?.segments) ? data.segments : [];
+      const rows = segments.filter(row => normalizeAgeKey(row.age ?? row.ageLabel ?? row.label) === ageKey);
+      if (rows.length) {
+        const female = rows
+          .filter(row => /여|female|woman|f/i.test(String(row.gender ?? row.sex ?? "")))
+          .reduce((sum, row) => sum + Number(row.value ?? row.count ?? row.buyers ?? row.customers ?? 0), 0);
+        const male = rows
+          .filter(row => /남|male|man|m/i.test(String(row.gender ?? row.sex ?? "")))
+          .reduce((sum, row) => sum + Number(row.value ?? row.count ?? row.buyers ?? row.customers ?? 0), 0);
+        const total = female + male;
+        if (total > 0) return { female: Math.round(female / total * 100), male: Math.round(male / total * 100), isAgeSpecific: true };
+      }
+      return null;
+    }
+
+    function renderGenderDonut({ donutId, legendId, titleId, female, male, title, color = "var(--green)" }) {
+      const donut = qs(`#${donutId}`);
+      if (!donut) return;
+      donut.dataset.label = `여성 ${female}%`;
+      donut.setAttribute("aria-label", `여성 ${female}%, 남성 ${male}%`);
+      donut.style.background = `conic-gradient(${color} 0 ${female}%, #b7c4be ${female}% 100%)`;
+      qs(`#${legendId}`).innerHTML = `<span><i></i>여성 ${female}%</span><span><i></i>남성 ${male}%</span>`;
+      if (titleId && title) qs(`#${titleId}`).textContent = title;
+    }
+
+    function selectAgeRow(containerId, ageLabel) {
+      qsa(`#${containerId} .age-row`).forEach(row => {
+        row.setAttribute("aria-pressed", String(row.dataset.age === ageLabel));
+      });
+    }
+
+    function updateProspectGenderByAge(ageLabel) {
+      if (!liveMarketData) return;
+      const selected = getAgeGenderShare(liveMarketData, ageLabel);
+      const topAgeKey = normalizeAgeKey(liveMarketData.topAge);
+      const selectedAgeKey = normalizeAgeKey(ageLabel);
+      const fallback = selected || (selectedAgeKey === topAgeKey ? liveMarketData.targetGenderShares : null) || liveMarketData.gender;
+      if (!fallback) return;
+      const female = Math.round(Number(fallback.female));
+      const male = Math.round(Number(fallback.male ?? 100 - female));
+      const title = selected || selectedAgeKey === topAgeKey
+        ? `${ageLabel} 성별 클릭 비중`
+        : `${ageLabel} 선택 · 전체 성별 클릭 비중`;
+      renderGenderDonut({ donutId: "prospectGenderDonut", legendId: "prospectGenderLegend", titleId: "prospectGenderTitle", female, male, title });
+      selectAgeRow("prospectAgeBars", ageLabel);
+    }
+
+    function updateCrmGenderByAge(data, ageLabel) {
+      const selected = getAgeGenderShare(data, ageLabel);
+      const fallback = selected || data;
+      const female = Math.round(Number(fallback.female));
+      const male = Math.round(Number(fallback.male ?? 100 - female));
+      const title = selected ? `${ageLabel} 성별 비율` : `${ageLabel} 선택 · 전체 성별 비율`;
+      renderGenderDonut({ donutId: "crmGenderDonut", legendId: "crmGenderLegend", titleId: "crmGenderTitle", female, male, title, color: "#5276dd" });
+      selectAgeRow("crmAgeBars", ageLabel);
     }
 
     function collectDashboardInsightPayload() {
@@ -1175,6 +1276,7 @@
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "잠재고객 데이터를 불러오지 못했습니다.");
 
+      liveMarketData = data;
       livePotentialTarget = data.target;
       highlightTargetKeywordCard(data.target);
       const existingIndex = targets.findIndex(target => target.name === data.target);
@@ -1182,18 +1284,14 @@
       else if (existingIndex < 0) targets[0].name = data.target;
       qs("#prospectTargetTitle").innerHTML = `잠재 타겟층은 <em>${data.target}</em>입니다.`;
       qs("#prospectDataCaption").textContent = `${data.period.startDate.slice(0, 7)}~${data.period.endDate.slice(0, 7)} 상대 클릭 기준`;
-      qs("#prospectGenderTitle").textContent = `${data.topAge}대 성별 클릭 비중`;
       const female = data.targetGenderShares.female;
       const male = data.targetGenderShares.male;
-      const donut = qs("#prospectGenderDonut");
-      donut.dataset.label = `여성 ${female}%`;
-      donut.setAttribute("aria-label", `여성 ${female}%, 남성 ${male}%`);
-      donut.style.background = `conic-gradient(var(--green) 0 ${female}%, #b7c4be ${female}% 100%)`;
-      qs("#prospectGenderLegend").innerHTML = `<span><i></i>여성 ${female}%</span><span><i></i>남성 ${male}%</span>`;
+      renderGenderDonut({ donutId: "prospectGenderDonut", legendId: "prospectGenderLegend", titleId: "prospectGenderTitle", female, male, title: `${data.topAge}대 성별 클릭 비중` });
       qs("#prospectAgeBars").innerHTML = data.ages
         .filter(item => item.value > 0)
-        .map(item => `<div class="age-row"><span>${item.label}</span><div class="track"><i style="--w:${item.value}%"></i></div><b>${item.value}%</b></div>`)
+        .map(item => `<button class="age-row" type="button" data-age="${item.label}" aria-pressed="${normalizeAgeKey(item.label) === normalizeAgeKey(data.topAge)}"><span>${item.label}</span><div class="track"><i style="--w:${item.value}%"></i></div><b>${item.value}%</b></button>`)
         .join("");
+      qsa("#prospectAgeBars .age-row").forEach(row => row.addEventListener("click", () => updateProspectGenderByAge(row.dataset.age)));
 
       connectedSources.add(data.source);
       qs("#dataUpdated").textContent = `최근 분석 · ${new Date(data.fetchedAt).toLocaleDateString("ko-KR")}`;
