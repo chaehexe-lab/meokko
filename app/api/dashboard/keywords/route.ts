@@ -11,6 +11,7 @@ const SEARCH_AGES: Record<string, string[]> = {
   "30": ["5", "6"],
   "40": ["7", "8"],
   "50": ["9", "10"],
+  "50plus": ["9", "10", "11"],
   "60": ["11"],
 };
 
@@ -26,7 +27,9 @@ function recentChange(points: TrendPoint[]) {
 
 export async function GET(request: NextRequest) {
   const age = request.nextUrl.searchParams.get("age") || "20";
-  const gender = request.nextUrl.searchParams.get("gender") === "m" ? "m" : "f";
+  const genderParam = request.nextUrl.searchParams.get("gender");
+  const gender = genderParam === "m" || genderParam === "f" ? genderParam : undefined;
+  const ageLabel = age === "50plus" ? "50대 이상" : `${age}대`;
 
   try {
     const credential = credentials("TREND");
@@ -40,7 +43,7 @@ export async function GET(request: NextRequest) {
           keywords: [keyword],
         })),
         device: "",
-        gender,
+        ...(gender ? { gender } : {}),
         ages: SEARCH_AGES[age] || SEARCH_AGES["20"],
       },
       credential,
@@ -60,7 +63,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         fetchedAt: new Date().toISOString(),
-        target: `${age}대 ${gender === "f" ? "여성" : "남성"}`,
+        target: `${ageLabel}${gender ? ` ${gender === "f" ? "여성" : "남성"}` : ""}`,
         keywords,
         source: `${response.provider} 검색어 트렌드`,
         notice: "사전 선정한 후보 키워드 5개의 상대 검색 추이를 동일 조건에서 비교한 순위입니다.",
@@ -78,4 +81,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

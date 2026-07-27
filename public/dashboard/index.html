@@ -150,6 +150,45 @@
     }
     .crm-period[aria-pressed="true"] { color: #fff; border-color: #5276dd; background: #5276dd; }
 
+    .keyword-overview { padding: 8px 0 14px; scroll-margin-top: 68px; }
+    .keyword-overview-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      min-height: 42px; padding: 0 4px 9px;
+    }
+    .keyword-overview-head div { display: flex; align-items: center; gap: 12px; }
+    .keyword-overview-head span { color: var(--green-2); font-size: 12px; font-weight: 950; }
+    .keyword-overview-head h2 { margin: 0; font-size: 16px; letter-spacing: -.025em; }
+    .keyword-overview-head small { color: var(--muted); font-size: 10px; font-weight: 750; }
+    .age-keyword-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .age-keyword-card {
+      min-width: 0; overflow: hidden; padding: 14px;
+      border: 1px solid #cfe0d6; border-radius: 16px;
+      background: #fff; box-shadow: var(--shadow);
+    }
+    .age-keyword-card h3 {
+      margin: 0 0 10px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
+      color: var(--green); font-size: 15px; letter-spacing: -.02em;
+    }
+    .age-keyword-list { display: grid; gap: 5px; }
+    .age-keyword-row {
+      min-height: 34px; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto;
+      align-items: center; gap: 7px; padding: 0 7px; border-radius: 9px;
+      color: var(--muted); background: #f6f8f6;
+    }
+    .age-keyword-row .number { color: var(--green-2); font-size: 10px; font-weight: 950; }
+    .age-keyword-row strong { overflow: hidden; color: var(--ink); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .age-keyword-row .change { font-size: 9px; font-weight: 900; white-space: nowrap; }
+    .age-keyword-row:first-child { color: var(--green); background: var(--mint); }
+    .age-keyword-row:first-child .number {
+      width: 20px; height: 20px; display: grid; place-items: center;
+      border-radius: 6px; color: #fff; background: var(--green);
+    }
+    .age-keyword-status { min-height: 34px; display: grid; place-items: center; color: var(--muted); font-size: 10px; }
+
     .summary-grid { display: grid; grid-template-columns: 1fr; gap: 5px; padding-bottom: 8px; }
     .analysis-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     .summary-card {
@@ -406,6 +445,7 @@
       .summary-grid { grid-template-columns: 1fr; overflow: visible; padding-bottom: 6px; }
       .summary-card { grid-template-columns: 120px minmax(0, 1fr) 32px; gap: 8px; }
       .summary-card.keyword-card { width: 88%; grid-template-columns: 112px minmax(0, 1fr) 30px; }
+      .age-keyword-grid { grid-template-columns: repeat(4, minmax(210px, 1fr)); overflow-x: auto; padding-bottom: 6px; }
       .detail-section { padding: 62px 0; }
       .panel, .summary-card { border-radius: 20px; }
       .target-profile, .chart-panel, .sentiment-total, .reaction-detail { padding: 21px; }
@@ -505,17 +545,18 @@
       </div>
     </section>
 
-    <input class="analysis-toggle" type="checkbox" id="toggle-keywords">
+    <section id="keywords" class="keyword-overview shell" aria-labelledby="keywordOverviewTitle">
+      <div class="keyword-overview-head">
+        <div><span>+</span><h2 id="keywordOverviewTitle">연령대별 관심 키워드 순위</h2></div>
+        <small>최근 12개월 검색 추이</small>
+      </div>
+      <div class="age-keyword-grid" id="ageKeywordGrid"></div>
+    </section>
+
     <input class="analysis-toggle" type="checkbox" id="toggle-reaction">
     <input class="analysis-toggle" type="checkbox" id="toggle-competitor">
 
     <section class="summary-grid shell" aria-label="핵심 분석 요약">
-      <label class="summary-card keyword-card" for="toggle-keywords" data-scroll="keywords" aria-expanded="false" tabindex="0">
-        <div class="bar-name"><span>+</span><b>관심 키워드</b></div>
-        <div class="bar-summary"><strong>타겟층별 관심 키워드 순위</strong></div>
-        <span class="arrow">⌄</span>
-      </label>
-
       <label class="summary-card" for="toggle-reaction" data-scroll="reaction" aria-expanded="false" tabindex="0">
         <div class="bar-name"><span>02</span><b>반응 분석</b></div>
         <div class="bar-summary">
@@ -530,16 +571,6 @@
         <div class="bar-summary"><strong>경쟁사가 대용량·저가 실용성을 앞세운다면, 꼬모냉장고는 감성적인 디자인과 공간 활용성을 강조해야 합니다.</strong></div>
         <span class="arrow">⌄</span>
       </label>
-    </section>
-
-    <section id="keywords" class="detail-section alt">
-      <div class="shell">
-        <div class="panel compact-panel">
-          <div class="panel-head"><h3>관심 키워드 순위</h3><label class="keyword-picker">타겟 <select id="keywordTargetSelect" aria-label="키워드를 확인할 타겟 선택"></select></label></div>
-          <div class="keyword-ranking" id="keywordRanking"></div>
-          <div class="keyword-insight" id="personaInsight">뷰티 루틴과 개인 공간을 연결한 제품 메시지에 가장 민감하게 반응합니다.</div>
-        </div>
-      </div>
     </section>
 
     <section id="reaction" class="detail-section">
@@ -691,45 +722,46 @@
       syncAnalysis(id, true, true);
     }));
 
-    function renderTarget(selectedIndex = 0) {
-      const selected = targets[selectedIndex];
-      qs("#keywordRanking").innerHTML = selected.keywords.map(([keyword, change], index) => `
-        <div class="keyword-rank-row ${index === 0 ? "fastest" : ""}"><span class="number">${index + 1}</span><strong>${keyword}</strong><span class="change">${index === 0 ? "급상승" : "▲"} ${change}</span></div>
-      `).join("");
-      qs("#personaInsight").textContent = selected.insight;
+    const keywordAgeGroups = [
+      { age: "20", label: "20대" },
+      { age: "30", label: "30대" },
+      { age: "40", label: "40대" },
+      { age: "50plus", label: "50대 이상" }
+    ];
+
+    function renderAgeKeywordCard(group, keywords = null) {
+      const content = keywords
+        ? keywords.map((item, index) => `
+            <div class="age-keyword-row">
+              <span class="number">${index + 1}</span>
+              <strong title="${item.keyword}">${item.keyword}</strong>
+              <span class="change">${item.change > 0 ? "▲" : item.change < 0 ? "▼" : "−"} ${Math.abs(item.change)}%</span>
+            </div>`).join("")
+        : `<div class="age-keyword-status">검색 추이를 불러오는 중입니다.</div>`;
+      return `<article class="age-keyword-card" data-keyword-age="${group.age}"><h3>${group.label}</h3><div class="age-keyword-list">${content}</div></article>`;
     }
 
-    function refreshTargetOptions(selectedIndex = 0) {
-      qs("#keywordTargetSelect").innerHTML = targets.map((target, index) => `<option value="${index}" ${index === selectedIndex ? "selected" : ""}>${target.name}</option>`).join("");
+    async function loadAgeKeywords() {
+      qs("#ageKeywordGrid").innerHTML = keywordAgeGroups.map(group => renderAgeKeywordCard(group)).join("");
+      await Promise.all(keywordAgeGroups.map(async group => {
+        const card = qs(`[data-keyword-age="${group.age}"] .age-keyword-list`);
+        try {
+          const response = await fetch(`/api/dashboard/keywords?age=${group.age}`, { cache: "no-store" });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "관심 키워드를 불러오지 못했습니다.");
+          card.innerHTML = data.keywords.slice(0, 5).map((item, index) => `
+            <div class="age-keyword-row">
+              <span class="number">${index + 1}</span>
+              <strong title="${item.keyword}">${item.keyword}</strong>
+              <span class="change">${item.change > 0 ? "▲" : item.change < 0 ? "▼" : "−"} ${Math.abs(item.change)}%</span>
+            </div>`).join("");
+          connectedSources.add(data.source);
+          updateSourceNotice();
+        } catch {
+          card.innerHTML = `<div class="age-keyword-status">키워드 데이터를 불러오지 못했습니다.</div>`;
+        }
+      }));
     }
-
-    function targetParams(name) {
-      const match = name.match(/(\d+)대(?:\+)?\s+(여성|남성)/);
-      return {
-        age: match?.[1] || "20",
-        gender: match?.[2] === "남성" ? "m" : "f"
-      };
-    }
-
-    async function loadKeywords(selectedIndex = 0) {
-      const selected = targets[selectedIndex];
-      const params = targetParams(selected.name);
-      qs("#keywordRanking").innerHTML = `<div class="keyword-rank-row"><strong>검색어 트렌드를 불러오는 중입니다.</strong></div>`;
-      try {
-        const response = await fetch(`/api/dashboard/keywords?age=${params.age}&gender=${params.gender}`, { cache: "no-store" });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "관심 키워드를 불러오지 못했습니다.");
-        selected.keywords = data.keywords.map(item => [item.keyword, `${item.change > 0 ? "+" : ""}${item.change}%`]);
-        selected.insight = `${data.target}의 최근 검색 관심도를 동일 조건에서 비교한 결과입니다.`;
-        renderTarget(selectedIndex);
-      } catch (error) {
-        renderTarget(selectedIndex);
-        qs("#personaInsight").textContent = `${selected.insight} · 실데이터 갱신 실패로 마지막 분석값을 표시합니다.`;
-      }
-    }
-
-    refreshTargetOptions();
-    qs("#keywordTargetSelect").addEventListener("change", event => loadKeywords(Number(event.target.value)));
 
     function renderCrmPeriod(key = "3m") {
       const data = crmPeriods[key];
@@ -808,8 +840,6 @@
       const existingIndex = targets.findIndex(target => target.name === data.target);
       if (existingIndex > 0) [targets[0], targets[existingIndex]] = [targets[existingIndex], targets[0]];
       else if (existingIndex < 0) targets[0].name = data.target;
-      refreshTargetOptions(0);
-
       qs("#prospectTargetTitle").innerHTML = `잠재 타겟층은 <em>${data.target}</em>입니다.`;
       qs("#prospectDataCaption").textContent = `${data.period.startDate.slice(0, 7)}~${data.period.endDate.slice(0, 7)} 상대 클릭 기준`;
       qs("#prospectGenderTitle").textContent = `${data.topAge}대 성별 클릭 비중`;
@@ -829,7 +859,6 @@
       qs("#dataUpdated").textContent = `최근 분석 · ${new Date(data.fetchedAt).toLocaleDateString("ko-KR")}`;
       updateSourceNotice();
       updateOverallInsight();
-      await loadKeywords(0);
     }
 
     async function loadCrm() {
@@ -882,7 +911,7 @@
       updateSourceNotice();
     }
 
-    renderTarget();
+    loadAgeKeywords();
     renderCrmPeriod();
     renderCompetitors();
     renderSentiment();
