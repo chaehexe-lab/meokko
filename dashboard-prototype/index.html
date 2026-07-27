@@ -1446,7 +1446,7 @@
     }
 
     async function loadMarket() {
-      const response = await fetch(`${API_BASE}/api/dashboard/market?date=${dailyDataDate}&mode=latest-day`, { cache: "no-store" });
+      const response = await fetch(`${API_BASE}/api/dashboard/market?date=${dailyDataDate}&mode=latest-positive-day`, { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "잠재고객 데이터를 불러오지 못했습니다.");
 
