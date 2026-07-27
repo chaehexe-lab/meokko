@@ -118,8 +118,18 @@
     }
     .insight-banner::after { content: ""; position: absolute; right: -80px; bottom: -150px; width: 330px; height: 330px; border-radius: 50%; background: rgba(255,255,255,.08); }
     .insight-kicker { justify-self: start; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 12px; font-weight: 900; }
-    .insight-banner h1 { max-width: none; margin: 11px 0 0; font-size: clamp(18px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -.05em; white-space: nowrap; }
-    .insight-banner p { margin: 18px 0 0; color: rgba(255,255,255,.78); font-size: 14px; }
+    .insight-banner h1 {
+      position: relative;
+      z-index: 1;
+      max-width: min(1120px, 100%);
+      margin: 11px 0 0;
+      font-size: clamp(18px, 2.7vw, 34px);
+      line-height: 1.22;
+      letter-spacing: -.045em;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .insight-banner p { position: relative; z-index: 1; margin: 14px 0 0; color: rgba(255,255,255,.78); font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
     .ai-insight-status { justify-self: start; margin-top: 10px; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 850; }
     .insight-source { justify-self: start; margin-top: 30px; padding: 10px 13px; border-radius: 9px; background: rgba(9,37,123,.28); font-size: 11px; font-weight: 750; }
     .step2-action {
@@ -478,6 +488,17 @@
     .competitor-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 2px 0 14px; }
     .competitor-toolbar strong { font-size: 14px; }
     .competitor-toolbar select { min-width: 210px; height: 40px; padding: 0 38px 0 13px; border: 1px solid #b9d5c5; border-radius: 10px; color: var(--green); background: #fff; font: inherit; font-size: 12px; font-weight: 900; }
+    .competitor-picker { display: flex; flex-wrap: wrap; gap: 10px; margin: -2px 0 16px; }
+    .competitor-choice { position: relative; display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: #fff; font-size: 13px; font-weight: 900; cursor: pointer; transition: .18s ease; }
+    .competitor-choice input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .competitor-choice:has(input:checked) { border-color: #97cdb2; color: var(--green); background: var(--mint); box-shadow: 0 10px 24px rgba(35, 95, 67, .10); transform: translateY(-1px); }
+    .competitor-stack { display: grid; gap: 18px; }
+    .competitor-empty { padding: 34px; border: 1px dashed #b9c9c0; border-radius: 20px; color: var(--muted); background: rgba(255,255,255,.62); font-size: 14px; font-weight: 850; text-align: center; }
+    .competitor-category { padding: 18px; border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.72); }
+    .competitor-category-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .competitor-category-head h3 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
+    .competitor-category-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .competitor-category-head span { flex: 0 0 auto; padding: 7px 10px; border-radius: 999px; color: var(--green); background: var(--mint); font-size: 11px; font-weight: 950; }
     .competitor-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .product-card { display: flex; min-width: 0; flex-direction: column; overflow: hidden; }
     .product-card img { width: 100%; height: 180px; object-fit: contain; padding: 14px; background: #f4f6f4; }
@@ -487,7 +508,9 @@
     .price { color: var(--green); font-size: 21px; font-weight: 950; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 17px; }
     .tags span { padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 11px; font-weight: 750; }
-    .position { margin-top: auto; padding-top: 16px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .product-meta { display: flex; gap: 10px; margin-top: 8px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .position { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .position + .position { margin-top: 10px; }
     .position strong { color: var(--ink); }
     .accordions { margin-top: 16px; }
     details { border: 1px solid var(--line); border-radius: 18px; background: #fff; overflow: hidden; }
@@ -732,13 +755,13 @@
           <p>네이버 쇼핑의 자동 HTML 수집이 허용되는 경우 갱신하며, 접근이 차단되면 마지막으로 확인한 연관상품 정보를 표시합니다.</p>
         </div>
         <div class="competitor-toolbar">
-          <select id="competitorType" aria-label="꼬모냉장고 종류 선택">
-            <option value="character">꼬모냉장고 브라운&amp;샐리</option>
-            <option value="homebar">꼬모냉장고 홈바</option>
-            <option value="beauty">꼬모냉장고 뷰티</option>
+          <select id="competitorType" aria-label="경쟁사 비교 제품군 선택">
+            <option value="character">샐리&amp;브라운</option>
+            <option value="homebar">홈바</option>
+            <option value="beauty">뷰티</option>
           </select>
         </div>
-        <div class="competitor-grid" id="competitorGrid"></div>
+        <div class="competitor-stack" id="competitorGrid"></div>
       </div>
     </section>
   </main>
@@ -814,21 +837,120 @@
     };
 
     let competitorProducts = {
+      character: [
+        {
+          brand: "꼬모",
+          name: "꼬모냉장고 브라운&샐리",
+          price: "458,000~498,000원",
+          image: "https://shopping-phinf.pstatic.net/main_8261624/82616243393.3.jpg?type=f450",
+          meta: "브라운 평점 4.9 · 리뷰 206 / 샐리 리뷰 152",
+          tags: ["라인프렌즈", "캐릭터", "개인공간"],
+          difference: "브라운·샐리 캐릭터 자체가 시각적 차별점",
+          direction: "가격 경쟁보다 선물성, 소장감, 방 꾸미기 콘텐츠로 강조"
+        },
+        {
+          brand: "쿠잉공식쇼핑몰",
+          name: "쿠잉 레트로 무소음 미니냉장고 REF-N30",
+          price: "269,000원",
+          image: "https://shopping-phinf.pstatic.net/main_8559027/85590274590.3.jpg?type=f450",
+          meta: "평점 4.8 · 리뷰 884",
+          tags: ["무소음", "원룸", "화장품"],
+          difference: "꼬모보다 낮은 가격과 무소음 키워드가 강함",
+          direction: "꼬모는 실용 스펙보다 캐릭터 감성과 선물성으로 분리"
+        },
+        {
+          brand: "디자인에버",
+          name: "레트로 4L 무소음 화장품 냉장고",
+          price: "57,000원",
+          image: "https://img.danuri.io/catalog-image/651/543/098/09541a9b076d43f5a811bcf11d4e23e8.jpg",
+          meta: "다나와 공개 검색 · 리뷰 3",
+          tags: ["초소형", "무소음", "레트로"],
+          difference: "초저가·초소형으로 진입장벽이 낮음",
+          direction: "꼬모는 저가형과 달리 선물성·캐릭터 가치·프리미엄 디자인 강조"
+        }
+      ],
       homebar: [
-        { brand: "꼬모냉장고", name: "꼬모냉장고 홈바 크림 31L", price: "443,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/medium/202606/4fe1347fb23b46abed0f7f5d9dbf3773.jpg", tags: ["감성 디자인", "음료 보관", "홈바"], direction: "개인 공간에 어울리는 컬러와 감성적인 홈바 연출을 강조" },
-        { brand: "매직쉐프Z", name: "와인셀러 34병 대용량 음료 냉장고", price: "539,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["대용량", "와인셀러", "술냉장고"], direction: "와인·주류 보관과 홈바 공간 연출을 강조" },
-        { brand: "아이지원", name: "가정용 미니 냉장고 소형 스탠드", price: "139,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["컴팩트", "수납 많음", "서브냉장고"], direction: "작은 공간에서의 수납력과 실용성을 강조" }
+        {
+          brand: "꼬모",
+          name: "꼬모냉장고 홈바 크림 30L",
+          price: "443,000원",
+          image: "https://shop-phinf.pstatic.net/20230331_281/1680238673152tIkWk_JPEG/9329844415748175_1636366347.jpeg?type=o1000",
+          meta: "평점 4.96 · 리뷰 27",
+          tags: ["홈바", "음료보관", "컬러"],
+          difference: "개인 방·거실에 어울리는 감성 홈바 연출이 강점",
+          direction: "술장고보다 가벼운 홈바 입문, 침실 음료 보관 장면으로 콘텐츠화"
+        },
+        {
+          brand: "주니쿨",
+          name: "음료수 미니 쇼케이스 냉장고",
+          price: "285,000원",
+          image: "https://shopping-phinf.pstatic.net/main_8754367/87543671249.14.jpg?type=f450",
+          meta: "평점 4.8 · 리뷰 1,389",
+          tags: ["미니 쇼케이스", "음료", "술장고"],
+          difference: "쇼케이스 형태로 내용물이 바로 보이는 기능성",
+          direction: "꼬모는 보여주는 보관보다 방 분위기에 어울리는 숨은 홈바 연출 강조"
+        },
+        {
+          brand: "지유쿨",
+          name: "음료수 냉장고 국산 1등급 쇼케이스",
+          price: "302,500원",
+          image: "https://shopping-phinf.pstatic.net/main_8446332/84463321316.12.jpg?type=f450",
+          meta: "평점 4.9 · 리뷰 7,489",
+          tags: ["음료", "업소용", "1등급"],
+          difference: "리뷰 수와 에너지 효율, 업소용 신뢰가 강함",
+          direction: "꼬모는 업소용 기능보다 개인 공간 분위기와 디자인으로 분리"
+        }
       ],
       beauty: [
-        { brand: "꼬모냉장고", name: "꼬모냉장고 뷰티", price: "173,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/medium/202501/715b622f0e096794660eea0f84f7fd74.jpg", tags: ["감성 디자인", "화장품 보관", "뷰티 루틴"], direction: "화장대에 어울리는 디자인과 전문적인 화장품 보관을 강조" },
-        { brand: "Cooluli", name: "뷰티 스킨케어 미니 냉장고 10L", price: "189,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["귀여움", "화장품 보관", "저소음"], direction: "파스텔 디자인과 매일의 스킨케어 루틴을 강조" },
-        { brand: "AstroAI", name: "화장품 보관 미니 냉온장고 6L", price: "89,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["컴팩트", "휴대성", "화장품 보관"], direction: "작은 크기와 이동이 쉬운 뷰티 보관함을 강조" }
-      ],
-      character: [
-        { brand: "꼬모냉장고", name: "꼬모냉장고 브라운&샐리 31L", price: "498,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/big/202606/85cf958c24979dd854a7461206b4c053.jpg", tags: ["캐릭터 디자인", "넉넉한 수납", "개인 냉장고"], direction: "라인프렌즈 캐릭터와 나만의 공간을 꾸미는 소장 가치를 강조" },
-        { brand: "Midea", name: "헬로키티 캐릭터 미니 냉장고", price: "219,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["귀여움", "캐릭터", "선물용"], direction: "강한 캐릭터 인지도와 선물용 제품 이미지를 강조" },
-        { brand: "Coca-Cola", name: "코카콜라 레트로 미니 냉온장고", price: "129,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["레트로", "음료 보관", "인테리어"], direction: "브랜드 상징성과 레트로 인테리어 소품 활용을 강조" }
+        {
+          brand: "꼬모",
+          name: "꼬모냉장고 뷰티",
+          price: "198,000~258,000원",
+          image: "https://ccomo.kr/web/product/big/202606/679aa4a6b9689db97958c740c993eec9.jpg",
+          meta: "공식몰 공개 상품 · 뷰티 라인",
+          tags: ["뷰티", "화장품", "화장대"],
+          difference: "화장품 보관을 생활 루틴과 인테리어 장면으로 연결 가능",
+          direction: "화장대 위 배치컷, 스킨케어 루틴, 선물용 콘텐츠로 강조"
+        },
+        {
+          brand: "쿠잉공식쇼핑몰",
+          name: "쿠잉 레트로 미니화장품냉장고",
+          price: "269,000원",
+          image: "https://shopping-phinf.pstatic.net/main_8741720/87417202875.2.jpg?type=f450",
+          meta: "평점 4.8 · 리뷰 55",
+          tags: ["화장품", "약냉장고", "무소음"],
+          difference: "화장품·약 보관처럼 기능 목적이 분명함",
+          direction: "꼬모는 기능 설명과 함께 컬러 선택·책상/화장대 배치컷을 강화"
+        },
+        {
+          brand: "디자인에버",
+          name: "레트로 4L 무소음 화장품 냉장고",
+          price: "57,000원",
+          image: "https://img.danuri.io/catalog-image/651/543/098/09541a9b076d43f5a811bcf11d4e23e8.jpg",
+          meta: "다나와 공개 검색 · 리뷰 3",
+          tags: ["화장품", "4L", "무소음"],
+          difference: "가격이 낮고 화장품 보관 목적이 직접적임",
+          direction: "꼬모 뷰티는 저가형 대비 디자인 가치와 루틴 연출을 강조"
+        }
       ]
+    };
+
+    const competitorCategoryMeta = {
+      character: {
+        title: "샐리&브라운",
+        description: "캐릭터 디자인과 선물성을 기준으로 비교합니다.",
+        badge: "꼬모 캐릭터형"
+      },
+      homebar: {
+        title: "홈바",
+        description: "음료 보관, 개인 공간, 홈바 연출 가능성을 기준으로 비교합니다.",
+        badge: "꼬모 홈바형"
+      },
+      beauty: {
+        title: "뷰티",
+        description: "화장품 보관, 화장대 배치, 루틴 콘텐츠 가능성을 기준으로 비교합니다.",
+        badge: "꼬모 뷰티형"
+      }
     };
 
     const qs = selector => document.querySelector(selector);
@@ -975,20 +1097,39 @@
       updateStep2Action();
     }));
 
-    function renderCompetitors(type = "character") {
-      const products = competitorProducts[type] || competitorProducts.character || [];
-      qs("#competitorGrid").innerHTML = products.map(product => `
+    function renderProductCard(product) {
+      return `
         <article class="panel product-card">
-          <img src="${product.image}" alt="${product.brand} ${product.name}" loading="lazy">
+          ${product.image ? `<img src="${product.image}" alt="${product.brand} ${product.name}" loading="lazy" onerror="this.style.display='none'; this.closest('.product-card').classList.add('image-missing');">` : ""}
           <div class="product-copy">
             <span class="brand-chip">${product.brand}</span>
             <h3>${product.name}</h3>
             <div class="price">${product.price}</div>
+            ${product.meta ? `<div class="product-meta">${product.meta}</div>` : ""}
             <div class="tags">${product.tags.map(tag => `<span>${tag}</span>`).join("")}</div>
+            <div class="position"><strong>차별점</strong><br>${product.difference}</div>
             <div class="position"><strong>마케팅 방향</strong><br>${product.direction}</div>
           </div>
         </article>
-      `).join("");
+      `;
+    }
+
+    function renderCompetitors(type = "character") {
+      const meta = competitorCategoryMeta[type];
+      qs("#competitorGrid").innerHTML = `
+          <section class="competitor-category" aria-label="${meta.title} 경쟁 제품 비교">
+            <div class="competitor-category-head">
+              <div>
+                <h3>${meta.title}</h3>
+                <p>${meta.description}</p>
+              </div>
+              <span>${meta.badge}</span>
+            </div>
+            <div class="competitor-grid">
+              ${competitorProducts[type].map(renderProductCard).join("")}
+            </div>
+          </section>
+        `;
     }
 
     qs("#competitorType").addEventListener("change", event => {
@@ -1112,6 +1253,7 @@
     function collectDashboardInsightPayload() {
       const activeCrm = crmPeriods[activeCrmPeriod] || crmPeriods["3m"];
       const activeCompetitorType = qs("#competitorType")?.value || "character";
+      const competitorTypes = [activeCompetitorType];
       const [topSentimentKey, topSentiment] = Object.entries(sentiments).sort(([, a], [, b]) => b.percent - a.percent)[0];
       const targetKeywordCard = qs(".age-keyword-card.is-target") || qs(".age-keyword-card");
       const keywordRanking = [...(targetKeywordCard?.querySelectorAll(".age-keyword-row strong") || [])]
@@ -1165,11 +1307,24 @@
             brand: product.brand,
             name: product.name,
             price: product.price,
+            meta: product.meta,
             tags: product.tags,
             difference: product.difference,
             direction: product.direction
           }))
         },
+        competitors: competitorTypes.map(type => ({
+          category: competitorCategoryMeta[type].title,
+          products: competitorProducts[type].map(product => ({
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            meta: product.meta,
+            tags: product.tags,
+            difference: product.difference,
+            direction: product.direction
+          }))
+        })),
         step2SelectedStrategies: qsa(".step2-checkbox:checked").map(input => input.value)
       };
     }
