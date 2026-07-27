@@ -1196,17 +1196,53 @@
       if (insight.summary) qs("#aiInsightSummary").textContent = insight.summary;
     }
 
+    function buildFallbackInsight(payload) {
+      const rules = payload?.insightRulesInput || {};
+      const existingCustomer = rules.existingCustomer || "기존 고객";
+      const prospectCustomer = rules.prospectCustomer || "잠재 고객";
+      const keywordRank1 = rules.keywordRank1 || "핵심 키워드";
+      const sentimentType = rules.topSentiment?.type || "긍정";
+      const sentimentKeyword = rules.topSentiment?.keywordRank1 || "긍정 반응";
+      let headline;
+
+      if (rules.isSameCustomer) {
+        if (sentimentType === "부정" || sentimentType === "부정/우려") {
+          headline = `꼬모냉장고는 ${existingCustomer}을 핵심 타깃으로 하되, ${keywordRank1} 니즈를 유지하면서 ${sentimentKeyword} 등 구매 불안 요소를 해소하는 마케팅이 필요합니다.`;
+        } else if (sentimentType === "중립") {
+          headline = `꼬모냉장고는 ${existingCustomer}을 핵심 타깃으로, ${keywordRank1}과 ${sentimentKeyword}의 차별점을 효과적으로 전달하는 마케팅이 필요합니다.`;
+        } else {
+          headline = `꼬모냉장고의 핵심 고객은 ${existingCustomer}이며, ${keywordRank1} 및 ${sentimentKeyword} 중심의 마케팅 집중이 필요합니다.`;
+        }
+      } else if (sentimentType === "부정" || sentimentType === "부정/우려") {
+        headline = `꼬모냉장고는 기존 고객인 ${existingCustomer}의 전략을 유지하면서, 잠재 고객인 ${prospectCustomer}의 ${keywordRank1} 니즈를 반영하되 ${sentimentKeyword} 등 구매 불안 요소를 해소한 마케팅으로 확장하는 것이 효과적입니다.`;
+      } else if (sentimentType === "중립") {
+        headline = `꼬모냉장고는 기존 고객인 ${existingCustomer}의 전략을 유지하면서, 잠재 고객인 ${prospectCustomer}에게 ${keywordRank1}과 ${sentimentKeyword}의 차별점을 전달하는 마케팅으로 확장하는 것이 효과적입니다.`;
+      } else {
+        headline = `꼬모냉장고는 기존 고객인 ${existingCustomer}의 전략을 유지하면서, 잠재 고객인 ${prospectCustomer}의 ${keywordRank1} 니즈와 ${sentimentKeyword} 강점을 반영한 마케팅으로 확장하는 것이 효과적입니다.`;
+      }
+
+      return { headline };
+    }
+
     async function generateAiInsight(reason = "daily") {
       const status = qs("#aiInsightStatus");
       status.textContent = reason === "daily"
         ? "Mistral이 오늘의 종합 인사이트를 자동 생성 중입니다."
         : "Mistral이 종합 인사이트를 갱신 중입니다.";
+      const payload = collectDashboardInsightPayload();
       try {
         const response = await fetch("/api/insight", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(collectDashboardInsightPayload())
+          body: JSON.stringify(payload)
         });
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          const fallback = buildFallbackInsight(payload);
+          applyAiInsight(fallback);
+          status.textContent = "AI 서버 미연결 · 대시보드 규칙 기반 인사이트 적용";
+          return;
+        }
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || "AI 인사이트 생성 실패");
         applyAiInsight(result.insight);
@@ -1217,7 +1253,8 @@
         }));
         status.textContent = `오늘 인사이트 자동 갱신 완료 · ${result.model || "Mistral"}`;
       } catch (error) {
-        status.textContent = `AI 자동 갱신 실패 · ${error.message}`;
+        applyAiInsight(buildFallbackInsight(payload));
+        status.textContent = "AI 자동 갱신 실패 · 대시보드 규칙 기반 인사이트 적용";
       }
     }
 
