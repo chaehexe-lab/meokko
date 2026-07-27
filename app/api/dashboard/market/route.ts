@@ -34,6 +34,10 @@ function topEntry(values: Record<string, number>, fallback: string) {
   return Object.entries(values).sort((a, b) => b[1] - a[1])[0]?.[0] || fallback;
 }
 
+function pointsForDate(points: TrendPoint[], date: string) {
+  return points.filter((point) => point.period === date);
+}
+
 export function OPTIONS(request: Request) {
   return corsOptions(request);
 }
@@ -41,9 +45,9 @@ export function OPTIONS(request: Request) {
 export async function GET(request: Request) {
   try {
     const credential = credentials("SHOPPING");
-    const period = lastCompleteDayRange(1);
+    const lookupPeriod = lastCompleteDayRange(7);
     const base = {
-      ...period,
+      ...lookupPeriod,
       category: CATEGORY,
       keyword: KEYWORD,
       device: "",
@@ -57,7 +61,11 @@ export async function GET(request: Request) {
       { ...base, ages: AGE_GROUPS },
       credential,
     );
-    const ageShares = toShares(sumGroups(ageResult.data.results?.[0]?.data || []));
+    const agePoints = ageResult.data.results?.[0]?.data || [];
+    const analysisDate = agePoints.map((point) => point.period).sort().at(-1);
+    if (!analysisDate) throw new Error("네이버 쇼핑에서 최근 일별 클릭 데이터를 아직 제공하지 않았습니다.");
+    const period = { startDate: analysisDate, endDate: analysisDate, timeUnit: "date" };
+    const ageShares = toShares(sumGroups(pointsForDate(agePoints, analysisDate)));
     const topAge = topEntry(ageShares, "20");
 
     const [genderResult, ...ageGenderResults] = await Promise.all([
@@ -77,10 +85,10 @@ export async function GET(request: Request) {
       ),
     ]);
 
-    const genderShares = toShares(sumGroups(genderResult.data.results?.[0]?.data || []));
+    const genderShares = toShares(sumGroups(pointsForDate(genderResult.data.results?.[0]?.data || [], analysisDate)));
     const genderByAge = Object.fromEntries(
       AGE_GROUPS.map((age, index) => {
-        const shares = toShares(sumGroups(ageGenderResults[index].data.results?.[0]?.data || []));
+        const shares = toShares(sumGroups(pointsForDate(ageGenderResults[index].data.results?.[0]?.data || [], analysisDate)));
         const female = shares.f || 0;
         const male = shares.m || 0;
         return [
@@ -111,7 +119,7 @@ export async function GET(request: Request) {
           value: ageShares[group] || 0,
         })),
         source: `${ageResult.provider} 쇼핑 인사이트`,
-        notice: "전날 하루의 상대 클릭지수를 합계 100%로 환산한 비중이며 매일 자정 갱신됩니다.",
+        notice: "네이버가 제공한 가장 최신 하루의 상대 클릭지수를 합계 100%로 환산했으며 매일 자정 재조회합니다.",
       },
       {
         headers: {
