@@ -213,14 +213,15 @@
     .keyword-overview-head h2 { margin: 0; font-size: 16px; letter-spacing: -.025em; }
     .keyword-overview-head small { color: var(--muted); font-size: 10px; font-weight: 750; }
     .age-keyword-grid {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(190px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
-      overflow-x: auto;
+      overflow: visible;
       padding: 4px 4px 10px;
     }
     .age-keyword-card {
-      min-width: 0; overflow: hidden; padding: 14px;
+      flex: 1 1 170px; max-width: 180px; min-width: 0; overflow: hidden; padding: 14px;
       border: 1px solid #cfe0d6; border-radius: 16px;
       background: #fff; box-shadow: var(--shadow);
     }
@@ -556,7 +557,7 @@
       .summary-grid { grid-template-columns: 1fr; overflow: visible; padding-bottom: 6px; }
       .summary-card { grid-template-columns: 120px minmax(0, 1fr) 32px; gap: 8px; }
       .summary-card.keyword-card { width: 88%; grid-template-columns: 112px minmax(0, 1fr) 30px; }
-      .age-keyword-grid { grid-template-columns: repeat(6, minmax(190px, 1fr)); }
+      .age-keyword-card { flex-basis: 160px; }
       .detail-section { padding: 62px 0; }
       .panel, .summary-card { border-radius: 20px; }
       .target-profile, .chart-panel, .sentiment-total, .reaction-detail { padding: 21px; }
