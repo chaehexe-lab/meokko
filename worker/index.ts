@@ -19,6 +19,25 @@ interface ExecutionContext {
   passThroughOnException(): void;
 }
 
+const GITHUB_PAGES_ORIGIN = "https://chaehexe-lab.github.io";
+
+function withDashboardCors(request: Request, response: Response) {
+  const origin = request.headers.get("origin");
+  const url = new URL(request.url);
+  if (origin !== GITHUB_PAGES_ORIGIN || !url.pathname.startsWith("/api/dashboard/")) return response;
+
+  const headers = new Headers(response.headers);
+  headers.set("Access-Control-Allow-Origin", GITHUB_PAGES_ORIGIN);
+  headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  headers.set("Access-Control-Allow-Headers", "Content-Type");
+  headers.append("Vary", "Origin");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 // Image security config. SVG sources with .svg extension auto-skip the
 // optimization endpoint on the client side (served directly, no proxy).
 // To route SVGs through the optimizer (with security headers), set
@@ -28,6 +47,14 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (
+      request.method === "OPTIONS" &&
+      url.pathname.startsWith("/api/dashboard/") &&
+      request.headers.get("origin") === GITHUB_PAGES_ORIGIN
+    ) {
+      return withDashboardCors(request, new Response(null, { status: 204 }));
+    }
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
@@ -40,7 +67,8 @@ const worker = {
       }, allowedWidths);
     }
 
-    return handler.fetch(request, env, ctx);
+    const response = await handler.fetch(request, env, ctx);
+    return withDashboardCors(request, response);
   },
 };
 
