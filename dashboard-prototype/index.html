@@ -118,6 +118,7 @@
     }
     .insight-banner::after { content: ""; position: absolute; right: -80px; bottom: -150px; width: 330px; height: 330px; border-radius: 50%; background: rgba(255,255,255,.08); }
     .insight-kicker { justify-self: start; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 12px; font-weight: 900; }
+    .ai-insight-status { justify-self: start; margin-top: 10px; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 850; }
     .insight-banner h1 { max-width: none; margin: 11px 0 0; font-size: clamp(18px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -.05em; white-space: nowrap; }
     .insight-banner p { margin: 18px 0 0; color: rgba(255,255,255,.78); font-size: 14px; }
     .insight-source { justify-self: start; margin-top: 30px; padding: 10px 13px; border-radius: 9px; background: rgba(9,37,123,.28); font-size: 11px; font-weight: 750; }
@@ -449,7 +450,9 @@
   <main>
     <section class="insight-banner shell">
       <div class="insight-kicker">타겟층 종합 인사이트</div>
-      <h1>집중해야 할 최종 타겟층은 20대 여성입니다.</h1>
+      <h1 id="aiInsightHeadline">집중해야 할 최종 타겟층은 20대 여성입니다.</h1>
+      <p id="aiInsightSummary">타겟층, 반응, 경쟁사 데이터를 종합해 오늘의 마케팅 방향을 자동 정리합니다.</p>
+      <div class="ai-insight-status" id="aiInsightStatus">오늘 인사이트 자동 갱신 대기</div>
     </section>
 
     <section id="target" class="target-overview shell">
@@ -756,10 +759,116 @@
       qsa("[data-sentiment]").forEach(button => button.addEventListener("click", () => renderSentiment(button.dataset.sentiment)));
     }
 
+    const aiInsightCacheKey = "meokko:daily-ai-insight";
+
+    function getTodayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    }
+
+    function getNextMidnightDelay() {
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(24, 0, 0, 0);
+      return next.getTime() - now.getTime();
+    }
+
+    function collectDashboardInsightPayload() {
+      const activeTarget = targets[Number(qs("#keywordTargetSelect")?.value || 0)];
+      const activeCrmPeriod = qsa(".crm-period").find(button => button.getAttribute("aria-pressed") === "true")?.dataset.period || "3m";
+      const activeCrm = crmPeriods[activeCrmPeriod];
+      const activeCompetitorType = qs("#competitorType")?.value || "character";
+      return {
+        product: "꼬모냉장고",
+        generatedAt: new Date().toISOString(),
+        target: {
+          source: "대시보드 타겟층 분석",
+          activeTarget,
+          allTargets: targets.map(({ rank, name, score, insight }) => ({ rank, name, score, insight }))
+        },
+        crm: {
+          source: "CRM 실제 구매 데이터",
+          period: activeCrm.label,
+          target: activeCrm.target,
+          femaleRate: activeCrm.female,
+          ages: activeCrm.ages
+        },
+        reaction: {
+          source: "공개 웹 반응 분석",
+          sentiments: Object.fromEntries(Object.entries(sentiments).map(([key, item]) => [key, {
+            label: item.label,
+            percent: item.percent,
+            title: item.title,
+            keywords: item.keywords,
+            topCauses: item.bars
+          }]))
+        },
+        competitor: {
+          source: "경쟁사 분석 영역",
+          type: activeCompetitorType,
+          products: competitorProducts[activeCompetitorType].map(product => ({
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            tags: product.tags,
+            direction: product.direction
+          }))
+        }
+      };
+    }
+
+    function applyAiInsight(insight) {
+      if (!insight || typeof insight !== "object") return;
+      if (insight.headline) qs("#aiInsightHeadline").textContent = insight.headline;
+      if (insight.summary) qs("#aiInsightSummary").textContent = insight.summary;
+    }
+
+    async function generateAiInsight(reason = "daily") {
+      const status = qs("#aiInsightStatus");
+      status.textContent = reason === "daily"
+        ? "Mistral이 오늘의 종합 인사이트를 자동 생성 중입니다."
+        : "Mistral이 종합 인사이트를 갱신 중입니다.";
+      try {
+        const response = await fetch("/api/insight", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(collectDashboardInsightPayload())
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "AI 인사이트 생성 실패");
+        applyAiInsight(result.insight);
+        localStorage.setItem(aiInsightCacheKey, JSON.stringify({
+          date: getTodayKey(),
+          model: result.model || "Mistral",
+          insight: result.insight
+        }));
+        status.textContent = `오늘 인사이트 자동 갱신 완료 · ${result.model || "Mistral"}`;
+      } catch (error) {
+        status.textContent = `AI 자동 갱신 실패 · ${error.message}`;
+      }
+    }
+
+    function initDailyAiInsight() {
+      const status = qs("#aiInsightStatus");
+      try {
+        const cached = JSON.parse(localStorage.getItem(aiInsightCacheKey) || "null");
+        if (cached?.date === getTodayKey() && cached.insight) {
+          applyAiInsight(cached.insight);
+          status.textContent = `오늘 인사이트 적용됨 · ${cached.model || "Mistral"}`;
+        } else {
+          generateAiInsight("daily");
+        }
+      } catch {
+        generateAiInsight("daily");
+      }
+      window.setTimeout(() => generateAiInsight("midnight"), getNextMidnightDelay());
+    }
+
     renderTarget();
     renderCrmPeriod();
     renderCompetitors();
     renderSentiment();
+    initDailyAiInsight();
   </script>
 </body>
 </html>
