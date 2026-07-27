@@ -118,8 +118,18 @@
     }
     .insight-banner::after { content: ""; position: absolute; right: -80px; bottom: -150px; width: 330px; height: 330px; border-radius: 50%; background: rgba(255,255,255,.08); }
     .insight-kicker { justify-self: start; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 12px; font-weight: 900; }
-    .insight-banner h1 { max-width: none; margin: 11px 0 0; font-size: clamp(18px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -.05em; white-space: nowrap; }
-    .insight-banner p { margin: 18px 0 0; color: rgba(255,255,255,.78); font-size: 14px; }
+    .insight-banner h1 {
+      position: relative;
+      z-index: 1;
+      max-width: min(1120px, 100%);
+      margin: 11px 0 0;
+      font-size: clamp(18px, 2.7vw, 34px);
+      line-height: 1.22;
+      letter-spacing: -.045em;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .insight-banner p { position: relative; z-index: 1; margin: 14px 0 0; color: rgba(255,255,255,.78); font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
     .ai-insight-status { justify-self: start; margin-top: 10px; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 850; }
     .insight-source { justify-self: start; margin-top: 30px; padding: 10px 13px; border-radius: 9px; background: rgba(9,37,123,.28); font-size: 11px; font-weight: 750; }
     .step2-action {
