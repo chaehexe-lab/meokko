@@ -1064,18 +1064,18 @@
 
     function highlightTargetKeywordCard(targetName) {
       const match = targetName.match(/(\d+)대(?:\+)?\s*(여성|남성)?/);
-      if (!match) return;
+      if (!match) return Promise.resolve();
       const age = match[1];
       const gender = match[2] === "여성" ? "f" : match[2] === "남성" ? "m" : "";
       const group = keywordAgeGroups.find(item => item.age === age);
       qsa(".age-keyword-card").forEach(card => card.classList.remove("is-target"));
       const card = qs(`[data-keyword-age="${age}"]`);
-      if (!card || !group) return;
+      if (!card || !group) return Promise.resolve();
       card.classList.add("is-target");
       card.querySelectorAll(".keyword-gender-tab").forEach(tab => {
         tab.setAttribute("aria-pressed", String(tab.dataset.gender === gender));
       });
-      loadAgeKeyword(group, gender);
+      return loadAgeKeyword(group, gender);
     }
 
     let activeCrmPeriod = "3m";
@@ -1156,6 +1156,7 @@
     let livePotentialTarget = "";
     let liveCrmTarget = "";
     let liveMarketData = null;
+    let ageKeywordsReady = Promise.resolve();
 
     function updateSourceNotice() {
       qs("#dataSourceNotice").textContent = [...connectedSources].join(" · ");
@@ -1452,7 +1453,8 @@
 
       liveMarketData = data;
       livePotentialTarget = data.target;
-      highlightTargetKeywordCard(data.target);
+      await ageKeywordsReady;
+      await highlightTargetKeywordCard(data.target);
       const existingIndex = targets.findIndex(target => target.name === data.target);
       if (existingIndex > 0) [targets[0], targets[existingIndex]] = [targets[existingIndex], targets[0]];
       else if (existingIndex < 0) targets[0].name = data.target;
@@ -1526,7 +1528,7 @@
       updateStep2Action();
     }
 
-    loadAgeKeywords();
+    ageKeywordsReady = loadAgeKeywords();
     renderCrmPeriod();
     renderCompetitors();
     renderSentiment();
