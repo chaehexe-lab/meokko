@@ -119,9 +119,78 @@
     .insight-banner::after { content: ""; position: absolute; right: -80px; bottom: -150px; width: 330px; height: 330px; border-radius: 50%; background: rgba(255,255,255,.08); }
     .insight-kicker { justify-self: start; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 12px; font-weight: 900; }
     .ai-insight-status { justify-self: start; margin-top: 10px; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 850; }
-    .insight-banner h1 { max-width: none; margin: 11px 0 0; font-size: clamp(18px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -.05em; white-space: nowrap; }
+    .insight-banner h1 { max-width: none; margin: 11px 0 0; font-size: clamp(18px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -.05em; white-space: normal; overflow-wrap: anywhere; }
     .insight-banner p { margin: 18px 0 0; color: rgba(255,255,255,.78); font-size: 14px; }
     .insight-source { justify-self: start; margin-top: 30px; padding: 10px 13px; border-radius: 9px; background: rgba(9,37,123,.28); font-size: 11px; font-weight: 750; }
+    .step2-action {
+      margin-top: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .step2-action-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .step2-action-head b { font-size: 15px; letter-spacing: -.02em; }
+    .step2-action-head span { color: var(--muted); font-size: 11px; font-weight: 800; }
+    .step2-strategy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .step2-strategy {
+      position: relative;
+      min-height: 96px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #f8faf8;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .step2-strategy:hover { transform: translateY(-2px); border-color: #bad8c7; background: #fff; }
+    .step2-strategy[aria-checked="true"] {
+      transform: scale(1.01);
+      border-color: var(--green);
+      background: var(--mint);
+      box-shadow: 0 14px 30px rgba(34, 93, 69, .12);
+    }
+    .step2-strategy[aria-checked="true"]::after {
+      content: "✓";
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .step2-strategy input { position: absolute; opacity: 0; pointer-events: none; }
+    .step2-strategy small { color: var(--green-2); font-size: 11px; font-weight: 950; }
+    .step2-strategy strong { display: block; margin-top: 8px; font-size: 16px; }
+    .step2-strategy span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.45; font-weight: 750; }
+    .step2-action-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+    .step2-mini-tools { display: flex; gap: 6px; }
+    .step2-mini-tools button,
+    .step2-submit {
+      border: 0;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .step2-mini-tools button { padding: 8px 11px; color: var(--muted); background: #f1f4f2; }
+    .step2-submit { min-height: 38px; padding: 0 18px; color: #fff; background: var(--green); }
+    .step2-submit:disabled { cursor: not-allowed; opacity: .46; }
+    .step2-selected-note { color: var(--muted); font-size: 11px; font-weight: 800; }
     .target-overview { padding: 10px 0 12px; scroll-margin-top: 60px; }
     .target-section-heading { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 4px 8px; }
     .target-section-heading span { color: var(--green-2); font-size: 12px; font-weight: 950; }
@@ -293,6 +362,21 @@
     .gender-legend span:last-child i { background: #b7c4be; }
     .age-bars { display: grid; gap: 5px; margin-top: 4px; }
     .age-row { display: grid; grid-template-columns: 38px 1fr 32px; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    button.age-row {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 4px 6px;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+    button.age-row:hover,
+    button.age-row:focus-visible { border-color: #bad8c7; background: #f4faf6; outline: none; }
+    button.age-row.selected { color: var(--green); border-color: #bad8c7; background: var(--mint); }
+    .customer-card button.age-row:hover,
+    .customer-card button.age-row:focus-visible { border-color: #d5ddf3; background: #f7f9ff; }
+    .customer-card button.age-row.selected { color: #3659bc; border-color: #b9c8f5; background: #f2f5ff; }
     .age-row .track { height: 7px; }
     .age-row .track i { background: var(--green-2); }
 
@@ -364,7 +448,9 @@
     .price { color: var(--green); font-size: 21px; font-weight: 950; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 17px; }
     .tags span { padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 11px; font-weight: 750; }
-    .position { margin-top: auto; padding-top: 16px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .product-meta { margin-top: 8px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .position { margin-top: 13px; padding-top: 13px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .position + .position { margin-top: 10px; }
     .position strong { color: var(--ink); }
     .accordions { margin-top: 16px; }
     details { border: 1px solid var(--line); border-radius: 18px; background: #fff; overflow: hidden; }
@@ -400,6 +486,9 @@
       .hero { padding-top: 48px; }
       .insight-banner { min-height: 148px; margin-top: 8px; padding: 20px 22px; border-radius: 18px; }
       .insight-banner h1 { font-size: clamp(18px, 4.4vw, 28px); }
+      .step2-strategy-grid { grid-template-columns: 1fr; }
+      .step2-action-bottom { align-items: stretch; flex-direction: column; }
+      .step2-submit { width: 100%; }
       .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .audience-card { padding: 12px; }
       .customer-card .demographic-grid { grid-template-columns: .75fr 1.25fr; }
@@ -455,31 +544,59 @@
       <div class="ai-insight-status" id="aiInsightStatus">오늘 인사이트 자동 갱신 대기</div>
     </section>
 
+    <section class="step2-action shell" aria-label="STEP2 콘텐츠 추천 연결">
+      <div class="step2-action-head">
+        <div><b>STEP2 연결 액션</b><span> · 선택한 전략과 현재 분석 결과를 콘텐츠 추천 화면으로 전달</span></div>
+        <span class="step2-selected-note" id="step2SelectedNote">선택 대기</span>
+      </div>
+      <div class="step2-strategy-grid">
+        <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
+          <input class="step2-checkbox" type="checkbox" value="강화">
+          <small>강화</small>
+          <strong>잘 먹히는 강점 확대</strong>
+          <span id="step2StrengthText">긍정 반응과 핵심 키워드를 콘텐츠 소재로 연결합니다.</span>
+        </label>
+        <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
+          <input class="step2-checkbox" type="checkbox" value="공략">
+          <small>공략</small>
+          <strong>우선 타겟 집중</strong>
+          <span id="step2TargetText">잠재고객과 기존고객 기준으로 우선 타겟 메시지를 만듭니다.</span>
+        </label>
+        <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
+          <input class="step2-checkbox" type="checkbox" value="해소">
+          <small>해소</small>
+          <strong>구매 전 불안 낮추기</strong>
+          <span id="step2BarrierText">부정·우려 키워드를 상세페이지와 광고 문구에서 먼저 설명합니다.</span>
+        </label>
+      </div>
+      <div class="step2-action-bottom">
+        <div class="step2-mini-tools">
+          <button type="button" id="step2SelectAll">전체 선택</button>
+          <button type="button" id="step2ClearAll">전체 해제</button>
+        </div>
+        <button class="step2-submit" type="button" id="step2Submit" disabled>선택한 전략으로 콘텐츠 추천 생성하기</button>
+      </div>
+    </section>
+
     <section id="target" class="target-overview shell">
       <div class="target-section-heading"><span>01</span><b>타겟층 분석</b></div>
       <div class="audience-grid">
         <article class="audience-card prospect-card">
           <div class="audience-head"><div class="audience-type"><i></i>잠재고객</div><span class="audience-source">네이버 쇼핑 클릭 데이터</span></div>
           <div class="audience-summary">
-            <h2>잠재 타겟층은 <em>20대 여성</em>입니다.</h2>
+            <h2 id="prospectTitle">잠재 타겟층은 <em>20대 여성</em>입니다.</h2>
           </div>
           <div class="audience-demographics">
-            <div class="panel-head"><h3>잠재고객 타겟 비율</h3><span>소형 냉장고 클릭 기준</span></div>
+            <div class="panel-head"><h3>잠재고객 타겟 비율</h3><span id="prospectCaption">소형 냉장고 클릭 기준</span></div>
             <div class="demographic-grid">
               <div class="demographic-part">
-                <div class="mini-title">성별 비율</div>
-                <div class="gender-chart"><div class="gender-donut" data-label="여성 64%" role="img" aria-label="여성 64%, 남성 36%"></div></div>
-                <div class="gender-legend"><span><i></i>여성 64%</span><span><i></i>남성 36%</span></div>
+                <div class="mini-title" id="prospectGenderTitle">성별 비율</div>
+                <div class="gender-chart"><div class="gender-donut" id="prospectGenderDonut" data-label="여성 64%" role="img" aria-label="여성 64%, 남성 36%"></div></div>
+                <div class="gender-legend" id="prospectGenderLegend"><span><i></i>여성 64%</span><span><i></i>남성 36%</span></div>
               </div>
               <div class="demographic-part">
                 <div class="mini-title">연령대 비율</div>
-                <div class="age-bars">
-                  <div class="age-row"><span>10대</span><div class="track"><i style="--w:14%"></i></div><b>14%</b></div>
-                  <div class="age-row"><span>20대</span><div class="track"><i style="--w:38%"></i></div><b>38%</b></div>
-                  <div class="age-row"><span>30대</span><div class="track"><i style="--w:27%"></i></div><b>27%</b></div>
-                  <div class="age-row"><span>40대</span><div class="track"><i style="--w:15%"></i></div><b>15%</b></div>
-                  <div class="age-row"><span>50대+</span><div class="track"><i style="--w:6%"></i></div><b>6%</b></div>
-                </div>
+                <div class="age-bars" id="prospectAgeBars"></div>
               </div>
             </div>
           </div>
@@ -500,7 +617,7 @@
             <div class="panel-head"><h3>기존고객 타겟 비율</h3><span id="crmPeriodCaption">최근 3개월 실제 결제 기준</span></div>
             <div class="demographic-grid">
               <div class="demographic-part">
-                <div class="mini-title">성별 비율</div>
+                <div class="mini-title" id="crmGenderTitle">성별 비율</div>
                 <div class="gender-chart"><div class="gender-donut crm-donut" id="crmGenderDonut" data-label="여성 62%" role="img" aria-label="여성 62%, 남성 38%"></div></div>
                 <div class="gender-legend" id="crmGenderLegend"><span><i></i>여성 62%</span><span><i></i>남성 38%</span></div>
               </div>
@@ -637,28 +754,104 @@
       }
     };
 
+    const prospectInsight = {
+      source: "네이버 쇼핑 인사이트 · 스마트스토어 고객현황",
+      date: "2026.07.26",
+      defaultAge: "50대",
+      age: [
+        { age: "20대", value: 16 },
+        { age: "30대", value: 53 },
+        { age: "40대", value: 96 },
+        { age: "50대", value: 100 },
+        { age: "60대", value: 74 }
+      ],
+      gender: [
+        { gender: "여성", value: 90.6 },
+        { gender: "남성", value: 100 }
+      ],
+      genderByAge: {
+        "20대": { male: 6.8, female: 3.1 },
+        "30대": { male: 10.2, female: 34.3 },
+        "40대": { male: 48.2, female: 43.7 },
+        "50대": { male: 30.9, female: 18.7 },
+        "60대": { male: 3.4, female: 0 }
+      }
+    };
+
     const crmPeriods = {
-      "3m": { label: "최근 3개월", target: "20대 여성", female: 62, ages: [["20대", 39], ["30대", 31], ["40대", 19], ["50대+", 11]] },
-      "6m": { label: "최근 6개월", target: "20대 여성", female: 60, ages: [["20대", 35], ["30대", 34], ["40대", 20], ["50대+", 11]] },
-      "12m": { label: "최근 12개월", target: "30대 여성", female: 58, ages: [["20대", 29], ["30대", 40], ["40대", 20], ["50대+", 11]] },
-      all: { label: "전체 누적", target: "30대 여성", female: 56, ages: [["20대", 24], ["30대", 43], ["40대", 21], ["50대+", 12]] }
+      "3m": {
+        label: "최근 3개월",
+        target: "남성 40대",
+        female: 45,
+        defaultAge: "40대",
+        ages: [["20대", 14], ["30대", 33], ["40대", 32], ["50대", 14], ["60대+", 7]],
+        genderByAge: {
+          "20대": { male: 2, female: 10 },
+          "30대": { male: 14, female: 14 },
+          "40대": { male: 15, female: 12 },
+          "50대": { male: 5, female: 7 },
+          "60대+": { male: 4, female: 2 }
+        }
+      },
+      "6m": {
+        label: "최근 6개월",
+        target: "남성 40대",
+        female: 53,
+        defaultAge: "40대",
+        ages: [["20대", 13], ["30대", 31], ["40대", 39], ["50대", 13], ["60대+", 4]],
+        genderByAge: {
+          "20대": { male: 5, female: 17 },
+          "30대": { male: 25, female: 27 },
+          "40대": { male: 35, female: 30 },
+          "50대": { male: 12, female: 10 },
+          "60대+": { male: 4, female: 3 }
+        }
+      },
+      "12m": {
+        label: "최근 12개월",
+        target: "30대 여성",
+        female: 58,
+        defaultAge: "30대",
+        ages: [["20대", 11], ["30대", 38], ["40대", 35], ["50대", 13], ["60대+", 3]],
+        genderByAge: {
+          "20대": { male: 7, female: 31 },
+          "30대": { male: 60, female: 66 },
+          "40대": { male: 58, female: 59 },
+          "50대": { male: 25, female: 19 },
+          "60대+": { male: 7, female: 4 }
+        }
+      },
+      all: {
+        label: "전체 누적",
+        target: "30대 여성",
+        female: 56,
+        defaultAge: "30대",
+        ages: [["20대", 12], ["30대", 37], ["40대", 35], ["50대", 12], ["60대+", 4]],
+        genderByAge: {
+          "20대": { male: 5, female: 49 },
+          "30대": { male: 86, female: 99 },
+          "40대": { male: 86, female: 87 },
+          "50대": { male: 27, female: 35 },
+          "60대+": { male: 13, female: 7 }
+        }
+      }
     };
 
     const competitorProducts = {
       homebar: [
-        { brand: "꼬모냉장고", name: "꼬모냉장고 홈바 크림 31L", price: "443,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/medium/202606/4fe1347fb23b46abed0f7f5d9dbf3773.jpg", tags: ["감성 디자인", "음료 보관", "홈바"], direction: "개인 공간에 어울리는 컬러와 감성적인 홈바 연출을 강조" },
-        { brand: "매직쉐프Z", name: "와인셀러 34병 대용량 음료 냉장고", price: "539,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["대용량", "와인셀러", "술냉장고"], direction: "와인·주류 보관과 홈바 공간 연출을 강조" },
-        { brand: "아이지원", name: "가정용 미니 냉장고 소형 스탠드", price: "139,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["컴팩트", "수납 많음", "서브냉장고"], direction: "작은 공간에서의 수납력과 실용성을 강조" }
+        { brand: "꼬모", name: "꼬모냉장고 홈바 크림 30L", price: "443,000원", image: "https://shop-phinf.pstatic.net/20230331_281/1680238673152tIkWk_JPEG/9329844415748175_1636366347.jpeg?type=o1000", meta: "공개 상품 HTML · 평점 4.96 · 리뷰 27", tags: ["홈바", "음료 보관", "컬러"], difference: "개인 방·거실에 어울리는 감성 홈바 연출이 강점", direction: "술장고보다 가벼운 홈바 입문, 침실 음료 보관 장면으로 콘텐츠화" },
+        { brand: "주니쿨", name: "음료수 미니 쇼케이스 냉장고", price: "285,000원", image: "https://shopping-phinf.pstatic.net/main_8754367/87543671249.14.jpg?type=f450", meta: "네이버 쇼핑 공개 정보 · 평점 4.8 · 리뷰 1,389", tags: ["미니 쇼케이스", "음료", "술장고"], difference: "쇼케이스 형태로 내용물이 바로 보이는 기능성", direction: "꼬모는 보여주는 보관보다 방 분위기에 어울리는 숨은 홈바 연출 강조" },
+        { brand: "지유쿨", name: "음료수 냉장고 국산 1등급 쇼케이스", price: "302,500원", image: "https://shopping-phinf.pstatic.net/main_8446332/84463321316.12.jpg?type=f450", meta: "네이버 쇼핑 공개 정보 · 평점 4.9 · 리뷰 7,489", tags: ["음료", "업소용", "1등급"], difference: "리뷰 수와 에너지 효율, 업소용 신뢰가 강함", direction: "꼬모는 업소용 기능보다 개인 공간 분위기와 디자인으로 분리" }
       ],
       beauty: [
-        { brand: "꼬모냉장고", name: "꼬모냉장고 뷰티", price: "173,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/medium/202501/715b622f0e096794660eea0f84f7fd74.jpg", tags: ["감성 디자인", "화장품 보관", "뷰티 루틴"], direction: "화장대에 어울리는 디자인과 전문적인 화장품 보관을 강조" },
-        { brand: "Cooluli", name: "뷰티 스킨케어 미니 냉장고 10L", price: "189,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["귀여움", "화장품 보관", "저소음"], direction: "파스텔 디자인과 매일의 스킨케어 루틴을 강조" },
-        { brand: "AstroAI", name: "화장품 보관 미니 냉온장고 6L", price: "89,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["컴팩트", "휴대성", "화장품 보관"], direction: "작은 크기와 이동이 쉬운 뷰티 보관함을 강조" }
+        { brand: "꼬모", name: "꼬모냉장고 뷰티", price: "198,000~258,000원", image: "https://ccomo.kr/web/product/big/202606/679aa4a6b9689db97958c740c993eec9.jpg", meta: "공식몰 공개 상품 · 뷰티 라인", tags: ["뷰티", "화장품", "화장대"], difference: "화장품 보관을 생활 루틴과 인테리어 장면으로 연결 가능", direction: "화장대 위 배치컷, 스킨케어 루틴, 선물용 콘텐츠로 강조" },
+        { brand: "쿠잉공식쇼핑몰", name: "쿠잉 레트로 미니화장품냉장고", price: "269,000원", image: "https://shopping-phinf.pstatic.net/main_8741720/87417202875.2.jpg?type=f450", meta: "네이버 쇼핑 공개 정보 · 평점 4.8 · 리뷰 55", tags: ["화장품", "약냉장고", "무소음"], difference: "화장품·약 보관처럼 기능 목적이 분명함", direction: "꼬모는 기능 설명과 함께 컬러 선택·책상/화장대 배치컷을 강화" },
+        { brand: "디자인에버", name: "레트로 4L 무소음 화장품 냉장고", price: "57,000원", image: "https://img.danuri.io/catalog-image/651/543/098/09541a9b076d43f5a811bcf11d4e23e8.jpg", meta: "다나와 공개 검색 · 리뷰 3", tags: ["화장품", "4L", "무소음"], difference: "가격이 낮고 화장품 보관 목적이 직접적임", direction: "꼬모 뷰티는 저가형 대비 디자인 가치와 루틴 연출을 강조" }
       ],
       character: [
-        { brand: "꼬모냉장고", name: "꼬모냉장고 브라운&샐리 31L", price: "498,000원", image: "https://cafe24img.poxo.com/ccomo01/web/product/big/202606/85cf958c24979dd854a7461206b4c053.jpg", tags: ["캐릭터 디자인", "넉넉한 수납", "개인 냉장고"], direction: "라인프렌즈 캐릭터와 나만의 공간을 꾸미는 소장 가치를 강조" },
-        { brand: "Midea", name: "헬로키티 캐릭터 미니 냉장고", price: "219,000원", image: "https://shopping-phinf.pstatic.net/main_8683014/86830141390.5.jpg?type=f450", tags: ["귀여움", "캐릭터", "선물용"], direction: "강한 캐릭터 인지도와 선물용 제품 이미지를 강조" },
-        { brand: "Coca-Cola", name: "코카콜라 레트로 미니 냉온장고", price: "129,000원", image: "https://shopping-phinf.pstatic.net/main_9105816/91058166731.jpg?type=f450", tags: ["레트로", "음료 보관", "인테리어"], direction: "브랜드 상징성과 레트로 인테리어 소품 활용을 강조" }
+        { brand: "꼬모", name: "꼬모냉장고 브라운&샐리 31L", price: "458,000~498,000원", image: "https://shopping-phinf.pstatic.net/main_8261624/82616243393.3.jpg?type=f450", meta: "네이버 쇼핑 공개 정보 · 브라운 리뷰 206 / 샐리 리뷰 152", tags: ["라인프렌즈", "캐릭터", "개인공간"], difference: "브라운·샐리 캐릭터 자체가 시각적 차별점", direction: "가격 경쟁보다 선물성, 소장감, 방 꾸미기 콘텐츠로 강조" },
+        { brand: "쿠잉공식쇼핑몰", name: "쿠잉 레트로 무소음 미니냉장고 REF-N30", price: "269,000원", image: "https://shopping-phinf.pstatic.net/main_8559027/85590274590.3.jpg?type=f450", meta: "네이버 쇼핑 공개 정보 · 평점 4.8 · 리뷰 884", tags: ["무소음", "원룸", "화장품"], difference: "꼬모보다 낮은 가격과 무소음 키워드가 강함", direction: "꼬모는 실용 스펙보다 캐릭터 감성과 선물성으로 분리" },
+        { brand: "디자인에버", name: "레트로 4L 무소음 화장품 냉장고", price: "57,000원", image: "https://img.danuri.io/catalog-image/651/543/098/09541a9b076d43f5a811bcf11d4e23e8.jpg", meta: "다나와 공개 검색 · 리뷰 3", tags: ["초소형", "무소음", "레트로"], difference: "초저가·초소형으로 진입장벽이 낮음", direction: "꼬모는 저가형과 달리 선물성·캐릭터 가치·프리미엄 디자인 강조" }
       ]
     };
 
@@ -709,40 +902,122 @@
     }
 
     qs("#keywordTargetSelect").innerHTML = targets.map((target, index) => `<option value="${index}">${target.name}</option>`).join("");
-    qs("#keywordTargetSelect").addEventListener("change", event => renderTarget(Number(event.target.value)));
+    qs("#keywordTargetSelect").addEventListener("change", event => {
+      renderTarget(Number(event.target.value));
+      updateStep2Action();
+    });
 
-    function renderCrmPeriod(key = "3m") {
+    let activeProspectAge = prospectInsight.defaultAge;
+    let activeCrmPeriod = "3m";
+    let activeCrmAge = crmPeriods["3m"].defaultAge;
+
+    function renderProspectGenderByAge(ageLabel) {
+      const values = prospectInsight.genderByAge[ageLabel] || { female: prospectInsight.gender[0].value, male: prospectInsight.gender[1].value };
+      const total = values.female + values.male;
+      const femaleRate = total ? Math.round(values.female / total * 100) : 0;
+      const maleRate = total ? 100 - femaleRate : 0;
+      const femaleText = Number.isInteger(values.female) ? values.female : values.female.toFixed(1);
+      const maleText = Number.isInteger(values.male) ? values.male : values.male.toFixed(1);
+      const dominantGender = values.female >= values.male ? "여성 우세" : "남성 우세";
+      qs("#prospectGenderTitle").textContent = `${ageLabel} 성별 관심 지수`;
+      const donut = qs("#prospectGenderDonut");
+      donut.dataset.label = total ? dominantGender : "데이터 없음";
+      donut.setAttribute("aria-label", total ? `${ageLabel} 여성 지수 ${femaleText}, 남성 지수 ${maleText}` : `${ageLabel} 성별 데이터 없음`);
+      donut.style.background = total
+        ? `conic-gradient(var(--green) 0 ${femaleRate}%, #b7c4be ${femaleRate}% 100%)`
+        : "conic-gradient(#d6dce8 0 100%)";
+      qs("#prospectGenderLegend").innerHTML = total
+        ? `<span><i></i>여성 지수 ${femaleText}</span><span><i></i>남성 지수 ${maleText}</span>`
+        : `<span><i></i>${ageLabel} 교차 데이터 없음</span>`;
+      qsa("#prospectAgeBars .age-row").forEach(row => row.classList.toggle("selected", row.dataset.age === ageLabel));
+    }
+
+    function renderProspectInsight(ageLabel = prospectInsight.defaultAge) {
+      activeProspectAge = ageLabel;
+      const topAge = [...prospectInsight.age].sort((a, b) => b.value - a.value)[0];
+      const topGender = [...prospectInsight.gender].sort((a, b) => b.value - a.value)[0];
+      qs("#prospectTitle").innerHTML = `잠재 타겟층은 <em>${topAge.age} ${topGender.gender}</em>입니다.`;
+      qs("#prospectCaption").textContent = `${prospectInsight.date} · 상대 관심지수 기준`;
+      const maxAge = Math.max(...prospectInsight.age.map(item => item.value));
+      qs("#prospectAgeBars").innerHTML = prospectInsight.age.map(item => `
+        <button class="age-row ${item.age === activeProspectAge ? "selected" : ""}" type="button" data-age="${item.age}" aria-pressed="${item.age === activeProspectAge}">
+          <span>${item.age}</span><div class="track"><i style="--w:${item.value / maxAge * 100}%"></i></div><b>${item.value}%</b>
+        </button>
+      `).join("");
+      qsa("#prospectAgeBars .age-row").forEach(row => {
+        row.addEventListener("click", () => {
+          activeProspectAge = row.dataset.age;
+          qsa("#prospectAgeBars .age-row").forEach(item => item.setAttribute("aria-pressed", String(item === row)));
+          renderProspectGenderByAge(activeProspectAge);
+          updateStep2Action();
+        });
+      });
+      renderProspectGenderByAge(activeProspectAge);
+    }
+
+    function renderCrmGenderByAge(data, ageLabel) {
+      const counts = data.genderByAge?.[ageLabel] || { female: data.female, male: 100 - data.female };
+      const total = counts.female + counts.male;
+      const femaleRate = total ? Math.round(counts.female / total * 100) : 0;
+      const maleRate = total ? 100 - femaleRate : 0;
+      qs("#crmGenderTitle").textContent = `${ageLabel} 성별 비율`;
+      const donut = qs("#crmGenderDonut");
+      donut.dataset.label = `여성 ${femaleRate}%`;
+      donut.setAttribute("aria-label", `${ageLabel} 여성 ${femaleRate}%, 남성 ${maleRate}%`);
+      donut.style.background = `conic-gradient(#5276dd 0 ${femaleRate}%, #c1c9df ${femaleRate}% 100%)`;
+      qs("#crmGenderLegend").innerHTML = `<span><i></i>여성 ${femaleRate}%</span><span><i></i>남성 ${maleRate}%</span>`;
+      qsa("#crmAgeBars .age-row").forEach(row => row.classList.toggle("selected", row.dataset.age === ageLabel));
+    }
+
+    function renderCrmPeriod(key = "3m", ageLabel = null) {
+      activeCrmPeriod = key;
       const data = crmPeriods[key];
-      const male = 100 - data.female;
+      activeCrmAge = ageLabel || data.defaultAge || data.ages[0][0];
       qs("#crmCustomerTitle").innerHTML = `${data.label} 주요 구매고객층은 <em>${data.target}</em>입니다.`;
       qs("#crmPeriodCaption").textContent = `${data.label} 실제 결제 기준`;
-      const donut = qs("#crmGenderDonut");
-      donut.dataset.label = `여성 ${data.female}%`;
-      donut.setAttribute("aria-label", `여성 ${data.female}%, 남성 ${male}%`);
-      donut.style.background = `conic-gradient(#5276dd 0 ${data.female}%, #c1c9df ${data.female}% 100%)`;
-      qs("#crmGenderLegend").innerHTML = `<span><i></i>여성 ${data.female}%</span><span><i></i>남성 ${male}%</span>`;
-      qs("#crmAgeBars").innerHTML = data.ages.map(([label, value]) => `<div class="age-row"><span>${label}</span><div class="track"><i style="--w:${value}%"></i></div><b>${value}%</b></div>`).join("");
+      qs("#crmAgeBars").innerHTML = data.ages.map(([label, value]) => `
+        <button class="age-row ${label === activeCrmAge ? "selected" : ""}" type="button" data-age="${label}" aria-pressed="${label === activeCrmAge}">
+          <span>${label}</span><div class="track"><i style="--w:${value}%"></i></div><b>${value}%</b>
+        </button>
+      `).join("");
+      qsa("#crmAgeBars .age-row").forEach(row => {
+        row.addEventListener("click", () => {
+          activeCrmAge = row.dataset.age;
+          qsa("#crmAgeBars .age-row").forEach(item => item.setAttribute("aria-pressed", String(item === row)));
+          renderCrmGenderByAge(crmPeriods[activeCrmPeriod], activeCrmAge);
+          updateStep2Action();
+        });
+      });
+      renderCrmGenderByAge(data, activeCrmAge);
       qsa(".crm-period").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.period === key)));
     }
 
-    qsa(".crm-period").forEach(button => button.addEventListener("click", () => renderCrmPeriod(button.dataset.period)));
+    qsa(".crm-period").forEach(button => button.addEventListener("click", () => {
+      renderCrmPeriod(button.dataset.period);
+      updateStep2Action();
+    }));
 
     function renderCompetitors(type = "character") {
       qs("#competitorGrid").innerHTML = competitorProducts[type].map(product => `
         <article class="panel product-card">
-          <img src="${product.image}" alt="${product.brand} ${product.name}" loading="lazy">
+          <img src="${product.image}" alt="${product.brand} ${product.name}" loading="lazy" onerror="this.style.display='none'">
           <div class="product-copy">
             <span class="brand-chip">${product.brand}</span>
             <h3>${product.name}</h3>
             <div class="price">${product.price}</div>
+            ${product.meta ? `<div class="product-meta">${product.meta}</div>` : ""}
             <div class="tags">${product.tags.map(tag => `<span>${tag}</span>`).join("")}</div>
+            <div class="position"><strong>차별점</strong><br>${product.difference || "공개 상품 정보 기준 비교 포인트를 확인합니다."}</div>
             <div class="position"><strong>마케팅 방향</strong><br>${product.direction}</div>
           </div>
         </article>
       `).join("");
     }
 
-    qs("#competitorType").addEventListener("change", event => renderCompetitors(event.target.value));
+    qs("#competitorType").addEventListener("change", event => {
+      renderCompetitors(event.target.value);
+      updateStep2Action();
+    });
 
     function renderSentiment(key = "positive") {
       const data = sentiments[key];
@@ -775,11 +1050,13 @@
 
     function collectDashboardInsightPayload() {
       const activeTarget = targets[Number(qs("#keywordTargetSelect")?.value || 0)];
-      const activeCrmPeriod = qsa(".crm-period").find(button => button.getAttribute("aria-pressed") === "true")?.dataset.period || "3m";
-      const activeCrm = crmPeriods[activeCrmPeriod];
+      const currentCrmPeriod = qsa(".crm-period").find(button => button.getAttribute("aria-pressed") === "true")?.dataset.period || activeCrmPeriod || "3m";
+      const activeCrm = crmPeriods[currentCrmPeriod];
       const activeCompetitorType = qs("#competitorType")?.value || "character";
       const topSentimentEntry = Object.entries(sentiments).sort(([, a], [, b]) => b.percent - a.percent)[0];
       const [topSentimentKey, topSentiment] = topSentimentEntry;
+      const prospectTopAge = [...prospectInsight.age].sort((a, b) => b.value - a.value)[0];
+      const prospectTopGender = [...prospectInsight.gender].sort((a, b) => b.value - a.value)[0];
       return {
         product: "꼬모냉장고",
         generatedAt: new Date().toISOString(),
@@ -812,7 +1089,17 @@
           period: activeCrm.label,
           target: activeCrm.target,
           femaleRate: activeCrm.female,
-          ages: activeCrm.ages
+          ages: activeCrm.ages,
+          selectedAge: activeCrmAge,
+          selectedAgeGenderCount: activeCrm.genderByAge?.[activeCrmAge]
+        },
+        prospect: {
+          source: prospectInsight.source,
+          date: prospectInsight.date,
+          topAge: prospectTopAge,
+          topGender: prospectTopGender,
+          selectedAge: activeProspectAge,
+          selectedAgeGenderRate: prospectInsight.genderByAge?.[activeProspectAge]
         },
         reaction: {
           source: "공개 웹 반응 분석",
@@ -831,12 +1118,77 @@
             brand: product.brand,
             name: product.name,
             price: product.price,
+            meta: product.meta,
             tags: product.tags,
+            difference: product.difference,
             direction: product.direction
           }))
-        }
+        },
+        step2SelectedStrategies: qsa(".step2-checkbox:checked").map(input => input.value)
       };
     }
+
+    function getSelectedStep2Strategies() {
+      return qsa(".step2-checkbox:checked").map(input => input.value);
+    }
+
+    function updateStep2Action() {
+      const payload = collectDashboardInsightPayload();
+      const topSentiment = payload.insightRulesInput.topSentiment;
+      const negativeKeyword = payload.reaction.sentiments.negative.keywords?.[0] || "구매 불안";
+      qs("#step2StrengthText").textContent = `${topSentiment.keywordRank1} 반응과 ${payload.insightRulesInput.keywordRank1} 키워드를 콘텐츠 소재로 사용합니다.`;
+      qs("#step2TargetText").textContent = `${payload.insightRulesInput.prospectCustomer}에게 맞는 메시지와 사용 장면을 만듭니다.`;
+      qs("#step2BarrierText").textContent = `${negativeKeyword} 우려를 먼저 설명하는 상세페이지/광고 문구를 만듭니다.`;
+
+      const selected = getSelectedStep2Strategies();
+      qsa(".step2-strategy").forEach(card => {
+        const input = card.querySelector(".step2-checkbox");
+        card.setAttribute("aria-checked", String(input.checked));
+      });
+      qs("#step2SelectedNote").textContent = selected.length ? `${selected.join(" · ")} 선택됨` : "선택 대기";
+      qs("#step2Submit").disabled = selected.length === 0;
+    }
+
+    qsa(".step2-strategy").forEach(card => {
+      const input = card.querySelector(".step2-checkbox");
+      card.addEventListener("click", event => {
+        if (event.target === input) return;
+        event.preventDefault();
+        input.checked = !input.checked;
+        updateStep2Action();
+      });
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          input.checked = !input.checked;
+          updateStep2Action();
+        }
+      });
+      input.addEventListener("change", updateStep2Action);
+    });
+
+    qs("#step2SelectAll")?.addEventListener("click", () => {
+      qsa(".step2-checkbox").forEach(input => { input.checked = true; });
+      updateStep2Action();
+    });
+
+    qs("#step2ClearAll")?.addEventListener("click", () => {
+      qsa(".step2-checkbox").forEach(input => { input.checked = false; });
+      updateStep2Action();
+    });
+
+    qs("#step2Submit")?.addEventListener("click", () => {
+      const selectedStrategies = getSelectedStep2Strategies();
+      if (!selectedStrategies.length) return;
+      const payload = collectDashboardInsightPayload();
+      const step2Input = {
+        createdAt: new Date().toISOString(),
+        selectedStrategies,
+        dashboardData: payload
+      };
+      sessionStorage.setItem("meokko:step2-input", JSON.stringify(step2Input));
+      window.location.href = `step2.html?strategies=${encodeURIComponent(selectedStrategies.join(","))}`;
+    });
 
     function applyAiInsight(insight) {
       if (!insight || typeof insight !== "object") return;
@@ -886,9 +1238,11 @@
     }
 
     renderTarget();
+    renderProspectInsight();
     renderCrmPeriod();
     renderCompetitors();
     renderSentiment();
+    updateStep2Action();
     initDailyAiInsight();
   </script>
 </body>
