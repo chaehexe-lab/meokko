@@ -750,6 +750,25 @@
       ? "https://ccomo-market-ai.aisprintteam2.chatgpt.site"
       : "";
 
+    function getKoreaDateKey(offsetDays = 0) {
+      const koreaNow = new Date(Date.now() + 9 * 60 * 60 * 1000);
+      koreaNow.setUTCDate(koreaNow.getUTCDate() + offsetDays);
+      return koreaNow.toISOString().slice(0, 10);
+    }
+
+    function getNextKoreaMidnightDelay() {
+      const now = Date.now();
+      const koreaNow = new Date(now + 9 * 60 * 60 * 1000);
+      const nextMidnightUtc = Date.UTC(
+        koreaNow.getUTCFullYear(),
+        koreaNow.getUTCMonth(),
+        koreaNow.getUTCDate() + 1,
+      ) - 9 * 60 * 60 * 1000;
+      return Math.max(nextMidnightUtc - now + 3000, 3000);
+    }
+
+    const dailyDataDate = getKoreaDateKey(-1);
+
     let targets = [
       { rank: 1, name: "20대 여성", score: 88.4, insight: "뷰티 루틴과 개인 공간을 연결한 제품 메시지에 가장 민감하게 반응합니다.", keywords: [["화장품 냉장고", "+18"], ["미니 냉장고", "+12"], ["원룸 인테리어", "+9"], ["파스텔 가전", "+7"], ["음료 냉장고", "+4"]] },
       { rank: 2, name: "30대 여성", score: 76.2, insight: "간식과 음료를 분리 보관하려는 실용 수요가 두드러집니다.", keywords: [["음료수 냉장고", "+14"], ["간식 보관", "+11"], ["홈카페", "+8"], ["저소음 냉장고", "+6"], ["주방 보조 냉장고", "+3"]] },
@@ -888,7 +907,7 @@
       list.innerHTML = `<div class="age-keyword-status">검색 추이를 불러오는 중입니다.</div>`;
       try {
         const genderQuery = gender ? `&gender=${gender}` : "";
-        const response = await fetch(`${API_BASE}/api/dashboard/keywords?age=${group.age}${genderQuery}`, { cache: "no-store" });
+        const response = await fetch(`${API_BASE}/api/dashboard/keywords?age=${group.age}${genderQuery}&date=${dailyDataDate}`, { cache: "no-store" });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "관심 키워드를 불러오지 못했습니다.");
         if (card.dataset.activeGender !== gender) return;
@@ -1272,7 +1291,7 @@
     }
 
     async function loadMarket() {
-      const response = await fetch(`${API_BASE}/api/dashboard/market`, { cache: "no-store" });
+      const response = await fetch(`${API_BASE}/api/dashboard/market?date=${dailyDataDate}`, { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "잠재고객 데이터를 불러오지 못했습니다.");
 
@@ -1283,7 +1302,7 @@
       if (existingIndex > 0) [targets[0], targets[existingIndex]] = [targets[existingIndex], targets[0]];
       else if (existingIndex < 0) targets[0].name = data.target;
       qs("#prospectTargetTitle").innerHTML = `잠재 타겟층은 <em>${data.target}</em>입니다.`;
-      qs("#prospectDataCaption").textContent = `${data.period.startDate.slice(0, 7)}~${data.period.endDate.slice(0, 7)} 상대 클릭 기준`;
+      qs("#prospectDataCaption").textContent = `${data.period.endDate} 하루 클릭 기준 · 매일 00:00 갱신`;
       const female = data.targetGenderShares.female;
       const male = data.targetGenderShares.male;
       renderGenderDonut({ donutId: "prospectGenderDonut", legendId: "prospectGenderLegend", titleId: "prospectGenderTitle", female, male, title: `${data.topAge}대 성별 클릭 비중` });
@@ -1368,6 +1387,7 @@
       }
       initDailyAiInsight();
     });
+    window.setTimeout(() => window.location.reload(), getNextKoreaMidnightDelay());
   </script>
 </body>
 </html>
