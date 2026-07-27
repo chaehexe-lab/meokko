@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { corsHeaders, corsOptions } from "../../../lib/cors";
-import { credentials, lastCompleteMonthRange, naverPost } from "../../../lib/naver-api";
+import { credentials, lastCompleteDayRange, naverPost } from "../../../lib/naver-api";
 
 type TrendPoint = { period: string; ratio: number; group?: string };
 type TrendResponse = { results?: { title?: string; data?: TrendPoint[] }[] };
@@ -41,7 +41,7 @@ export function OPTIONS(request: Request) {
 export async function GET(request: Request) {
   try {
     const credential = credentials("SHOPPING");
-    const period = lastCompleteMonthRange(12);
+    const period = lastCompleteDayRange(1);
     const base = {
       ...period,
       category: CATEGORY,
@@ -111,11 +111,11 @@ export async function GET(request: Request) {
           value: ageShares[group] || 0,
         })),
         source: `${ageResult.provider} 쇼핑 인사이트`,
-        notice: "실제 고객 수가 아닌 상대 클릭지수를 합계 100%로 환산한 비중입니다.",
+        notice: "전날 하루의 상대 클릭지수를 합계 100%로 환산한 비중이며 매일 자정 갱신됩니다.",
       },
       {
         headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=21600, stale-while-revalidate=86400",
+          "Cache-Control": "public, max-age=60, s-maxage=86400",
           ...corsHeaders(request),
         },
       },

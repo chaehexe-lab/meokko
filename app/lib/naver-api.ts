@@ -125,3 +125,16 @@ export function lastCompleteMonthRange(months = 12) {
   };
 }
 
+function koreaDate(offsetDays: number) {
+  const koreaNow = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  koreaNow.setUTCDate(koreaNow.getUTCDate() + offsetDays);
+  return koreaNow.toISOString().slice(0, 10);
+}
+
+export function lastCompleteDayRange(days = 1) {
+  return {
+    startDate: koreaDate(-days),
+    endDate: koreaDate(-1),
+    timeUnit: "date",
+  };
+}

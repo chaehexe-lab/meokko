@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { corsHeaders, corsOptions } from "../../../lib/cors";
-import { credentials, lastCompleteMonthRange, naverPost } from "../../../lib/naver-api";
+import { credentials, lastCompleteDayRange, naverPost } from "../../../lib/naver-api";
 
 type TrendPoint = { period: string; ratio: number };
 type TrendResponse = { results?: { title?: string; data?: TrendPoint[] }[] };
@@ -16,14 +16,11 @@ const SEARCH_AGES: Record<string, string[]> = {
   "60": ["11"],
 };
 
-function recentChange(points: TrendPoint[]) {
+function dailyChange(points: TrendPoint[]) {
   const values = points.map((point) => Number(point.ratio || 0));
-  const recentValues = values.slice(-3);
-  const previousValues = values.slice(-6, -3);
-  const average = (items: number[]) => items.reduce((sum, value) => sum + value, 0) / Math.max(items.length, 1);
-  const recent = average(recentValues);
-  const previous = average(previousValues);
-  return previous ? Math.round(((recent - previous) / previous) * 100) : 0;
+  const recent = values.at(-1) || 0;
+  const previous = values.at(-2) || 0;
+  return previous ? Math.round(((recent - previous) / previous) * 100) : recent ? 100 : 0;
 }
 
 export function OPTIONS(request: Request) {
@@ -38,11 +35,12 @@ export async function GET(request: NextRequest) {
 
   try {
     const credential = credentials("TREND");
+    const period = lastCompleteDayRange(2);
     const response = await naverPost<TrendResponse>(
       "/search-trend/v1/search",
       "/v1/datalab/search",
       {
-        ...lastCompleteMonthRange(12),
+        ...period,
         keywordGroups: CANDIDATES.map((keyword) => ({
           groupName: keyword,
           keywords: [keyword],
@@ -57,25 +55,23 @@ export async function GET(request: NextRequest) {
     const keywords = (response.data.results || [])
       .map((result) => ({
         keyword: result.title || "",
-        change: recentChange(result.data || []),
-        recentIndex: Math.round(
-          (result.data || []).slice(-3).reduce((sum, point) => sum + Number(point.ratio || 0), 0) /
-            Math.max((result.data || []).slice(-3).length, 1),
-        ),
+        change: dailyChange(result.data || []),
+        recentIndex: Math.round(Number((result.data || []).at(-1)?.ratio || 0)),
       }))
       .sort((a, b) => b.recentIndex - a.recentIndex);
 
     return NextResponse.json(
       {
         fetchedAt: new Date().toISOString(),
+        analysisDate: period.endDate,
         target: `${ageLabel}${gender ? ` ${gender === "f" ? "여성" : "남성"}` : ""}`,
         keywords,
         source: `${response.provider} 검색어 트렌드`,
-        notice: "사전 선정한 후보 키워드 5개의 상대 검색 추이를 동일 조건에서 비교한 순위입니다.",
+        notice: "전날 하루의 검색지수로 순위를 계산하고 전전날 대비 변화를 표시하며 매일 자정 갱신됩니다.",
       },
       {
         headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=21600, stale-while-revalidate=86400",
+          "Cache-Control": "public, max-age=60, s-maxage=86400",
           ...corsHeaders(request),
         },
       },
