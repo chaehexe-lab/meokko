@@ -165,10 +165,8 @@
     .step2-strategy small { color: var(--green-2); font-size: 10px; font-weight: 950; }
     .step2-strategy strong { display: block; margin-top: 0; font-size: 13px; white-space: nowrap; }
     .step2-strategy span { display: block; margin-top: 0; padding-right: 15px; overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1.25; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
-    .step2-action-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 7px; }
-    .step2-mini-tools { display: flex; gap: 6px; }
-    .step2-mini-tools button, .step2-submit { border: 0; border-radius: 999px; font: inherit; font-size: 11px; cursor: pointer; }
-    .step2-mini-tools button { padding: 6px 9px; color: var(--muted); background: #f1f4f2; }
+    .step2-action-bottom { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 7px; }
+    .step2-submit { border: 0; border-radius: 999px; font: inherit; font-size: 11px; cursor: pointer; }
     .step2-submit { min-height: 30px; padding: 0 14px; color: #fff; background: var(--green); }
     .step2-submit:disabled { cursor: not-allowed; opacity: .46; }
     .step2-selected-note { color: var(--muted); font-size: 11px; font-weight: 800; }
@@ -613,7 +611,7 @@
 
     <section class="step2-action shell" aria-label="STEP2 콘텐츠 추천 연결">
       <div class="step2-action-head">
-        <div><b>STEP2 액션</b><span> · 전략 선택</span></div>
+        <div><b>콘텐츠 추천 전략</b><span> · STEP2 연결</span></div>
         <span class="step2-selected-note" id="step2SelectedNote">선택 대기</span>
       </div>
       <div class="step2-strategy-grid">
@@ -637,10 +635,6 @@
         </label>
       </div>
       <div class="step2-action-bottom">
-        <div class="step2-mini-tools">
-          <button type="button" id="step2SelectAll">전체 선택</button>
-          <button type="button" id="step2ClearAll">전체 해제</button>
-        </div>
         <button class="step2-submit" type="button" id="step2Submit" disabled>STEP2 생성</button>
       </div>
     </section>
@@ -1384,16 +1378,6 @@
         }
       });
       input.addEventListener("change", updateStep2Action);
-    });
-
-    qs("#step2SelectAll").addEventListener("click", () => {
-      qsa(".step2-checkbox").forEach(input => { input.checked = true; });
-      updateStep2Action();
-    });
-
-    qs("#step2ClearAll").addEventListener("click", () => {
-      qsa(".step2-checkbox").forEach(input => { input.checked = false; });
-      updateStep2Action();
     });
 
     qs("#step2Submit").addEventListener("click", () => {
