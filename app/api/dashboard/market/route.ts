@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { corsHeaders, corsOptions } from "../../../lib/cors";
 import { credentials, lastCompleteMonthRange, naverPost } from "../../../lib/naver-api";
 
 type TrendPoint = { period: string; ratio: number; group?: string };
@@ -33,7 +34,11 @@ function topEntry(values: Record<string, number>, fallback: string) {
   return Object.entries(values).sort((a, b) => b[1] - a[1])[0]?.[0] || fallback;
 }
 
-export async function GET() {
+export function OPTIONS(request: Request) {
+  return corsOptions(request);
+}
+
+export async function GET(request: Request) {
   try {
     const credential = credentials("SHOPPING");
     const period = lastCompleteMonthRange(12);
@@ -100,14 +105,14 @@ export async function GET() {
       {
         headers: {
           "Cache-Control": "public, max-age=300, s-maxage=21600, stale-while-revalidate=86400",
+          ...corsHeaders(request),
         },
       },
     );
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "잠재고객 데이터를 불러오지 못했습니다." },
-      { status: 502 },
+      { status: 502, headers: corsHeaders(request) },
     );
   }
 }
-

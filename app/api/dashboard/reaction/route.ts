@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { corsHeaders, corsOptions } from "../../../lib/cors";
 import { credentials, naverSearch } from "../../../lib/naver-api";
 
 type SearchItem = {
@@ -66,7 +67,11 @@ function topThemes(items: { text: string }[]) {
     .sort((a, b) => b.count - a.count);
 }
 
-export async function GET() {
+export function OPTIONS(request: Request) {
+  return corsOptions(request);
+}
+
+export async function GET(request: Request) {
   try {
     const credential = credentials("SEARCH");
     const batches = await Promise.all(
@@ -159,13 +164,14 @@ export async function GET() {
       {
         headers: {
           "Cache-Control": "public, max-age=300, s-maxage=21600, stale-while-revalidate=86400",
+          ...corsHeaders(request),
         },
       },
     );
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "반응 데이터를 불러오지 못했습니다." },
-      { status: 502 },
+      { status: 502, headers: corsHeaders(request) },
     );
   }
 }

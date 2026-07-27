@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { corsHeaders, corsOptions } from "../../../lib/cors";
 import { credentials, lastCompleteMonthRange, naverPost } from "../../../lib/naver-api";
 
 type TrendPoint = { period: string; ratio: number };
@@ -23,6 +24,10 @@ function recentChange(points: TrendPoint[]) {
   const recent = average(recentValues);
   const previous = average(previousValues);
   return previous ? Math.round(((recent - previous) / previous) * 100) : 0;
+}
+
+export function OPTIONS(request: Request) {
+  return corsOptions(request);
 }
 
 export async function GET(request: NextRequest) {
@@ -71,13 +76,14 @@ export async function GET(request: NextRequest) {
       {
         headers: {
           "Cache-Control": "public, max-age=300, s-maxage=21600, stale-while-revalidate=86400",
+          ...corsHeaders(request),
         },
       },
     );
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "관심 키워드를 불러오지 못했습니다." },
-      { status: 502 },
+      { status: 502, headers: corsHeaders(request) },
     );
   }
 }
