@@ -759,7 +759,7 @@
       qsa("[data-sentiment]").forEach(button => button.addEventListener("click", () => renderSentiment(button.dataset.sentiment)));
     }
 
-    const aiInsightCacheKey = "meokko:daily-ai-insight";
+    const aiInsightCacheKey = "meokko:daily-ai-insight:v3";
 
     function getTodayKey() {
       const now = new Date();
@@ -778,9 +778,30 @@
       const activeCrmPeriod = qsa(".crm-period").find(button => button.getAttribute("aria-pressed") === "true")?.dataset.period || "3m";
       const activeCrm = crmPeriods[activeCrmPeriod];
       const activeCompetitorType = qs("#competitorType")?.value || "character";
+      const topSentimentEntry = Object.entries(sentiments).sort(([, a], [, b]) => b.percent - a.percent)[0];
+      const [topSentimentKey, topSentiment] = topSentimentEntry;
       return {
         product: "꼬모냉장고",
         generatedAt: new Date().toISOString(),
+        insightRulesInput: {
+          existingCustomer: activeCrm.target,
+          prospectCustomer: activeTarget.name,
+          isSameCustomer: activeCrm.target === activeTarget.name,
+          keywordRank1: activeTarget.keywords?.[0]?.[0],
+          keywordRanking: activeTarget.keywords?.map(([keyword], index) => ({ rank: index + 1, keyword })) || [],
+          topSentiment: {
+            key: topSentimentKey,
+            type: topSentiment.label,
+            percent: topSentiment.percent,
+            keywordRank1: topSentiment.keywords?.[0],
+            keywordRanking: topSentiment.keywords?.map((keyword, index) => ({ rank: index + 1, keyword })) || []
+          },
+          sentimentRatios: Object.entries(sentiments).map(([key, item]) => ({
+            key,
+            label: item.label,
+            percent: item.percent
+          }))
+        },
         target: {
           source: "대시보드 타겟층 분석",
           activeTarget,
