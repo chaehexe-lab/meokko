@@ -1220,10 +1220,12 @@
       if (!donut) return;
       const dominantGender = female >= male ? "여성" : "남성";
       const dominantPercent = Math.max(female, male);
+      const femaleColor = female >= male ? color : "#b7c4be";
+      const maleColor = male > female ? color : "#b7c4be";
       donut.dataset.label = `${dominantGender} ${dominantPercent}%`;
       donut.setAttribute("aria-label", `여성 ${female}%, 남성 ${male}%`);
-      donut.style.background = `conic-gradient(${color} 0 ${female}%, #b7c4be ${female}% 100%)`;
-      qs(`#${legendId}`).innerHTML = `<span><i></i>여성 ${female}%</span><span><i></i>남성 ${male}%</span>`;
+      donut.style.background = `conic-gradient(${femaleColor} 0 ${female}%, ${maleColor} ${female}% 100%)`;
+      qs(`#${legendId}`).innerHTML = `<span><i style="background:${femaleColor}"></i>여성 ${female}%</span><span><i style="background:${maleColor}"></i>남성 ${male}%</span>`;
       if (titleId && title) qs(`#${titleId}`).textContent = title;
     }
 
