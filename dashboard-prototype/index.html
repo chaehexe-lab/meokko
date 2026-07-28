@@ -1492,7 +1492,7 @@
     }
 
     async function loadReaction() {
-      const response = await fetch(`${API_BASE}/api/dashboard/reaction`, { cache: "no-store" });
+      const response = await fetch(`${API_BASE}/api/dashboard/reaction?date=${dailyDataDate}`, { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "온라인 반응을 불러오지 못했습니다.");
 

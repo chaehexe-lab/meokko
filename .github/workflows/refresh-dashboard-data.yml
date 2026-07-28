@@ -22,7 +22,7 @@ jobs:
           set -euo pipefail
           curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/market?date=${{ steps.date.outputs.target_date }}&mode=latest-positive-day" > /tmp/market.json
           curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/crm" > /tmp/crm.json
-          curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/reaction" > /tmp/reaction.json
+          curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/reaction?date=${{ steps.date.outputs.target_date }}" > /tmp/reaction.json
 
       - name: Refresh keyword data by segment
         run: |
