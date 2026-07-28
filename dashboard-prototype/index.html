@@ -111,8 +111,8 @@
     .product-filter span { color: var(--muted); font-size: 12px; }
     .product-filter strong { padding: 8px 12px; border-radius: 9px; color: #fff; background: var(--green); }
     .insight-banner {
-      position: relative; overflow: hidden; min-height: 154px; display: grid; align-content: center;
-      margin-top: 10px; padding: 22px 34px; border-radius: 20px; color: #fff;
+      position: relative; overflow: hidden; min-height: 0; display: grid; align-content: center;
+      margin-top: 8px; padding: 18px 26px; border-radius: 18px; color: #fff;
       background: linear-gradient(120deg, #1f563f 0%, #2f7655 62%, #63a77e 100%);
       box-shadow: 0 24px 60px rgba(34, 93, 69, .22);
     }
@@ -122,32 +122,36 @@
       position: relative;
       z-index: 1;
       max-width: min(1120px, 100%);
-      margin: 11px 0 0;
-      font-size: clamp(18px, 2.7vw, 34px);
+      margin: 9px 0 0;
+      font-size: clamp(18px, 2.45vw, 31px);
       line-height: 1.22;
       letter-spacing: -.045em;
       white-space: normal;
       overflow-wrap: anywhere;
     }
-    .insight-banner p { position: relative; z-index: 1; margin: 14px 0 0; color: rgba(255,255,255,.78); font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
-    .ai-insight-status { justify-self: start; margin-top: 10px; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 850; }
+    .insight-banner p { position: relative; z-index: 1; margin: 8px 0 0; color: rgba(255,255,255,.78); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+    .ai-insight-status { justify-self: start; margin-top: 8px; color: rgba(255,255,255,.72); font-size: 10px; font-weight: 850; }
     .insight-source { justify-self: start; margin-top: 30px; padding: 10px 13px; border-radius: 9px; background: rgba(9,37,123,.28); font-size: 11px; font-weight: 750; }
     .step2-action {
-      margin-top: 10px;
-      padding: 16px;
+      margin-top: 6px;
+      padding: 8px 10px;
       border: 1px solid var(--line);
       border-radius: 20px;
       background: #fff;
       box-shadow: var(--shadow);
     }
-    .step2-action-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
-    .step2-action-head b { font-size: 15px; letter-spacing: -.02em; }
-    .step2-action-head span { color: var(--muted); font-size: 11px; font-weight: 800; }
-    .step2-strategy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .step2-action-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 6px; }
+    .step2-action-head b { font-size: 13px; letter-spacing: -.02em; }
+    .step2-action-head span { color: var(--muted); font-size: 10px; font-weight: 800; }
+    .step2-strategy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
     .step2-strategy {
       position: relative;
-      min-height: 96px;
-      padding: 14px;
+      min-height: 36px;
+      display: grid;
+      grid-template-columns: 36px minmax(0, auto) minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
       border: 1px solid var(--line);
       border-radius: 14px;
       background: #fff;
@@ -156,16 +160,14 @@
     }
     .step2-strategy:hover { transform: translateY(-2px); border-color: #bad8c7; }
     .step2-strategy[aria-checked="true"] { transform: scale(1.01); border-color: var(--green); background: var(--mint); box-shadow: 0 14px 30px rgba(34, 93, 69, .12); }
-    .step2-strategy[aria-checked="true"]::after { content: "✓"; position: absolute; top: 12px; right: 12px; font-weight: 950; }
+    .step2-strategy[aria-checked="true"]::after { content: "✓"; position: absolute; top: 50%; right: 9px; font-weight: 950; transform: translateY(-50%); }
     .step2-strategy input { position: absolute; opacity: 0; pointer-events: none; }
-    .step2-strategy small { color: var(--green-2); font-size: 11px; font-weight: 950; }
-    .step2-strategy strong { display: block; margin-top: 8px; font-size: 16px; }
-    .step2-strategy span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.45; font-weight: 750; }
-    .step2-action-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
-    .step2-mini-tools { display: flex; gap: 6px; }
-    .step2-mini-tools button, .step2-submit { border: 0; border-radius: 999px; font: inherit; font-size: 11px; cursor: pointer; }
-    .step2-mini-tools button { padding: 8px 11px; color: var(--muted); background: #f1f4f2; }
-    .step2-submit { min-height: 38px; padding: 0 18px; color: #fff; background: var(--green); }
+    .step2-strategy small { color: var(--green-2); font-size: 10px; font-weight: 950; }
+    .step2-strategy strong { display: block; margin-top: 0; font-size: 13px; white-space: nowrap; }
+    .step2-strategy span { display: block; margin-top: 0; padding-right: 15px; overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1.25; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+    .step2-action-bottom { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 7px; }
+    .step2-submit { border: 0; border-radius: 999px; font: inherit; font-size: 11px; cursor: pointer; }
+    .step2-submit { min-height: 30px; padding: 0 14px; color: #fff; background: var(--green); }
     .step2-submit:disabled { cursor: not-allowed; opacity: .46; }
     .step2-selected-note { color: var(--muted); font-size: 11px; font-weight: 800; }
     .target-overview { padding: 10px 0 12px; scroll-margin-top: 60px; }
@@ -545,9 +547,10 @@
       .topbar-inner { min-height: 54px; }
       .nav { display: none; }
       .hero { padding-top: 48px; }
-      .insight-banner { min-height: 148px; margin-top: 8px; padding: 20px 22px; border-radius: 18px; }
+      .insight-banner { min-height: 0; margin-top: 8px; padding: 14px; border-radius: 18px; }
       .insight-banner h1 { font-size: clamp(18px, 4.4vw, 28px); }
       .step2-strategy-grid { grid-template-columns: 1fr; }
+      .step2-strategy { grid-template-columns: 38px minmax(0, auto) minmax(0, 1fr); }
       .step2-action-bottom { align-items: stretch; flex-direction: column; }
       .step2-submit { width: 100%; }
       .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -601,42 +604,38 @@
   <main>
     <section class="insight-banner shell">
       <div class="insight-kicker">타겟층 종합 인사이트</div>
-      <h1 id="overallInsight">집중해야 할 최종 타겟층을 분석하고 있습니다.</h1>
-      <p id="aiInsightSummary">타겟층, 반응, 경쟁사 데이터를 종합해 오늘의 마케팅 방향을 정리합니다.</p>
-      <div class="ai-insight-status" id="aiInsightStatus">연결된 데이터를 확인하고 있습니다.</div>
+      <h1 id="overallInsight">Mistral API로 오늘의 종합 인사이트를 생성 중입니다.</h1>
+      <p id="aiInsightSummary">타겟층·반응·경쟁사 데이터를 종합합니다.</p>
+      <div class="ai-insight-status" id="aiInsightStatus">Mistral API 연결 확인 중</div>
     </section>
 
     <section class="step2-action shell" aria-label="STEP2 콘텐츠 추천 연결">
       <div class="step2-action-head">
-        <div><b>STEP2 연결 액션</b><span> · 선택한 전략과 현재 분석 결과를 콘텐츠 추천 화면으로 전달</span></div>
+        <div><b>콘텐츠 추천 전략</b><span> · STEP2 연결</span></div>
         <span class="step2-selected-note" id="step2SelectedNote">선택 대기</span>
       </div>
       <div class="step2-strategy-grid">
         <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
           <input class="step2-checkbox" type="checkbox" value="강화">
           <small>강화</small>
-          <strong>잘 먹히는 강점 확대</strong>
-          <span id="step2StrengthText">긍정 반응과 핵심 키워드를 콘텐츠 소재로 연결합니다.</span>
+          <strong>강점 강화</strong>
+          <span id="step2StrengthText">긍정 키워드</span>
         </label>
         <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
           <input class="step2-checkbox" type="checkbox" value="공략">
           <small>공략</small>
-          <strong>우선 타겟 집중</strong>
-          <span id="step2TargetText">잠재고객과 기존고객 기준으로 우선 타겟 메시지를 만듭니다.</span>
+          <strong>타겟 공략</strong>
+          <span id="step2TargetText">우선 타겟</span>
         </label>
         <label class="step2-strategy" role="checkbox" aria-checked="false" tabindex="0">
           <input class="step2-checkbox" type="checkbox" value="해소">
           <small>해소</small>
-          <strong>구매 전 불안 낮추기</strong>
-          <span id="step2BarrierText">부정·우려 키워드를 상세페이지와 광고 문구에서 먼저 설명합니다.</span>
+          <strong>불안 해소</strong>
+          <span id="step2BarrierText">부정 키워드</span>
         </label>
       </div>
       <div class="step2-action-bottom">
-        <div class="step2-mini-tools">
-          <button type="button" id="step2SelectAll">전체 선택</button>
-          <button type="button" id="step2ClearAll">전체 해제</button>
-        </div>
-        <button class="step2-submit" type="button" id="step2Submit" disabled>선택한 전략으로 콘텐츠 추천 생성하기</button>
+        <button class="step2-submit" type="button" id="step2Submit" disabled>STEP2 생성</button>
       </div>
     </section>
 
@@ -1260,6 +1259,12 @@
       selectAgeRow("crmAgeBars", ageLabel);
     }
 
+    function getCustomerCenterStrategy(customerName) {
+      const normalizedName = String(customerName || "").replace(/\s+/g, "");
+      const matchedTarget = targets.find(target => String(target.name || "").replace(/\s+/g, "") === normalizedName);
+      return matchedTarget?.keywords?.[0]?.[0] || "기존 고객";
+    }
+
     function collectDashboardInsightPayload() {
       const activeCrm = crmPeriods[activeCrmPeriod] || crmPeriods["3m"];
       const activeCompetitorType = qs("#competitorType")?.value || "character";
@@ -1270,12 +1275,14 @@
         .map((element, index) => ({ rank: index + 1, keyword: element.textContent.trim() }));
       const prospectCustomer = livePotentialTarget || targets[0]?.name || "잠재 고객";
       const existingCustomer = liveCrmTarget || activeCrm?.target || "기존 고객";
+      const existingCustomerCenterStrategy = getCustomerCenterStrategy(existingCustomer);
 
       return {
         product: "꼬모냉장고",
         generatedAt: new Date().toISOString(),
         insightRulesInput: {
           existingCustomer,
+          existingCustomerCenterStrategy,
           prospectCustomer,
           isSameCustomer: existingCustomer === prospectCustomer,
           keywordRank1: keywordRanking[0]?.keyword || targets[0]?.keywords?.[0]?.[0] || "핵심 키워드",
@@ -1287,6 +1294,9 @@
             keywordRank1: topSentiment.keywords?.[0],
             keywordRanking: topSentiment.keywords?.map((keyword, index) => ({ rank: index + 1, keyword })) || []
           },
+          positiveKeywordRank1: sentiments.positive.keywords?.[0],
+          neutralKeywordRank1: sentiments.neutral.keywords?.[0],
+          negativeKeywordRank1: sentiments.negative.keywords?.[0],
           sentimentRatios: Object.entries(sentiments).map(([key, item]) => ({ key, label: item.label, percent: item.percent }))
         },
         crm: {
@@ -1347,9 +1357,9 @@
       const payload = collectDashboardInsightPayload();
       const topSentiment = payload.insightRulesInput.topSentiment;
       const negativeKeyword = payload.reaction.sentiments.negative.keywords?.[0] || "구매 불안";
-      qs("#step2StrengthText").textContent = `${topSentiment.keywordRank1 || "긍정 반응"}과 ${payload.insightRulesInput.keywordRank1} 키워드를 콘텐츠 소재로 사용합니다.`;
-      qs("#step2TargetText").textContent = `${payload.insightRulesInput.prospectCustomer}에게 맞는 메시지와 사용 장면을 만듭니다.`;
-      qs("#step2BarrierText").textContent = `${negativeKeyword} 우려를 먼저 설명하는 상세페이지·광고 문구를 만듭니다.`;
+      qs("#step2StrengthText").textContent = `${topSentiment.keywordRank1 || "긍정"} · ${payload.insightRulesInput.keywordRank1}`;
+      qs("#step2TargetText").textContent = payload.insightRulesInput.prospectCustomer;
+      qs("#step2BarrierText").textContent = negativeKeyword;
 
       const selected = getSelectedStep2Strategies();
       qsa(".step2-strategy").forEach(card => {
@@ -1378,16 +1388,6 @@
       input.addEventListener("change", updateStep2Action);
     });
 
-    qs("#step2SelectAll").addEventListener("click", () => {
-      qsa(".step2-checkbox").forEach(input => { input.checked = true; });
-      updateStep2Action();
-    });
-
-    qs("#step2ClearAll").addEventListener("click", () => {
-      qsa(".step2-checkbox").forEach(input => { input.checked = false; });
-      updateStep2Action();
-    });
-
     qs("#step2Submit").addEventListener("click", () => {
       const selectedStrategies = getSelectedStep2Strategies();
       if (!selectedStrategies.length) return;
@@ -1399,7 +1399,7 @@
       window.location.href = `step2.html?strategies=${encodeURIComponent(selectedStrategies.join(","))}`;
     });
 
-    const aiInsightCacheKey = "meokko:daily-ai-insight:v5";
+    const aiInsightCacheKey = "meokko:daily-ai-insight:v8";
 
     function getTodayKey() {
       const now = new Date();
@@ -1410,15 +1410,6 @@
       if (!insight || typeof insight !== "object") return;
       if (insight.headline) qs("#overallInsight").textContent = insight.headline;
       if (insight.summary) qs("#aiInsightSummary").textContent = insight.summary;
-    }
-
-    function buildFallbackInsight(payload) {
-      const rules = payload.insightRulesInput;
-      const sentimentKeyword = rules.topSentiment.keywordRank1 || "긍정 반응";
-      const headline = rules.isSameCustomer
-        ? `꼬모냉장고는 ${rules.existingCustomer}을 핵심 타겟으로, ${rules.keywordRank1}과 ${sentimentKeyword} 중심의 마케팅 집중이 필요합니다.`
-        : `기존 고객 ${rules.existingCustomer}을 유지하면서, 잠재 고객 ${rules.prospectCustomer}의 ${rules.keywordRank1} 니즈와 ${sentimentKeyword} 강점을 반영한 확장이 필요합니다.`;
-      return { headline };
     }
 
     async function generateAiInsight() {
@@ -1437,9 +1428,9 @@
         applyAiInsight(result.insight);
         localStorage.setItem(aiInsightCacheKey, JSON.stringify({ date: getTodayKey(), model: result.model || "AI", insight: result.insight }));
         status.textContent = `오늘 인사이트 갱신 완료 · ${result.model || "AI"}`;
-      } catch {
-        applyAiInsight(buildFallbackInsight(payload));
-        status.textContent = "연결된 데이터 기준 종합 인사이트";
+      } catch (error) {
+        qs("#overallInsight").textContent = "Mistral API 연결 후 종합 인사이트가 표시됩니다.";
+        status.textContent = `AI 자동 갱신 실패 · ${error.message}`;
       }
     }
 

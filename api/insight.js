@@ -1,42 +1,4 @@
-import { createServer } from "node:http";
-import { readFile } from "node:fs/promises";
-import { extname, join, normalize } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const root = fileURLToPath(new URL(".", import.meta.url));
-const port = Number(process.env.PORT || 5180);
 const model = process.env.MISTRAL_MODEL || "mistral-small-latest";
-
-const mimeTypes = {
-  ".html": "text/html; charset=utf-8",
-  ".css": "text/css; charset=utf-8",
-  ".js": "application/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".svg": "image/svg+xml"
-};
-
-function readBody(request) {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    request.on("data", chunk => {
-      body += chunk;
-      if (body.length > 1_000_000) {
-        request.destroy();
-        reject(new Error("요청 데이터가 너무 큽니다."));
-      }
-    });
-    request.on("end", () => resolve(body));
-    request.on("error", reject);
-  });
-}
-
-function sendJson(response, status, payload) {
-  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
-  response.end(JSON.stringify(payload));
-}
 
 function buildPrompt(payload) {
   return [
@@ -98,51 +60,6 @@ function buildPrompt(payload) {
   ];
 }
 
-async function handleInsight(request, response) {
-  const apiKey = process.env.MISTRAL_API_KEY;
-  if (!apiKey) {
-    sendJson(response, 500, { error: "MISTRAL_API_KEY 환경변수가 없습니다." });
-    return;
-  }
-
-  const rawBody = await readBody(request);
-  const payload = JSON.parse(rawBody || "{}");
-  const mistralResponse = await fetch("https://api.mistral.ai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      response_format: { type: "json_object" },
-      messages: buildPrompt(payload)
-    })
-  });
-
-  const data = await mistralResponse.json();
-  if (!mistralResponse.ok) {
-    sendJson(response, mistralResponse.status, {
-      error: data?.message || data?.error?.message || "Mistral API 요청 실패"
-    });
-    return;
-  }
-
-  const content = data?.choices?.[0]?.message?.content || "{}";
-  let insight;
-  try {
-    insight = JSON.parse(content);
-  } catch {
-    insight = { headline: content };
-  }
-  if (!insight.headline && insight.instruction?.headline) insight = insight.instruction;
-  if (!insight.headline && insight.output?.headline) insight = insight.output;
-  if (!insight.headline && insight.result?.headline) insight = insight.result;
-  insight = enforceInsightRules(payload, insight);
-  sendJson(response, 200, { model, insight });
-}
-
 function enforceInsightRules(payload, insight) {
   const rules = payload?.insightRulesInput;
   if (!rules) return insight;
@@ -176,40 +93,64 @@ function enforceInsightRules(payload, insight) {
   return { ...insight, headline: corrected };
 }
 
-async function serveStatic(request, response) {
-  const url = new URL(request.url || "/", `http://${request.headers.host}`);
-  const requestedPath = url.pathname === "/" ? "/index.html" : decodeURIComponent(url.pathname);
-  const filePath = normalize(join(root, requestedPath));
-  if (!filePath.startsWith(root)) {
-    response.writeHead(403);
-    response.end("Forbidden");
+module.exports = async function handler(request, response) {
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (request.method === "OPTIONS") {
+    response.status(204).end();
     return;
   }
-  try {
-    const file = await readFile(filePath);
-    response.writeHead(200, { "Content-Type": mimeTypes[extname(filePath)] || "application/octet-stream" });
-    response.end(file);
-  } catch {
-    response.writeHead(404);
-    response.end("Not found");
-  }
-}
 
-createServer(async (request, response) => {
-  try {
-    if (request.method === "POST" && request.url === "/api/insight") {
-      await handleInsight(request, response);
-      return;
-    }
-    if (request.method === "GET" || request.method === "HEAD") {
-      await serveStatic(request, response);
-      return;
-    }
-    response.writeHead(405);
-    response.end("Method not allowed");
-  } catch (error) {
-    sendJson(response, 500, { error: error.message || "서버 오류" });
+  if (request.method !== "POST") {
+    response.status(405).json({ error: "POST 요청만 지원합니다." });
+    return;
   }
-}).listen(port, () => {
-  console.log(`Meokko dashboard with Mistral proxy: http://localhost:${port}`);
-});
+
+  const apiKey = process.env.MISTRAL_API_KEY;
+  if (!apiKey) {
+    response.status(500).json({ error: "MISTRAL_API_KEY 환경변수가 없습니다." });
+    return;
+  }
+
+  try {
+    const payload = request.body || {};
+    const mistralResponse = await fetch("https://api.mistral.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.2,
+        response_format: { type: "json_object" },
+        messages: buildPrompt(payload)
+      })
+    });
+
+    const data = await mistralResponse.json();
+    if (!mistralResponse.ok) {
+      response.status(mistralResponse.status).json({
+        error: data?.message || data?.error?.message || "Mistral API 요청 실패"
+      });
+      return;
+    }
+
+    const content = data?.choices?.[0]?.message?.content || "{}";
+    let insight;
+    try {
+      insight = JSON.parse(content);
+    } catch {
+      insight = { headline: content };
+    }
+    if (!insight.headline && insight.instruction?.headline) insight = insight.instruction;
+    if (!insight.headline && insight.output?.headline) insight = insight.output;
+    if (!insight.headline && insight.result?.headline) insight = insight.result;
+
+    response.status(200).json({ model, insight: enforceInsightRules(payload, insight) });
+  } catch (error) {
+    response.status(500).json({ error: error.message || "서버 오류" });
+  }
+};

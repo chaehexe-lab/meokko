@@ -1,0 +1,34 @@
+name: Refresh dashboard data
+
+on:
+  schedule:
+    - cron: "20 15 * * *"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    name: Call dashboard data APIs
+    runs-on: ubuntu-latest
+    env:
+      DASHBOARD_BASE_URL: https://meokko.vercel.app
+    steps:
+      - name: Calculate dashboard date
+        id: date
+        run: |
+          echo "target_date=$(TZ=Asia/Seoul date -d 'yesterday' +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Refresh market and customer data
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/market?date=${{ steps.date.outputs.target_date }}&mode=latest-positive-day" > /tmp/market.json
+          curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/crm" > /tmp/crm.json
+          curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/reaction" > /tmp/reaction.json
+
+      - name: Refresh keyword data by segment
+        run: |
+          set -euo pipefail
+          for age in 20 30 40 50 60; do
+            for gender in F M; do
+              curl --fail --silent --show-error "${DASHBOARD_BASE_URL}/api/dashboard/keywords?age=${age}&gender=${gender}&date=${{ steps.date.outputs.target_date }}" > "/tmp/keywords_${age}_${gender}.json"
+            done
+          done

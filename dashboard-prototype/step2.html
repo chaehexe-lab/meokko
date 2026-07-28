@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>STEP2 콘텐츠 추천</title>
+  <title>STEP2 준비중</title>
   <style>
     :root {
       --bg: #f4f6f3;
@@ -12,15 +12,13 @@
       --line: #dfe4df;
       --panel: #ffffff;
       --green: #225d45;
-      --mint: #dff2e7;
-      --lime: #d9ef76;
-      --coral: #ff765f;
-      --shadow: 0 16px 50px rgba(37, 63, 51, .08);
+      --shadow: 0 18px 55px rgba(37, 63, 51, .08);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-width: 320px;
+      min-height: 100vh;
       color: var(--ink);
       background: var(--bg);
       font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -37,45 +35,39 @@
     .brand-mark { width: 33px; height: 33px; display: grid; place-items: center; border-radius: 12px; color: #fff; background: var(--green); font-size: 12px; }
     a { color: inherit; text-decoration: none; }
     .back { padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--green); background: #fff; font-size: 12px; font-weight: 900; }
-    main { padding: 34px 0 52px; }
-    .hero {
-      padding: 24px;
-      border-radius: 22px;
-      color: #fff;
-      background: linear-gradient(120deg, #1f563f 0%, #2f7655 72%, #63a77e 100%);
-      box-shadow: 0 24px 60px rgba(34, 93, 69, .18);
-    }
-    .hero small { display: inline-flex; padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 11px; font-weight: 950; }
-    h1 { margin: 12px 0 0; font-size: clamp(24px, 3.2vw, 36px); line-height: 1.15; letter-spacing: -.05em; }
-    .hero p { margin: 12px 0 0; color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.6; }
-    .summary-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
-    .summary-card { padding: 14px; border-radius: 15px; background: rgba(255,255,255,.12); }
-    .summary-card span { display: block; color: rgba(255,255,255,.68); font-size: 10px; font-weight: 900; }
-    .summary-card b { display: block; margin-top: 5px; font-size: 16px; }
-    .recommendations { display: grid; gap: 12px; margin-top: 18px; }
-    .strategy-card { padding: 18px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: var(--shadow); }
-    .strategy-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-    .strategy-head h2 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
-    .strategy-head span { padding: 7px 10px; border-radius: 999px; color: var(--green); background: var(--mint); font-size: 11px; font-weight: 950; }
-    .strategy-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
-    .content-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
-    .content-box { min-height: 98px; padding: 14px; border-radius: 14px; background: #f7faf7; }
-    .content-box small { color: var(--green); font-size: 10px; font-weight: 950; }
-    .content-box b { display: block; margin-top: 7px; font-size: 14px; line-height: 1.4; }
-    .empty {
-      margin-top: 18px;
-      padding: 28px;
-      border: 1px dashed #b9c9c0;
-      border-radius: 18px;
-      color: var(--muted);
-      background: #fff;
+    main { min-height: calc(100vh - 59px); display: grid; place-items: center; padding: 40px 0; }
+    .placeholder {
+      width: min(560px, 100%);
+      padding: 46px 28px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
       text-align: center;
-      font-size: 14px;
-      font-weight: 850;
     }
-    @media (max-width: 760px) {
+    .placeholder small {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .08em;
+    }
+    h1 {
+      margin: 14px 0 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.1;
+      letter-spacing: -.05em;
+    }
+    p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.6;
+    }
+    @media (max-width: 680px) {
       .shell { width: min(100% - 24px, 1180px); }
-      .summary-row, .content-grid { grid-template-columns: 1fr; }
+      .topbar-inner { min-height: 54px; }
+      .placeholder { padding: 38px 20px; border-radius: 20px; }
     }
   </style>
 </head>
@@ -88,96 +80,11 @@
   </header>
 
   <main class="shell">
-    <section class="hero">
-      <small>CONTENT RECOMMENDATION</small>
-      <h1 id="pageTitle">선택한 전략 기반 콘텐츠 추천 생성 화면</h1>
-      <p id="pageLead">STEP1 대시보드에서 전달된 최신 타겟층, 반응, 경쟁사 데이터를 바탕으로 추천 방향을 구성합니다.</p>
-      <div class="summary-row" id="summaryRow"></div>
+    <section class="placeholder" aria-label="STEP2 준비 상태">
+      <small>STEP2</small>
+      <h1>아직 준비중...</h1>
+      <p>콘텐츠 추천 생성 화면은 다음 단계에서 연결됩니다.</p>
     </section>
-    <section class="recommendations" id="recommendations"></section>
   </main>
-
-  <script>
-    const qs = selector => document.querySelector(selector);
-
-    function getStep2Input() {
-      try {
-        return JSON.parse(sessionStorage.getItem("meokko:step2-input") || "null");
-      } catch {
-        return null;
-      }
-    }
-
-    function buildStrategy(strategy, data) {
-      const rules = data.insightRulesInput || {};
-      const topSentiment = rules.topSentiment || {};
-      const negative = data.reaction?.sentiments?.negative?.keywords?.[0] || "구매 불안";
-      const competitor = data.competitor?.products?.find(product => product.brand !== "꼬모") || data.competitor?.products?.[0] || {};
-      const base = {
-        "강화": {
-          title: "강화 전략",
-          summary: `${topSentiment.keywordRank1 || "긍정 반응"}과 ${rules.keywordRank1 || "핵심 키워드"}를 중심으로 잘 반응한 소재를 반복 노출합니다.`,
-          boxes: [
-            ["핵심 메시지", `${topSentiment.keywordRank1 || "장점"}을 전면에 둔 한 줄 카피`],
-            ["콘텐츠 장면", `${rules.keywordRank1 || "관심 키워드"}가 바로 보이는 제품 배치컷`],
-            ["측정 지표", "클릭률, 저장수, 상세페이지 유입"]
-          ]
-        },
-        "공략": {
-          title: "공략 전략",
-          summary: `${rules.prospectCustomer || "잠재 고객"}에게 맞춰 사용 상황과 구매 이유가 바로 보이는 콘텐츠를 생성합니다.`,
-          boxes: [
-            ["우선 타겟", rules.prospectCustomer || "잠재 고객"],
-            ["추천 소재", `${rules.keywordRank1 || "관심 키워드"} 기반 사용 장면`],
-            ["비교 기준", `${competitor.brand || "경쟁 제품"} 대비 꼬모 차별점`]
-          ]
-        },
-        "해소": {
-          title: "해소 전략",
-          summary: `${negative} 같은 구매 전 우려를 먼저 설명해 이탈을 줄이는 콘텐츠를 생성합니다.`,
-          boxes: [
-            ["불안 요소", negative],
-            ["보완 문구", "상세페이지 상단 FAQ형 설명"],
-            ["검증 지표", "문의 감소, 장바구니 이탈률"]
-          ]
-        }
-      };
-      return base[strategy] || base["공략"];
-    }
-
-    function render() {
-      const input = getStep2Input();
-      if (!input?.dashboardData) {
-        qs("#recommendations").innerHTML = `<div class="empty">STEP1에서 전략을 선택한 뒤 다시 들어오면 최신 분석 결과가 표시됩니다.</div>`;
-        qs("#summaryRow").innerHTML = "";
-        return;
-      }
-
-      const data = input.dashboardData;
-      const selected = input.selectedStrategies || [];
-      const rules = data.insightRulesInput || {};
-      qs("#pageTitle").textContent = `${selected.join(" · ")} 전략 콘텐츠 추천`;
-      qs("#summaryRow").innerHTML = [
-        ["기존고객", rules.existingCustomer || "-"],
-        ["잠재고객", rules.prospectCustomer || "-"],
-        ["1위 키워드", rules.keywordRank1 || "-"],
-        ["주요 반응", `${rules.topSentiment?.type || "-"} ${rules.topSentiment?.percent || ""}%`]
-      ].map(([label, value]) => `<div class="summary-card"><span>${label}</span><b>${value}</b></div>`).join("");
-      qs("#recommendations").innerHTML = selected.map(strategy => {
-        const item = buildStrategy(strategy, data);
-        return `
-          <article class="strategy-card">
-            <div class="strategy-head"><h2>${item.title}</h2><span>${strategy}</span></div>
-            <p>${item.summary}</p>
-            <div class="content-grid">
-              ${item.boxes.map(([label, value]) => `<div class="content-box"><small>${label}</small><b>${value}</b></div>`).join("")}
-            </div>
-          </article>
-        `;
-      }).join("");
-    }
-
-    render();
-  </script>
 </body>
 </html>
