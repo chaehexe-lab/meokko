@@ -134,7 +134,7 @@ API가 있는 데이터는 우선 API를 사용함.
 
 스마트스토어 리뷰는 공개 웹 크롤링이 아니라, 관리자 화면의 엑셀 다운로드 기능을 활용함.
 
-흐름:
+최초 전체 수집 흐름:
 
 1. 네이버 스마트스토어센터에 로그인함.
 2. `문의/리뷰관리 > 리뷰 관리`로 이동함.
@@ -145,12 +145,64 @@ API가 있는 데이터는 우선 API를 사용함.
 7. 어댑터, UV-C 살균키트처럼 냉장고 본품이 아닌 상품은 제외함.
 8. 냉장고 본품 리뷰만 반응 키워드로 변환함.
 
-실행:
+최초 전체 수집 실행:
 
 ```bash
 python3 scripts/collect_smartstore_reviews_auto.py --dir data/raw/smartstore_reviews/downloads
 python3 scripts/build_public_web_reaction_dataset.py
 ```
+
+## 주 1회 업데이트 운영 방식
+
+스마트스토어 관리자 데이터는 로그인 권한이 필요하므로 완전 무인 자동 수집으로 두지 않음. 대신 매주 1회 관리자가 최신 리뷰 엑셀만 내려받고, 이후 정제/통합/검산은 자동 처리함.
+
+운영 주기:
+
+- 권장 주기: 주 1회
+- 권장 요일: 매주 월요일
+- 권장 다운로드 범위: 최근 1개월 또는 최근 1년
+- 저장 위치: `data/raw/smartstore_reviews/downloads/`
+
+주 1회 업데이트 흐름:
+
+1. 관리자가 스마트스토어 리뷰 관리 화면에 로그인함.
+2. 최근 1개월 또는 최근 1년 리뷰 엑셀을 다운로드함.
+3. 다운로드 파일을 `data/raw/smartstore_reviews/downloads/`에 넣음.
+4. 아래 주간 업데이트 명령어를 실행함.
+5. 스크립트가 기존 파일과 새 파일을 모두 읽음.
+6. 리뷰 날짜, 상품명, 옵션명, 평점, 리뷰 내용을 기준으로 중복 제거함.
+7. 어댑터, UV-C 살균키트 리뷰는 제외함.
+8. 개인정보성 항목은 저장하지 않음.
+9. 대시보드용 반응 데이터와 요약 데이터를 다시 생성함.
+10. 업데이트 로그를 남김.
+
+주간 업데이트 실행:
+
+```bash
+python3 scripts/run_weekly_dashboard_data_update.py
+```
+
+주 1회 업데이트 결과물:
+
+- `data/processed/smartstore_reviews_sanitized.csv`
+- `data/processed/smartstore_review_mentions.csv`
+- `data/processed/public_web_reaction_signals.csv`
+- `data/processed/public_web_reaction_summary.csv`
+- `data/processed/dashboard_data_update_log.csv`
+
+자동화 수준:
+
+- 관리자 로그인 및 엑셀 다운로드: 관리자가 직접 수행함.
+- 개인정보 제거: 자동 처리함.
+- 본품 외 상품 제외: 자동 처리함.
+- 중복 제거: 자동 처리함.
+- 반응 키워드 생성: 자동 처리함.
+- 최종 반응 신호 통합: 자동 처리함.
+- 업데이트 로그 기록: 자동 처리함.
+
+PPT 표현:
+
+> 스마트스토어 관리자 데이터는 권한 로그인이 필요하므로 매주 1회 관리자가 최신 엑셀을 내려받고, 이후 개인정보 제거·본품 필터링·반응 키워드 생성·대시보드 데이터 갱신은 자동 처리하는 반자동 업데이트 구조로 운영함.
 
 ## 수집 결과 기록 형식
 
