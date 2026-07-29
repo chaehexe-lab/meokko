@@ -1,0 +1,10 @@
+data/raw/
+data/processed/
+reports/
+*.xlsx
+*.xls
+*.csv
+__pycache__/
+*.pyc
+.env
+.DS_Store
