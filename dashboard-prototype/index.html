@@ -487,6 +487,18 @@
     .reaction-bar .track i { background: var(--tab-color); }
     .quote { display: none; }
     .source-note { margin: 10px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+    .return-keyword-panel { margin-top: 16px; padding: 20px; border: 1px solid #e7c8c0; border-radius: 16px; background: #fffaf8; }
+    .return-keyword-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .return-keyword-head h3 { margin: 0; color: #773c32; font-size: 15px; }
+    .return-keyword-head small { color: var(--muted); font-size: 11px; }
+    .return-keyword-list { display: grid; gap: 9px; }
+    .return-keyword-card { display: grid; grid-template-columns: minmax(105px, .5fr) minmax(0, 1.5fr) auto; align-items: center; gap: 12px; padding: 12px; border: 1px solid #f0ddd7; border-radius: 12px; background: #fff; }
+    .return-keyword-card strong { color: #b55342; font-size: 14px; }
+    .return-keyword-card p { margin: 0; color: var(--ink); font-size: 12px; line-height: 1.5; }
+    .return-keyword-card p span { color: var(--muted); }
+    .return-keyword-card em { display: block; margin-top: 3px; color: #7d605b; font-size: 11px; font-style: normal; }
+    .return-keyword-card b { padding: 6px 8px; border-radius: 999px; color: #b55342; background: var(--coral-soft); font-size: 11px; white-space: nowrap; }
+    .return-keyword-empty { margin: 0; color: var(--muted); font-size: 12px; }
 
     .competitor-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 2px 0 14px; }
     .competitor-toolbar strong { font-size: 14px; }
@@ -575,6 +587,8 @@
       .demographic-grid { grid-template-columns: .75fr 1.25fr; }
       .demographic-part + .demographic-part { padding: 0 0 0 12px; border-top: 0; border-left: 1px solid var(--line); }
       .reaction-layout { grid-template-columns: 1fr; }
+      .return-keyword-card { grid-template-columns: 1fr auto; }
+      .return-keyword-card p { grid-column: 1 / -1; }
       .sentiment-tabs { overflow-x: auto; }
       .sentiment-tab { min-width: 86px; }
       .reaction-bar { grid-template-columns: 88px 1fr 36px; gap: 8px; }
@@ -723,6 +737,13 @@
             <div class="quote" id="reactionQuote">“방에 두기 부담스럽지 않고, 화장품과 음료를 나눠 보관할 수 있어 좋아요.”</div>
           </article>
         </div>
+        <article class="return-keyword-panel" aria-labelledby="returnKeywordTitle">
+          <div class="return-keyword-head">
+            <h3 id="returnKeywordTitle">카페24 반품 사유 · 부정 키워드</h3>
+            <small id="returnKeywordUpdated">반품 요약 데이터를 불러오는 중</small>
+          </div>
+          <div class="return-keyword-list" id="returnKeywordList" aria-live="polite"></div>
+        </article>
         <p class="source-note">출처 · 광고·판매글을 제외하고 실사용 후기를 포함한 네이버 블로그 및 공개 카페 언급</p>
       </div>
     </section>
@@ -750,6 +771,16 @@
     const API_BASE = location.hostname === "chaehexe-lab.github.io"
       ? "https://ccomo-market-ai.aisprintteam2.chatgpt.site"
       : "";
+    const CAFE24_RETURN_DATA_URL = "./data/cafe24-return-negative-keywords.json";
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
     function getKoreaDateKey(offsetDays = 0) {
       const koreaNow = new Date(Date.now() + 9 * 60 * 60 * 1000);
@@ -1429,6 +1460,45 @@
       updateStep2Action();
     }
 
+    function renderCafe24ReturnKeywords(payload) {
+      const list = qs("#returnKeywordList");
+      const entries = Array.isArray(payload?.negative_keywords) ? payload.negative_keywords : [];
+      const updated = payload?.generated_at
+        ? new Date(payload.generated_at).toLocaleDateString("ko-KR")
+        : "날짜 정보 없음";
+
+      qs("#returnKeywordUpdated").textContent = entries.length
+        ? `반품 완료·접수 건 기준 · ${updated} 업데이트`
+        : `표시할 반품 부정 키워드 없음 · ${updated}`;
+
+      if (!entries.length) {
+        list.innerHTML = '<p class="return-keyword-empty">현재 조건에 맞는 반품 부정 키워드가 없습니다.</p>';
+        return;
+      }
+
+      list.innerHTML = entries
+        .slice()
+        .sort((a, b) => Number(b.count || 0) - Number(a.count || 0))
+        .map(item => `
+          <div class="return-keyword-card">
+            <strong>${escapeHtml(item.keyword)}</strong>
+            <p>${escapeHtml(item.product_name)} <span>· ${escapeHtml(item.return_status)} · ${escapeHtml(item.reason_type)}</span>
+              <em>“${escapeHtml(item.example_reason_detail)}”</em>
+            </p>
+            <b>${escapeHtml(item.count)}건</b>
+          </div>`)
+        .join("");
+    }
+
+    async function loadCafe24ReturnKeywords() {
+      const response = await fetch(CAFE24_RETURN_DATA_URL, { cache: "no-store" });
+      if (!response.ok) throw new Error("카페24 반품 요약 데이터를 불러오지 못했습니다.");
+      const payload = await response.json();
+      renderCafe24ReturnKeywords(payload);
+      connectedSources.add(`카페24 반품 사유 ${payload.dashboard_keyword_count || 0}건`);
+      updateSourceNotice();
+    }
+
     ageKeywordsReady = loadAgeKeywords();
     renderCrmPeriod();
     renderCompetitors();
@@ -1436,7 +1506,7 @@
     updateSourceNotice();
     updateStep2Action();
 
-    Promise.allSettled([loadMarket(), loadCrm(), loadReaction()]).then(results => {
+    Promise.allSettled([loadMarket(), loadCrm(), loadReaction(), loadCafe24ReturnKeywords()]).then(results => {
       const failures = results.filter(result => result.status === "rejected");
       if (failures.length) {
         qs("#dataUpdated").textContent = `일부 데이터 연결 실패 · 마지막 정상값 표시`;

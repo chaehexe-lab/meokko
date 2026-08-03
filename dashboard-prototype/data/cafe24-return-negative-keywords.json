@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-08-03T14:30:29Z",
+  "dashboard_keyword_count": 1,
+  "negative_keywords": [
+    {
+      "keyword": "생각보다 큼",
+      "product_name": "꼬모냉장고 홈바 크림 실속형",
+      "return_status": "반품완료",
+      "reason_type": "단순변심",
+      "count": "1",
+      "example_reason_detail": "사이즈가 생각보다 너무 커요 상자만 뜯고 포장은 안뜯었어요!"
+    }
+  ]
+}
