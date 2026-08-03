@@ -1,0 +1,264 @@
+{
+  "generatedAt": "2026-08-03T13:45:33.012255+00:00",
+  "source": "네이버 스마트스토어센터 데이터분석 > 고객현황 > 성별/연령별",
+  "definition": "월별 신규구매고객과 재구매고객을 성별·연령별로 합산한 집계값이며 동일 고객이 여러 달에 걸쳐 중복 포함될 수 있음",
+  "latestMonth": "2026-07",
+  "periods": {
+    "3m": {
+      "label": "최근 3개월",
+      "from": "2026-05",
+      "to": "2026-07",
+      "target": "40대 남성",
+      "targetBuyers": 21,
+      "totalBuyerCounts": 102,
+      "female": 52,
+      "male": 48,
+      "ages": [
+        [
+          "20대",
+          9
+        ],
+        [
+          "30대",
+          27
+        ],
+        [
+          "40대",
+          37
+        ],
+        [
+          "50대",
+          22
+        ],
+        [
+          "60대+",
+          5
+        ]
+      ],
+      "genderByAge": {
+        "20대": {
+          "female": 78,
+          "male": 22,
+          "femaleCount": 7,
+          "maleCount": 2
+        },
+        "30대": {
+          "female": 64,
+          "male": 36,
+          "femaleCount": 18,
+          "maleCount": 10
+        },
+        "40대": {
+          "female": 45,
+          "male": 55,
+          "femaleCount": 17,
+          "maleCount": 21
+        },
+        "50대": {
+          "female": 45,
+          "male": 55,
+          "femaleCount": 10,
+          "maleCount": 12
+        },
+        "60대+": {
+          "female": 20,
+          "male": 80,
+          "femaleCount": 1,
+          "maleCount": 4
+        }
+      }
+    },
+    "6m": {
+      "label": "최근 6개월",
+      "from": "2026-02",
+      "to": "2026-07",
+      "target": "40대 여성",
+      "targetBuyers": 39,
+      "totalBuyerCounts": 190,
+      "female": 56,
+      "male": 44,
+      "ages": [
+        [
+          "20대",
+          9
+        ],
+        [
+          "30대",
+          28
+        ],
+        [
+          "40대",
+          39
+        ],
+        [
+          "50대",
+          18
+        ],
+        [
+          "60대+",
+          6
+        ]
+      ],
+      "genderByAge": {
+        "20대": {
+          "female": 72,
+          "male": 28,
+          "femaleCount": 13,
+          "maleCount": 5
+        },
+        "30대": {
+          "female": 60,
+          "male": 40,
+          "femaleCount": 32,
+          "maleCount": 21
+        },
+        "40대": {
+          "female": 53,
+          "male": 47,
+          "femaleCount": 39,
+          "maleCount": 35
+        },
+        "50대": {
+          "female": 50,
+          "male": 50,
+          "femaleCount": 17,
+          "maleCount": 17
+        },
+        "60대+": {
+          "female": 45,
+          "male": 55,
+          "femaleCount": 5,
+          "maleCount": 6
+        }
+      }
+    },
+    "12m": {
+      "label": "최근 12개월",
+      "from": "2025-08",
+      "to": "2026-07",
+      "target": "40대 여성",
+      "targetBuyers": 66,
+      "totalBuyerCounts": 342,
+      "female": 53,
+      "male": 47,
+      "ages": [
+        [
+          "20대",
+          8
+        ],
+        [
+          "30대",
+          34
+        ],
+        [
+          "40대",
+          37
+        ],
+        [
+          "50대",
+          15
+        ],
+        [
+          "60대+",
+          5
+        ]
+      ],
+      "genderByAge": {
+        "20대": {
+          "female": 82,
+          "male": 18,
+          "femaleCount": 23,
+          "maleCount": 5
+        },
+        "30대": {
+          "female": 55,
+          "male": 45,
+          "femaleCount": 64,
+          "maleCount": 53
+        },
+        "40대": {
+          "female": 52,
+          "male": 48,
+          "femaleCount": 66,
+          "maleCount": 62
+        },
+        "50대": {
+          "female": 45,
+          "male": 55,
+          "femaleCount": 24,
+          "maleCount": 29
+        },
+        "60대+": {
+          "female": 31,
+          "male": 69,
+          "femaleCount": 5,
+          "maleCount": 11
+        }
+      }
+    },
+    "all": {
+      "label": "조회기간 전체",
+      "from": "2025-08",
+      "to": "2026-07",
+      "target": "40대 여성",
+      "targetBuyers": 66,
+      "totalBuyerCounts": 342,
+      "female": 53,
+      "male": 47,
+      "ages": [
+        [
+          "20대",
+          8
+        ],
+        [
+          "30대",
+          34
+        ],
+        [
+          "40대",
+          37
+        ],
+        [
+          "50대",
+          15
+        ],
+        [
+          "60대+",
+          5
+        ]
+      ],
+      "genderByAge": {
+        "20대": {
+          "female": 82,
+          "male": 18,
+          "femaleCount": 23,
+          "maleCount": 5
+        },
+        "30대": {
+          "female": 55,
+          "male": 45,
+          "femaleCount": 64,
+          "maleCount": 53
+        },
+        "40대": {
+          "female": 52,
+          "male": 48,
+          "femaleCount": 66,
+          "maleCount": 62
+        },
+        "50대": {
+          "female": 45,
+          "male": 55,
+          "femaleCount": 24,
+          "maleCount": 29
+        },
+        "60대+": {
+          "female": 31,
+          "male": 69,
+          "femaleCount": 5,
+          "maleCount": 11
+        }
+      }
+    }
+  }
+}
