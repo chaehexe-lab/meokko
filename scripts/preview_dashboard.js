@@ -15,6 +15,15 @@ const contentTypes = {
   ".svg": "image/svg+xml",
 };
 
+function readRequestBody(request) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    request.on("data", chunk => chunks.push(chunk));
+    request.on("end", () => resolve(chunks.length ? Buffer.concat(chunks) : undefined));
+    request.on("error", reject);
+  });
+}
+
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
   if (url.pathname === "/api/dashboard/crm") {
@@ -29,9 +38,16 @@ const server = http.createServer(async (request, response) => {
 
   if (url.pathname.startsWith("/api/")) {
     try {
+      const requestBody = request.method === "GET" || request.method === "HEAD"
+        ? undefined
+        : await readRequestBody(request);
       const upstream = await fetch(`https://meokko.vercel.app${url.pathname}${url.search}`, {
         method: request.method,
-        headers: { Accept: request.headers.accept || "application/json" },
+        headers: {
+          Accept: request.headers.accept || "application/json",
+          ...(request.headers["content-type"] ? { "Content-Type": request.headers["content-type"] } : {}),
+        },
+        body: requestBody,
       });
       const body = Buffer.from(await upstream.arrayBuffer());
       response.writeHead(upstream.status, {
