@@ -170,6 +170,33 @@
       background: var(--panel);
       box-shadow: var(--shadow);
     }
+    .guide-panel {
+      --guide-pointer-top: 76px;
+      position: relative;
+    }
+    .guide-panel::before,
+    .guide-panel::after {
+      content: "";
+      position: absolute;
+      top: var(--guide-pointer-top);
+      width: 0;
+      height: 0;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .guide-panel::before {
+      left: -16px;
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-right: 16px solid rgba(27, 27, 27, .14);
+      filter: drop-shadow(-4px 3px 5px rgba(0, 0, 0, .07));
+    }
+    .guide-panel::after {
+      left: -14px;
+      border-top: 13px solid transparent;
+      border-bottom: 13px solid transparent;
+      border-right: 15px solid rgba(255, 255, 255, .96);
+    }
     .panel-head {
       display: flex;
       align-items: start;
@@ -508,6 +535,7 @@
       .hero { align-items: center; }
       .dashboard-grid, .strategy-grid { grid-template-columns: 1fr; }
       .panel { min-height: 0; }
+      .guide-panel::before, .guide-panel::after { display: none; }
     }
     @media (max-width: 680px) {
       .shell { width: min(100% - 24px, 1440px); }
@@ -814,7 +842,7 @@
         <div class="content-list" id="contentList"></div>
       </article>
 
-      <article class="panel">
+      <article class="panel guide-panel">
         <div class="panel-head">
           <div>
             <h2>콘텐츠 가이드</h2>
@@ -1317,12 +1345,23 @@
       qs("#generateSummary").textContent = `${segment.label} / ${platform.name} / ${content.name} 조합으로 AI 생성 입력값을 구성합니다.`;
     }
 
+    function updateGuidePointer() {
+      const guidePanel = qs(".guide-panel");
+      const selectedContent = qs('#contentList .content-card[aria-selected="true"]');
+      if (!guidePanel || !selectedContent) return;
+      const guideRect = guidePanel.getBoundingClientRect();
+      const contentRect = selectedContent.getBoundingClientRect();
+      const pointerTop = contentRect.top + (contentRect.height / 2) - guideRect.top;
+      guidePanel.style.setProperty("--guide-pointer-top", `${Math.round(pointerTop)}px`);
+    }
+
     function render() {
       qsa(".customer-tab").forEach(tab => tab.setAttribute("aria-pressed", String(tab.dataset.segment === activeSegment)));
       renderPlatforms();
       renderContents();
       renderDetail();
       renderStrategy();
+      updateGuidePointer();
     }
 
     qsa(".customer-tab").forEach(tab => {
@@ -1337,6 +1376,8 @@
     qs("#generateButton").addEventListener("click", () => {
       alert("AI 콘텐츠 제작 기능은 다음 단계에서 연결됩니다.");
     });
+
+    window.addEventListener("resize", updateGuidePointer);
 
     applyStep1Payload();
     activePlatform = rankedPlatforms()[0].key;
