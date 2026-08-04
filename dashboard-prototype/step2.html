@@ -67,6 +67,61 @@
     .hero small { color: var(--green-2); font-size: 12px; font-weight: 950; letter-spacing: .12em; }
     h1 { margin: 8px 0 0; font-size: clamp(30px, 4vw, 54px); line-height: 1.05; letter-spacing: -.06em; }
     .hero p { max-width: 620px; margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; font-weight: 760; }
+    .notice-drawer { position: fixed; top: 88px; right: 0; z-index: 40; }
+    .notice-toggle {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border: 0;
+      border-radius: 13px 0 0 13px;
+      color: #b4232d;
+      background: transparent;
+      box-shadow: none;
+      cursor: pointer;
+    }
+    .notice-toggle:focus { outline: none; }
+    .notice-toggle:focus-visible { filter: drop-shadow(0 0 4px rgba(180, 35, 45, .35)); }
+    .notice-toggle img { width: 28px; height: 28px; object-fit: contain; }
+    .notice-panel {
+      position: absolute;
+      top: 0;
+      right: 50px;
+      width: 390px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(24px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .notice-drawer.is-open .notice-panel { opacity: 1; pointer-events: auto; transform: translateX(0); }
+    .notice-link {
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      width: min(100%, 430px);
+      padding: 5px 9px;
+      border: 1px solid #f0d4d4;
+      border-radius: 13px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .5);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+    .notice-link:hover { transform: translateY(-1px); border-color: #e8a7a7; box-shadow: 0 20px 42px rgba(121, 45, 45, .11); }
+    .notice-icon { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; background: transparent; overflow: hidden; }
+    .notice-icon img { width: 27px; height: 27px; object-fit: contain; }
+    .notice-copy { min-width: 0; }
+    .notice-label { display: flex; align-items: center; gap: 6px; margin-bottom: 1px; color: #b4232d; font-size: 8px; font-weight: 950; }
+    .notice-label span { padding: 2px 5px; border-radius: 999px; color: #fff; background: #d72f3b; }
+    .notice-copy strong { display: block; font-size: 12px; letter-spacing: -.02em; }
+    .notice-meta { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 1px; color: var(--muted); font-size: 9px; font-weight: 780; }
+    .notice-action { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 8px; border-radius: 8px; color: #fff; background: #d72f3b; font-size: 9px; font-weight: 950; white-space: nowrap; }
     .hero-rank-card {
       width: min(240px, 23vw);
       min-height: 140px;
@@ -77,7 +132,8 @@
       gap: 9px;
       flex: 0 0 auto;
       padding: 0;
-      transform: translateY(18px);
+      margin-top: 0;
+      transform: translateY(58px);
     }
     .hero-rank-title {
       display: inline-flex;
@@ -532,7 +588,7 @@
     }
 
     @media (max-width: 1040px) {
-      .hero { align-items: center; }
+      .hero { align-items: flex-start; flex-wrap: wrap; }
       .dashboard-grid, .strategy-grid { grid-template-columns: 1fr; }
       .panel { min-height: 0; }
       .guide-panel::before, .guide-panel::after { display: none; }
@@ -540,7 +596,13 @@
     @media (max-width: 680px) {
       .shell { width: min(100% - 24px, 1440px); }
       .hero { display: block; }
+      .notice-link { width: 100%; grid-template-columns: 34px minmax(0, 1fr); }
+      .notice-icon { width: 34px; height: 34px; }
+      .notice-icon img { width: 30px; height: 30px; }
+      .notice-action { grid-column: 1 / -1; justify-content: center; }
       .hero-rank-card { width: 100%; margin-top: 16px; transform: none; }
+      .notice-drawer { top: 72px; }
+      .notice-panel { width: calc(100vw - 70px); }
       .customer-tabs { width: 100%; grid-template-columns: 1fr; }
       .rank-item { grid-template-columns: 28px 36px minmax(0, 1fr); }
       .rank-score { grid-column: 3; text-align: left; }
@@ -816,6 +878,23 @@
         </div>
       </aside>
     </section>
+
+    <aside class="notice-drawer" id="noticeDrawer">
+      <button class="notice-toggle" id="noticeToggle" type="button" aria-label="공지사항 열기" aria-expanded="false" aria-controls="noticePanel">
+        <img src="assets/step2/notice-megaphone-transparent.png" alt="">
+      </button>
+      <div class="notice-panel" id="noticePanel">
+        <a class="notice-link" href="https://sell.smartstore.naver.com/#/promotion/participation" target="_blank" rel="noopener noreferrer" aria-label="8월 슈퍼적립 프로모션 신청 화면으로 이동">
+          <span class="notice-icon" aria-hidden="true"><img src="assets/step2/notice-megaphone-transparent.png" alt=""></span>
+          <span class="notice-copy">
+            <span class="notice-label">공지사항 <span>신청 가능</span></span>
+            <strong>8월 슈퍼적립 참여형 프로모션</strong>
+            <span class="notice-meta"><span>신청 2026. 7. 6.~7. 12.</span><span>진행 2026. 8. 1.~8. 31.</span></span>
+          </span>
+          <span class="notice-action">신청 화면으로 이동 <span aria-hidden="true">↗</span></span>
+        </a>
+      </div>
+    </aside>
 
     <div class="customer-tabs" aria-label="고객 카테고리 선택">
       <button class="customer-tab" type="button" data-segment="existing" aria-pressed="true">기존 고객</button>
@@ -1378,6 +1457,12 @@
     });
 
     window.addEventListener("resize", updateGuidePointer);
+
+    qs("#noticeToggle").addEventListener("click", () => {
+      const drawer = qs("#noticeDrawer");
+      const isOpen = drawer.classList.toggle("is-open");
+      qs("#noticeToggle").setAttribute("aria-expanded", String(isOpen));
+    });
 
     applyStep1Payload();
     activePlatform = rankedPlatforms()[0].key;
