@@ -1,0 +1,236 @@
+/* STEP1 color theme only: graphite on cool marble */
+:root {
+  --color-graphite-ink: #1b1b1b;
+  --color-marble: #ffffff;
+  --color-drafting-gray: #eaeaea;
+  --color-steel: #60646c;
+  --color-ash: #7c7c7c;
+  --color-hairline: #e0e1e6;
+  --color-mint-signal: #00f2e6;
+  --color-moss: #8dc63f;
+  --color-sky: #00b9f1;
+  --gradient-forest-to-deep-gradient: linear-gradient(89.97deg, rgb(25, 160, 95) 0.02%, rgb(13, 127, 140) 123.85%);
+
+  --bg: var(--color-drafting-gray);
+  --ink: var(--color-graphite-ink);
+  --muted: var(--color-steel);
+  --line: var(--color-hairline);
+  --panel: var(--color-marble);
+  --green: #0d7f8c;
+  --green-2: #19a05f;
+  --mint: rgba(0, 242, 230, .12);
+  --lime: var(--color-mint-signal);
+  --coral: #0d7f8c;
+  --coral-soft: rgba(0, 185, 241, .10);
+  --yellow: #8dc63f;
+  --slate: var(--color-ash);
+  --shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+}
+
+body {
+  color: var(--color-graphite-ink);
+  background:
+    radial-gradient(circle at 18% 8%, rgba(0, 242, 230, .16), transparent 22rem),
+    radial-gradient(circle at 84% 12%, rgba(0, 185, 241, .12), transparent 24rem),
+    linear-gradient(180deg, #f7f7f7 0%, var(--color-drafting-gray) 42%, #f2f2f2 100%);
+  font-family: Inter, Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button:focus-visible,
+select:focus-visible,
+label[tabindex]:focus-visible,
+input:focus-visible {
+  outline-color: rgba(0, 242, 230, .46) !important;
+}
+
+.topbar {
+  border-bottom-color: rgba(27, 27, 27, .08);
+  background: rgba(255, 255, 255, .76);
+  box-shadow: none;
+}
+
+.brand-mark,
+.target-section-heading span,
+.crm-period[aria-pressed="true"],
+.sentiment-tab[aria-selected="true"],
+.step2-submit {
+  background: var(--gradient-forest-to-deep-gradient);
+  box-shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+}
+
+.nav {
+  border-color: rgba(27, 27, 27, .06);
+  background: rgba(255, 255, 255, .62);
+}
+
+.nav button:hover,
+.nav button:focus-visible {
+  color: #0d7f8c;
+  background: #fff;
+}
+
+.insight-banner {
+  border-color: rgba(27, 27, 27, .08);
+  color: var(--color-graphite-ink);
+  background:
+    radial-gradient(circle at 86% 2%, rgba(0, 242, 230, .16), transparent 20rem),
+    linear-gradient(135deg, #ffffff 0%, #f4f4f4 58%, #eaeaea 100%);
+  box-shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+}
+
+.insight-banner::after {
+  background: radial-gradient(circle, rgba(0, 185, 241, .11), transparent 70%);
+}
+
+.insight-kicker {
+  color: #0d7f8c;
+  border-color: rgba(13, 127, 140, .16);
+  background: rgba(0, 242, 230, .10);
+}
+
+.insight-banner h1,
+.compass-point b,
+.signal-title b,
+.signal-copy b,
+.position strong {
+  color: var(--color-graphite-ink);
+}
+
+.insight-banner p,
+.updated,
+.source-note,
+.compass-point span,
+.signal-title span,
+.signal-copy span {
+  color: var(--color-steel);
+}
+
+.compass-card,
+.signal-card,
+.audience-card,
+.summary-card,
+.panel,
+.step2-action,
+.compass-point,
+.signal-row,
+.sentiment-tab,
+.reaction-keywords span,
+.tags span {
+  border-color: rgba(27, 27, 27, .08);
+  background: rgba(255, 255, 255, .86);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 8px 24px rgba(0, 0, 0, .06);
+}
+
+.compass-center {
+  background: var(--gradient-forest-to-deep-gradient);
+  box-shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+}
+
+.compass-center small {
+  color: rgba(255, 255, 255, .74);
+}
+
+.signal-label,
+.brand-chip,
+.keyword-rank-row .change,
+.summary-card.keyword-card,
+.summary-card.keyword-card.featured {
+  color: #0d7f8c;
+  border-color: rgba(13, 127, 140, .14);
+  background: rgba(0, 242, 230, .10);
+}
+
+.signal-row.opportunity .signal-label,
+.arrow,
+.keyword-card .arrow,
+.keyword-card.featured .arrow,
+.keyword-rank-row.fastest .number,
+.keyword-rank-row.fastest .change {
+  color: #fff;
+  background: var(--gradient-forest-to-deep-gradient);
+}
+
+.signal-row.risk .signal-label {
+  color: #006c7b;
+  background: rgba(0, 185, 241, .12);
+}
+
+.audience-type i,
+.customer-card .audience-type i {
+  background: var(--gradient-forest-to-deep-gradient);
+  box-shadow: 0 0 0 5px rgba(0, 242, 230, .12);
+}
+
+.audience-card h2 em,
+.section-index,
+.bar-name span,
+.keyword-rank-row .number,
+.price,
+.compass-point small {
+  color: #0d7f8c;
+}
+
+.crm-donut,
+.gender-donut {
+  background: conic-gradient(#0d7f8c 0 58%, #d7d9de 58% 100%);
+}
+
+.age-row .track,
+.reaction-bar .track {
+  background: #dfe2e7;
+}
+
+.age-row .track i {
+  background: var(--gradient-forest-to-deep-gradient);
+}
+
+.sentiment-inline .mini-sentiment-track,
+.donut {
+  background: conic-gradient(#0d7f8c 0 51%, #00b9f1 51% 71%, #7c7c7c 71% 100%);
+}
+
+.detail-section.alt {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(0, 242, 230, .10), transparent 18rem),
+    #e4e5e8;
+}
+
+.keyword-picker select,
+.competitor-toolbar select,
+.crm-period {
+  border-color: rgba(27, 27, 27, .10);
+  color: var(--color-graphite-ink);
+  background: #fff;
+}
+
+.keyword-rank-row.fastest {
+  border-color: rgba(0, 242, 230, .28);
+  background: rgba(0, 242, 230, .08);
+}
+
+.keyword-rank-row.fastest strong {
+  color: var(--color-graphite-ink);
+}
+
+.keyword-insight,
+.insight-box,
+.position {
+  color: var(--color-steel);
+  background: #f4f4f4;
+}
+
+.product-card img {
+  background: #f1f1f1;
+}
+
+.step2-strategy[aria-checked="true"] {
+  border-color: rgba(13, 127, 140, .35);
+  background: rgba(0, 242, 230, .10);
+}
+
+.step2-page {
+  background:
+    radial-gradient(circle at 20% 8%, rgba(0, 242, 230, .14), transparent 25rem),
+    radial-gradient(circle at 82% 14%, rgba(0, 185, 241, .10), transparent 27rem),
+    var(--color-drafting-gray);
+}
