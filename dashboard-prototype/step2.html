@@ -193,7 +193,7 @@
     .rank-item {
       width: 100%;
       display: grid;
-      grid-template-columns: 32px 40px minmax(0, 1fr) auto;
+      grid-template-columns: 32px 40px minmax(0, 1fr);
       align-items: center;
       gap: 10px;
       min-height: 54px;
@@ -1268,7 +1268,6 @@
           <span class="rank-num">${index + 1}</span>
           <span class="logo-box"><img src="${logoPath}${platform.logo}" alt=""></span>
           <span class="rank-title"><strong>${platform.name}</strong><span>${platform.metric}</span></span>
-          <span class="rank-score"><b>${platform.score}</b><span>지수</span></span>
         </button>
       `).join("");
       qsa("[data-platform]").forEach(button => {
