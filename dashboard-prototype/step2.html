@@ -710,7 +710,7 @@
       <div>
         <small>MARKETING CONTENT DASHBOARD</small>
         <h1>STEP2 콘텐츠 추천 대시보드</h1>
-        <p>STEP1에서 도출한 고객층을 선택하면 플랫폼 순위와 플랫폼별 콘텐츠 우선순위를 확인하고, 선택한 콘텐츠의 구체 전략 생성으로 이어집니다.</p>
+        <p>STEP1에서 도출한 고객층을 선택하면 추천 플랫폼과 콘텐츠별 예상 금액을 확인하고, 구체적인 집행 전략으로 이어집니다.</p>
       </div>
     </section>
 
@@ -735,10 +735,10 @@
       <article class="panel">
         <div class="panel-head">
           <div>
-            <h2>콘텐츠 순위</h2>
-            <p id="contentBasis">선택 플랫폼에서 우선 제작할 콘텐츠</p>
+            <h2>콘텐츠</h2>
+            <p id="contentBasis">선택 플랫폼에서 제작할 콘텐츠</p>
           </div>
-          <span class="metric-chip">성과 지표 예시</span>
+          <span class="metric-chip">콘텐츠 선택</span>
         </div>
         <div class="content-list" id="contentList"></div>
       </article>
@@ -955,6 +955,14 @@
 
     function rankedContents(platformKey) {
       return [...platforms[platformKey].contents].sort((a, b) => b.score - a.score);
+    }
+
+    function getContentAmount(content) {
+      const cost = getContentCost(content);
+      const range = cost.match(/(?:월|ud68c당|건당)?\s*\d+만~\d+만 원/);
+      if (range) return range[0].replace(/\s+/g, " ");
+      if (cost.includes("판매가의")) return "판매가 10~30%";
+      return "별도 견적";
     }
 
     function getContentGuide(platform, content) {
@@ -1200,11 +1208,11 @@
     function renderContents() {
       const platform = platforms[activePlatform];
       const contents = rankedContents(activePlatform);
-      qs("#contentBasis").textContent = `${platform.name} 내 콘텐츠 우선순위`;
+      qs("#contentBasis").textContent = `${platform.name}에서 제작 가능한 콘텐츠`;
       qs("#contentList").innerHTML = contents.map((content, index) => `
         <button class="content-card" type="button" data-content="${index}" aria-selected="${index === activeContent}">
-          <span class="content-main"><strong>${index + 1}. ${content.name}</strong><p>${content.desc}</p></span>
-          <span class="content-score"><b>${content.score}</b><span>${content.metric}</span></span>
+          <span class="content-main"><strong>${content.name}</strong><p>${content.desc}</p></span>
+          <span class="content-score"><b>${getContentAmount(content)}</b><span>예상 금액</span></span>
         </button>
       `).join("");
       qsa("[data-content]").forEach(button => {
