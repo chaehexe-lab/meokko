@@ -781,6 +781,9 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+    const INSIGHT_API_BASE = ["127.0.0.1", "localhost"].includes(location.hostname)
+      ? "https://meokko.vercel.app"
+      : API_BASE;
 
     function getKoreaDateKey(offsetDays = 0) {
       const koreaNow = new Date(Date.now() + 9 * 60 * 60 * 1000);
@@ -1061,6 +1064,8 @@
     function renderCrmPeriod(key = "3m") {
       activeCrmPeriod = key;
       const data = crmPeriods[key];
+      if (!data) return;
+      liveCrmTarget = data.target;
       const male = data.male ?? 100 - data.female;
       qs("#crmCustomerTitle").innerHTML = `${data.label} 주요 구매고객층은 <em>${data.target}</em>입니다.`;
       qs("#crmPeriodCaption").textContent = `${data.from}~${data.to} 월별 결제고객수 기준`;
@@ -1072,7 +1077,9 @@
 
     qsa(".crm-period").forEach(button => button.addEventListener("click", () => {
       renderCrmPeriod(button.dataset.period);
+      updateOverallInsight();
       updateStep2Action();
+      generateAiInsight();
     }));
 
     function renderProductCard(product) {
@@ -1336,7 +1343,13 @@
       window.location.href = "step2.html";
     });
 
-    const aiInsightCacheKey = "meokko:daily-ai-insight:v8";
+    const aiInsightCacheKey = "meokko:crm-period-ai-insight:v1";
+    let aiInsightRequestId = 0;
+
+    function getAiInsightCacheKey() {
+      const activeCrm = crmPeriods[activeCrmPeriod] || crmPeriods["3m"];
+      return `${aiInsightCacheKey}:${getTodayKey()}:${activeCrmPeriod}:${activeCrm?.target || "unknown"}`;
+    }
 
     function getTodayKey() {
       const now = new Date();
@@ -1350,11 +1363,13 @@
     }
 
     async function generateAiInsight() {
+      const requestId = ++aiInsightRequestId;
+      const requestedPeriod = activeCrmPeriod;
       const payload = collectDashboardInsightPayload();
       const status = qs("#aiInsightStatus");
-      status.textContent = "오늘의 종합 인사이트를 갱신하고 있습니다.";
+      status.textContent = `${payload.crm.period} 타겟 인사이트를 갱신하고 있습니다.`;
       try {
-        const response = await fetch(`${API_BASE}/api/insight`, {
+        const response = await fetch(`${INSIGHT_API_BASE}/api/insight`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
@@ -1362,10 +1377,12 @@
         const contentType = response.headers.get("content-type") || "";
         if (!response.ok || !contentType.includes("application/json")) throw new Error("AI 인사이트 서버 미연결");
         const result = await response.json();
+        if (requestId !== aiInsightRequestId || requestedPeriod !== activeCrmPeriod) return;
         applyAiInsight(result.insight);
-        localStorage.setItem(aiInsightCacheKey, JSON.stringify({ date: getTodayKey(), model: result.model || "AI", insight: result.insight }));
-        status.textContent = `오늘 인사이트 갱신 완료 · ${result.model || "AI"}`;
+        localStorage.setItem(getAiInsightCacheKey(), JSON.stringify({ model: result.model || "AI", insight: result.insight }));
+        status.textContent = `${payload.crm.period} 인사이트 갱신 완료 · ${result.model || "AI"}`;
       } catch (error) {
+        if (requestId !== aiInsightRequestId || requestedPeriod !== activeCrmPeriod) return;
         qs("#overallInsight").textContent = "Mistral API 연결 후 종합 인사이트가 표시됩니다.";
         status.textContent = `AI 자동 갱신 실패 · ${error.message}`;
       }
@@ -1373,10 +1390,11 @@
 
     function initDailyAiInsight() {
       try {
-        const cached = JSON.parse(localStorage.getItem(aiInsightCacheKey) || "null");
-        if (cached?.date === getTodayKey() && cached.insight) {
+        const cached = JSON.parse(localStorage.getItem(getAiInsightCacheKey()) || "null");
+        if (cached?.insight) {
           applyAiInsight(cached.insight);
-          qs("#aiInsightStatus").textContent = `오늘 인사이트 적용됨 · ${cached.model || "AI"}`;
+          const activeCrm = crmPeriods[activeCrmPeriod] || crmPeriods["3m"];
+          qs("#aiInsightStatus").textContent = `${activeCrm.label} 인사이트 적용됨 · ${cached.model || "AI"}`;
           return;
         }
       } catch {}
