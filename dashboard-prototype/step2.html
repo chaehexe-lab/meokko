@@ -59,7 +59,7 @@
     main { padding: 28px 0 70px; }
     .hero {
       display: flex;
-      align-items: end;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 28px;
       margin-bottom: 16px;
@@ -67,7 +67,7 @@
     .hero small { color: var(--green-2); font-size: 12px; font-weight: 950; letter-spacing: .12em; }
     h1 { margin: 8px 0 0; font-size: clamp(30px, 4vw, 54px); line-height: 1.05; letter-spacing: -.06em; }
     .hero p { max-width: 620px; margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; font-weight: 760; }
-    .notice-drawer { position: fixed; top: 88px; right: 0; z-index: 40; }
+    .notice-drawer { position: fixed; top: 86px; right: 0; z-index: 40; }
     .notice-toggle {
       width: 44px;
       height: 44px;
@@ -519,6 +519,24 @@
       top: 22px;
       border-radius: 22px;
       background: rgba(36, 87, 197, .18);
+    }
+    .preview-visual.has-guide-image {
+      min-height: 0;
+      aspect-ratio: 16 / 9;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      background: #f4f7f5;
+    }
+    .preview-visual.has-guide-image::before,
+    .preview-visual.has-guide-image::after { display: none; }
+    .preview-visual.has-guide-image img {
+      position: absolute;
+      inset: 8px;
+      width: calc(100% - 16px);
+      height: calc(100% - 16px);
+      object-fit: fill;
+      border-radius: 12px;
     }
     .selected-platform {
       display: flex;
@@ -1137,11 +1155,11 @@
 
     <aside class="notice-drawer is-open" id="noticeDrawer">
       <button class="notice-toggle" id="noticeToggle" type="button" aria-label="공지사항 닫기" aria-expanded="true" aria-controls="noticePanel">
-        <img src="assets/step2/notice-megaphone-transparent.png" alt="">
+        <img src="assets/step2/notice-alert-transparent.png" alt="">
       </button>
       <div class="notice-panel" id="noticePanel">
         <a class="notice-link" href="https://sell.smartstore.naver.com/#/promotion/participation" target="_blank" rel="noopener noreferrer" aria-label="8월 슈퍼적립 프로모션 신청 화면으로 이동">
-          <span class="notice-icon" aria-hidden="true"><img src="assets/step2/notice-megaphone-transparent.png" alt=""></span>
+          <span class="notice-icon" aria-hidden="true"><img src="assets/step2/notice-alert-transparent.png" alt=""></span>
           <span class="notice-copy">
             <span class="notice-label">공지사항 <span>신청 가능</span></span>
             <strong>8월 슈퍼적립 참여형 프로모션</strong>
@@ -1796,8 +1814,12 @@
       const platform = platforms[activePlatform];
       const content = rankedContents(activePlatform)[activeContent];
       const guide = getContentGuide(platform, content);
+      const isNaverShoppingBanner = activePlatform === "naverShopping" && content === platforms.naverShopping.contents[3];
+      const preview = isNaverShoppingBanner
+        ? `<div class="preview-visual has-guide-image"><img src="assets/step2/guide-naver-shopping-search-ad.png" alt="Naver Shopping banner placement example"></div>`
+        : `<div class="preview-visual ${content.type}" aria-hidden="true"></div>`;
       qs("#detailCard").innerHTML = `
-        <div class="preview-visual ${content.type}" aria-hidden="true"></div>
+        ${preview}
         <div class="selected-platform">
           <img src="${logoPath}${platform.logo}" alt="">
           <div><strong>${content.name}</strong><span>${platform.name} · ${segment.label} · ${segment.target}</span></div>
