@@ -1238,18 +1238,6 @@
           <small>집행 방식</small>
           <p>${guide.how}</p>
         </div>
-        <div class="info-box">
-          <small>필요 소재</small>
-          <p>${guide.material}</p>
-        </div>
-        <div class="info-box">
-          <small>예상 비용</small>
-          <p>${getContentCost(content)}</p>
-        </div>
-        <div class="tag-row">
-          <span class="tag">${guide.metric}</span>
-          ${platform.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
-        </div>
         <button class="strategy-button" type="button" id="strategyButton">전략 보기</button>
       `;
       qs("#strategyButton").addEventListener("click", () => qs("#strategyPanel").scrollIntoView({ behavior: "smooth", block: "start" }));
