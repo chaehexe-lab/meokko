@@ -1323,11 +1323,16 @@
       };
     }
 
+    const step2PayloadKey = "meokko:step1-to-step2-payload:v1";
+
     function updateStep2Action() {
-      // STEP 1의 데이터 갱신 과정과 호환성을 유지하기 위한 빈 함수입니다.
+      try {
+        localStorage.setItem(step2PayloadKey, JSON.stringify(collectDashboardInsightPayload()));
+      } catch {}
     }
 
     qs("#step2Submit").addEventListener("click", () => {
+      updateStep2Action();
       window.location.href = "step2.html";
     });
 

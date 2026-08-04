@@ -922,9 +922,25 @@
     let activeSegment = "existing";
     let activePlatform = "naverShopping";
     let activeContent = 0;
+    const step1PayloadKey = "meokko:step1-to-step2-payload:v1";
 
     const qs = selector => document.querySelector(selector);
     const qsa = selector => [...document.querySelectorAll(selector)];
+
+    function applyStep1Payload() {
+      try {
+        const payload = JSON.parse(localStorage.getItem(step1PayloadKey) || "null");
+        const rules = payload?.insightRulesInput || {};
+        if (rules.existingCustomer) segments.existing.target = rules.existingCustomer;
+        if (rules.prospectCustomer) segments.prospect.target = rules.prospectCustomer;
+        if (payload?.crm?.source) {
+          segments.existing.basis = `${payload.crm.source}${payload.crm.period ? ` · ${payload.crm.period}` : ""}`;
+        }
+        if (payload?.prospect?.source) {
+          segments.prospect.basis = payload.prospect.source;
+        }
+      } catch {}
+    }
 
     function rankedPlatforms() {
       const scores = segments[activeSegment].platformScores;
@@ -1256,6 +1272,7 @@
       alert("AI 콘텐츠 제작 기능은 다음 단계에서 연결됩니다.");
     });
 
+    applyStep1Payload();
     activePlatform = rankedPlatforms()[0].key;
     render();
   </script>
