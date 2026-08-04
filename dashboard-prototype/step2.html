@@ -698,9 +698,45 @@
 
     /* Desktop overview: keep the full recommendation dashboard above the fold. */
     @media (min-width: 1041px) {
-      .topbar,
-      .hero {
+      .topbar {
         display: none;
+      }
+
+      .hero {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .hero > div {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .hero small {
+        flex: 0 0 auto;
+        font-size: 9px;
+        letter-spacing: .1em;
+      }
+
+      .hero h1 {
+        flex: 0 0 auto;
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.1;
+        white-space: nowrap;
+      }
+
+      .hero p {
+        min-width: 0;
+        max-width: none;
+        margin: 0;
+        overflow: hidden;
+        font-size: 11px;
+        line-height: 1.35;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
 
       .shell {
@@ -721,9 +757,9 @@
       }
 
       .dashboard-grid {
-        height: calc(100svh - 74px);
-        min-height: 590px;
-        max-height: 700px;
+        height: calc(100svh - 102px);
+        min-height: 600px;
+        max-height: 650px;
         gap: 12px;
       }
 
@@ -744,7 +780,7 @@
       }
 
       .rank-item {
-        min-height: 48px;
+        min-height: 47px;
         padding: 6px 8px;
       }
 
