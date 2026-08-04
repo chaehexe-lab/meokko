@@ -277,6 +277,55 @@
       border-radius: 22px;
       background: rgba(36, 87, 197, .18);
     }
+    .search-rank-card {
+      min-height: 340px;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 20px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle, rgba(27, 27, 27, .28) 1px, transparent 1.2px) 0 0 / 12px 12px,
+        #fff;
+      overflow: hidden;
+    }
+    .search-rank-card h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(21px, 2.1vw, 28px);
+      line-height: 1.15;
+      letter-spacing: -.045em;
+      text-align: center;
+    }
+    .search-rank-circle {
+      width: min(230px, 78%);
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 3px solid #7a7a7a;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .94);
+    }
+    .search-rank-position {
+      color: #1b1b1b;
+      font-size: clamp(68px, 7vw, 92px);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -.08em;
+    }
+    .search-rank-change {
+      align-self: center;
+      margin-top: 38px;
+      color: #1b1b1b;
+      font-size: clamp(18px, 2vw, 25px);
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+    }
     .selected-platform {
       display: flex;
       align-items: center;
@@ -1229,7 +1278,13 @@
       const content = rankedContents(activePlatform)[activeContent];
       const guide = getContentGuide(platform, content);
       qs("#detailCard").innerHTML = `
-        <div class="preview-visual ${content.type}" aria-hidden="true"></div>
+        <div class="search-rank-card" aria-label="꼬모냉장고 검색 순위 6위, 20퍼센트 상승">
+          <h3>꼬모냉장고 검색 순위</h3>
+          <div class="search-rank-circle">
+            <strong class="search-rank-position">6위</strong>
+            <span class="search-rank-change">△ 20%</span>
+          </div>
+        </div>
         <div class="selected-platform">
           <img src="${logoPath}${platform.logo}" alt="">
           <div><strong>${content.name}</strong><span>${platform.name} · ${segment.label} · ${segment.target}</span></div>
