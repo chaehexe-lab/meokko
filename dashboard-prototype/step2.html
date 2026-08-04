@@ -3,71 +3,691 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>STEP2 준비중</title>
+  <title>Meokko STEP2 Dashboard</title>
   <style>
     :root {
-      --bg: #f4f6f3;
-      --ink: #18201d;
-      --muted: #69736f;
-      --line: #dfe4df;
+      --bg: #f5f7f4;
       --panel: #ffffff;
-      --green: #225d45;
-      --shadow: 0 18px 55px rgba(37, 63, 51, .08);
+      --ink: #17211d;
+      --muted: #6d7872;
+      --line: #dce4df;
+      --green: #205d43;
+      --green-2: #2e7a58;
+      --mint: #e6f4ec;
+      --blue: #2457c5;
+      --orange: #ff8a3d;
+      --shadow: 0 18px 46px rgba(30, 58, 43, .08);
     }
+
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       min-width: 320px;
-      min-height: 100vh;
       color: var(--ink);
       background: var(--bg);
       font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       word-break: keep-all;
     }
-    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    button { font: inherit; }
+    .shell { width: min(1440px, calc(100% - 44px)); margin: 0 auto; }
     .topbar {
-      border-bottom: 1px solid rgba(24, 32, 29, .08);
-      background: rgba(244, 246, 243, .9);
-      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(23, 33, 29, .08);
+      background: rgba(245, 247, 244, .9);
+      backdrop-filter: blur(18px);
     }
-    .topbar-inner { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand { display: flex; align-items: center; gap: 11px; font-weight: 900; }
-    .brand-mark { width: 33px; height: 33px; display: grid; place-items: center; border-radius: 12px; color: #fff; background: var(--green); font-size: 12px; }
-    a { color: inherit; text-decoration: none; }
-    .back { padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--green); background: #fff; font-size: 12px; font-weight: 900; }
-    main { min-height: calc(100vh - 59px); display: grid; place-items: center; padding: 40px 0; }
-    .placeholder {
-      width: min(560px, 100%);
-      padding: 46px 28px;
+    .topbar-inner { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 950; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; color: #fff; background: var(--green); font-size: 12px; }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 14px;
       border: 1px solid var(--line);
-      border-radius: 24px;
+      border-radius: 999px;
+      color: var(--green);
+      background: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    main { padding: 28px 0 70px; }
+    .hero {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 16px;
+    }
+    .hero small { color: var(--green-2); font-size: 12px; font-weight: 950; letter-spacing: .12em; }
+    h1 { margin: 8px 0 0; font-size: clamp(30px, 4vw, 54px); line-height: 1.05; letter-spacing: -.06em; }
+    .hero p { max-width: 620px; margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; font-weight: 760; }
+    .customer-tabs {
+      display: inline-grid;
+      grid-template-columns: repeat(3, minmax(130px, 1fr));
+      gap: 7px;
+      margin-bottom: 13px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .customer-tab {
+      min-height: 42px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 950;
+    }
+    .customer-tab[aria-pressed="true"] { color: #fff; background: var(--green); }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, .95fr) minmax(320px, 1fr) minmax(320px, .95fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+    .panel {
+      min-height: 520px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
       background: var(--panel);
       box-shadow: var(--shadow);
+    }
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .panel-head h2 { margin: 0; font-size: 19px; letter-spacing: -.04em; }
+    .panel-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; font-weight: 800; }
+    .metric-chip {
+      flex: 0 0 auto;
+      padding: 7px 9px;
+      border-radius: 999px;
+      color: var(--green);
+      background: var(--mint);
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .rank-list { display: grid; gap: 8px; }
+    .rank-item {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 32px 40px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      color: var(--ink);
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: .16s ease;
+    }
+    .rank-item:hover { transform: translateY(-1px); border-color: #b9d0c4; }
+    .rank-item[aria-selected="true"] { border-color: var(--green); background: #f0f8f3; box-shadow: 0 12px 26px rgba(32, 93, 67, .10); }
+    .rank-num {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 11px;
+      color: var(--green);
+      background: var(--mint);
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .logo-box {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .logo-box img { width: 28px; height: 28px; object-fit: contain; }
+    .rank-title { min-width: 0; }
+    .rank-title strong { display: block; overflow: hidden; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; }
+    .rank-title span { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 780; }
+    .rank-score { text-align: right; }
+    .rank-score b { display: block; font-size: 16px; }
+    .rank-score span { display: block; color: var(--muted); font-size: 10px; font-weight: 850; }
+
+    .content-list { display: grid; gap: 10px; }
+    .content-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 70px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+      transition: .16s ease;
+    }
+    .content-card[aria-selected="true"] { border-color: var(--blue); box-shadow: 0 12px 26px rgba(36, 87, 197, .10); }
+    .visual {
+      height: 62px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #eef7f2, #d8e9df);
+      position: relative;
+      overflow: hidden;
+    }
+    .visual::before, .visual::after { content: ""; position: absolute; border-radius: 999px; background: rgba(32, 93, 67, .16); }
+    .visual::before { width: 36px; height: 36px; left: 10px; top: 12px; }
+    .visual::after { width: 70px; height: 10px; right: 10px; top: 14px; box-shadow: 0 18px 0 rgba(32,93,67,.12), 0 36px 0 rgba(32,93,67,.08); }
+    .visual.video { background: linear-gradient(135deg, #ffe9e9, #fff2d8); }
+    .visual.video::before { width: 0; height: 0; left: 34px; top: 21px; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 20px solid var(--orange); background: transparent; border-radius: 0; }
+    .visual.search { background: linear-gradient(135deg, #edf3ff, #e4f8ee); }
+    .visual.search::before { left: 13px; top: 14px; width: 50px; height: 12px; border-radius: 5px; background: rgba(36, 87, 197, .20); box-shadow: 0 18px 0 rgba(32,93,67,.14); }
+    .visual.social { background: linear-gradient(135deg, #f8eaff, #e6f4ff); }
+    .visual.social::before { width: 34px; height: 44px; left: 18px; top: 9px; border-radius: 10px; background: rgba(36, 87, 197, .18); }
+    .content-main strong { display: block; font-size: 14px; letter-spacing: -.02em; }
+    .content-main p { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; font-weight: 780; }
+    .content-score { text-align: right; }
+    .content-score b { display: block; color: var(--blue); font-size: 16px; }
+    .content-score span { display: block; color: var(--muted); font-size: 10px; font-weight: 850; }
+
+    .detail-card {
+      display: grid;
+      gap: 13px;
+    }
+    .preview-visual {
+      position: relative;
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #eef7f2, #d8e9df);
+    }
+    .preview-visual::before,
+    .preview-visual::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(32, 93, 67, .16);
+    }
+    .preview-visual::before {
+      width: 74px;
+      height: 74px;
+      left: 22px;
+      top: 28px;
+    }
+    .preview-visual::after {
+      width: 46%;
+      height: 16px;
+      right: 24px;
+      top: 34px;
+      box-shadow:
+        0 30px 0 rgba(32, 93, 67, .12),
+        0 60px 0 rgba(32, 93, 67, .08);
+    }
+    .preview-visual.video { background: linear-gradient(135deg, #ffe9e9, #fff2d8); }
+    .preview-visual.video::before {
+      width: 0;
+      height: 0;
+      left: 46%;
+      top: 50%;
+      transform: translate(-35%, -50%);
+      border-top: 24px solid transparent;
+      border-bottom: 24px solid transparent;
+      border-left: 38px solid var(--orange);
+      background: transparent;
+      border-radius: 0;
+    }
+    .preview-visual.search { background: linear-gradient(135deg, #edf3ff, #e4f8ee); }
+    .preview-visual.search::before {
+      left: 24px;
+      top: 34px;
+      width: 56%;
+      height: 18px;
+      border-radius: 8px;
+      background: rgba(36, 87, 197, .20);
+      box-shadow:
+        0 34px 0 rgba(32, 93, 67, .14),
+        0 68px 0 rgba(36, 87, 197, .10);
+    }
+    .preview-visual.social { background: linear-gradient(135deg, #f8eaff, #e6f4ff); }
+    .preview-visual.social::before {
+      width: 82px;
+      height: 104px;
+      left: 32px;
+      top: 22px;
+      border-radius: 22px;
+      background: rgba(36, 87, 197, .18);
+    }
+    .selected-platform {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f7faf7;
+    }
+    .selected-platform img { width: 44px; height: 44px; object-fit: contain; }
+    .selected-platform strong { display: block; font-size: 18px; }
+    .selected-platform span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .info-box {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+    .info-box small { color: var(--green-2); font-size: 11px; font-weight: 950; }
+    .info-box p { margin: 7px 0 0; color: var(--ink); font-size: 13px; line-height: 1.55; font-weight: 800; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag { padding: 7px 9px; border-radius: 999px; color: var(--green); background: var(--mint); font-size: 11px; font-weight: 900; }
+    .strategy-button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 14px;
+      color: #fff;
+      background: var(--green);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .strategy-panel {
+      margin-top: 14px;
+      min-height: 330px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .strategy-panel h2 { margin: 0; font-size: 24px; letter-spacing: -.04em; }
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .strategy-copy {
+      padding: 18px;
+      border-radius: 18px;
+      background: #f7faf7;
+    }
+    .strategy-copy h3 { margin: 0 0 10px; font-size: 18px; }
+    .strategy-copy p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.75; font-weight: 800; }
+    .strategy-extra {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .creator-card,
+    .action-card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+    .creator-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, #205d43, #73b88f);
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .creator-card:nth-child(2) .avatar { background: linear-gradient(135deg, #2457c5, #8bb2ff); }
+    .creator-card:nth-child(3) .avatar { background: linear-gradient(135deg, #ff8a3d, #ffc28a); }
+    .creator-name { min-width: 0; }
+    .creator-name strong,
+    .action-card strong {
+      display: block;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 14px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .creator-name span,
+    .action-card span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .creator-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin: 10px 0;
+    }
+    .creator-metrics b {
+      display: block;
+      padding: 8px;
+      border-radius: 11px;
+      color: var(--green);
+      background: var(--mint);
+      font-size: 12px;
       text-align: center;
     }
-    .placeholder small {
-      color: var(--green);
-      font-size: 12px;
-      font-weight: 950;
-      letter-spacing: .08em;
-    }
-    h1 {
-      margin: 14px 0 0;
-      font-size: clamp(28px, 4vw, 44px);
-      line-height: 1.1;
-      letter-spacing: -.05em;
-    }
-    p {
-      margin: 12px 0 0;
+    .creator-card p,
+    .action-card p {
+      margin: 8px 0 0;
       color: var(--muted);
-      font-size: 14px;
-      font-weight: 750;
-      line-height: 1.6;
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+    .action-card small {
+      display: inline-flex;
+      margin-bottom: 8px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: var(--blue);
+      background: #edf3ff;
+      font-size: 10px;
+      font-weight: 950;
+    }
+    .generate-card {
+      display: grid;
+      align-content: center;
+      gap: 10px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+    }
+    .generate-card strong { font-size: 18px; }
+    .generate-card span { color: var(--muted); font-size: 12px; line-height: 1.55; font-weight: 800; }
+    .generate-card button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 13px;
+      color: #fff;
+      background: var(--blue);
+      cursor: pointer;
+      font-weight: 950;
+    }
+
+    @media (max-width: 1040px) {
+      .hero { display: block; }
+      .dashboard-grid, .strategy-grid { grid-template-columns: 1fr; }
+      .panel { min-height: 0; }
     }
     @media (max-width: 680px) {
-      .shell { width: min(100% - 24px, 1180px); }
-      .topbar-inner { min-height: 54px; }
-      .placeholder { padding: 38px 20px; border-radius: 20px; }
+      .shell { width: min(100% - 24px, 1440px); }
+      .customer-tabs { width: 100%; grid-template-columns: 1fr; }
+      .rank-item { grid-template-columns: 28px 36px minmax(0, 1fr); }
+      .rank-score { grid-column: 3; text-align: left; }
+      .content-card { grid-template-columns: 1fr; }
+      .content-score { text-align: left; }
+      .strategy-extra { grid-template-columns: 1fr; }
+    }
+
+    /* Soft AI dashboard palette */
+    :root {
+      --bg: #dfe9f4;
+      --panel: rgba(255, 255, 255, .86);
+      --ink: #142033;
+      --muted: #6b7892;
+      --line: #cbd8e8;
+      --green: #2f74b7;
+      --green-2: #2e9fa3;
+      --mint: #d8f2ef;
+      --blue: #586fdc;
+      --orange: #49cabd;
+      --shadow:
+        0 1px 0 rgba(255, 255, 255, .96) inset,
+        0 18px 48px rgba(36, 63, 102, .16);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 23% 7%, rgba(73, 202, 190, .22), transparent 23rem),
+        radial-gradient(circle at 76% 17%, rgba(101, 120, 223, .20), transparent 25rem),
+        linear-gradient(180deg, #e7f0f9 0%, #dfe9f4 45%, #edf3f9 100%);
+    }
+
+    .topbar {
+      border-bottom-color: rgba(91, 124, 164, .10);
+      background: rgba(232, 240, 249, .88);
+      box-shadow: 0 1px 0 rgba(53, 83, 122, .12), 0 12px 32px rgba(42, 68, 102, .08);
+    }
+
+    .brand-mark,
+    .customer-tab[aria-pressed="true"],
+    .generate-card button {
+      background: linear-gradient(145deg, #32b9ad, #4d6fda);
+      box-shadow: 0 10px 26px rgba(43, 107, 178, .28);
+    }
+
+    .back,
+    .customer-tabs,
+    .panel,
+    .section-card,
+    .selected-platform,
+    .info-box,
+    .strategy-panel,
+    .strategy-copy,
+    .creator-card,
+    .action-card,
+    .generate-card {
+      border-color: rgba(96, 125, 164, .24);
+      background: rgba(248, 251, 255, .88);
+      box-shadow: 0 18px 46px rgba(42, 68, 104, .15);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero small,
+    .section-number,
+    .info-box small,
+    .tag,
+    .back {
+      color: #317db6;
+    }
+
+    .rank-item,
+    .content-card {
+      border-color: rgba(97, 127, 166, .22);
+      background: rgba(250, 252, 255, .86);
+    }
+
+    .rank-item:hover {
+      border-color: #a9dfe1;
+    }
+
+    .rank-item[aria-selected="true"] {
+      border-color: #2e9fa3;
+      background: linear-gradient(135deg, #ddf4f0, #e2e9ff);
+      box-shadow: 0 16px 30px rgba(46, 159, 163, .18);
+    }
+
+    .content-card[aria-selected="true"] {
+      border-color: #586fdc;
+      background: linear-gradient(135deg, #e2e9ff, #f4f8fd);
+      box-shadow: 0 16px 30px rgba(88, 111, 220, .18);
+    }
+
+    .rank-number,
+    .tag,
+    .action-card small {
+      color: #317db6;
+      background: #eef8ff;
+    }
+
+    .content-score b {
+      color: #6f8dff;
+    }
+
+    .preview-visual,
+    .visual {
+      background: linear-gradient(135deg, #ddf4f0, #e2e9ff);
+    }
+
+    .visual.video,
+    .preview-visual.video {
+      background: linear-gradient(135deg, #e2e9ff, #dceffa);
+    }
+
+    .visual.search,
+    .preview-visual.search {
+      background: linear-gradient(135deg, #ddf4f0, #e2eef8);
+    }
+
+    .visual.social,
+    .preview-visual.social {
+      background: linear-gradient(135deg, #e2e9ff, #ece8fb);
+    }
+
+    .avatar {
+      background: linear-gradient(135deg, #2e9fa3, #586fdc);
+    }
+
+    .creator-card:nth-child(2) .avatar {
+      background: linear-gradient(135deg, #586fdc, #8ea0f2);
+    }
+
+    .creator-card:nth-child(3) .avatar {
+      background: linear-gradient(135deg, #49cabd, #62b9e6);
+    }
+
+    /* Grafbase-inspired graphite on cool marble */
+    :root {
+      --color-graphite-ink: #1b1b1b;
+      --color-marble: #ffffff;
+      --color-drafting-gray: #eaeaea;
+      --color-steel: #60646c;
+      --color-ash: #7c7c7c;
+      --color-hairline: #e0e1e6;
+      --color-mint-signal: #00f2e6;
+      --color-sky: #00b9f1;
+      --gradient-forest-to-deep-gradient: linear-gradient(89.97deg, rgb(25, 160, 95) 0.02%, rgb(13, 127, 140) 123.85%);
+      --bg: var(--color-drafting-gray);
+      --panel: rgba(255, 255, 255, .88);
+      --ink: var(--color-graphite-ink);
+      --muted: var(--color-steel);
+      --line: var(--color-hairline);
+      --green: #0d7f8c;
+      --green-2: #19a05f;
+      --mint: rgba(0, 242, 230, .12);
+      --blue: #0d7f8c;
+      --orange: #00b9f1;
+      --shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+    }
+
+    body {
+      color: var(--color-graphite-ink);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(0, 242, 230, .16), transparent 22rem),
+        radial-gradient(circle at 84% 12%, rgba(0, 185, 241, .12), transparent 24rem),
+        linear-gradient(180deg, #f7f7f7 0%, var(--color-drafting-gray) 42%, #f2f2f2 100%);
+      font-family: Inter, Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .topbar {
+      border-bottom: 1px solid rgba(27, 27, 27, .08);
+      background: rgba(255, 255, 255, .76);
+      box-shadow: none;
+    }
+
+    .brand-mark,
+    .customer-tab[aria-pressed="true"],
+    .generate-card button {
+      background: var(--gradient-forest-to-deep-gradient);
+      box-shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+    }
+
+    .back,
+    .customer-tabs,
+    .panel,
+    .section-card,
+    .selected-platform,
+    .info-box,
+    .strategy-panel,
+    .strategy-copy,
+    .creator-card,
+    .action-card,
+    .generate-card,
+    .rank-item,
+    .content-card {
+      border: 1px solid rgba(27, 27, 27, .08);
+      background: rgba(255, 255, 255, .88);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 8px 24px rgba(0, 0, 0, .06);
+    }
+
+    .hero small,
+    .section-number,
+    .info-box small,
+    .tag,
+    .back,
+    .content-score b {
+      color: #0d7f8c;
+    }
+
+    .rank-item:hover {
+      border-color: rgba(13, 127, 140, .26);
+    }
+
+    .rank-item[aria-selected="true"],
+    .content-card[aria-selected="true"] {
+      border-color: rgba(13, 127, 140, .35);
+      background: rgba(0, 242, 230, .10);
+      box-shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+    }
+
+    .rank-number,
+    .tag,
+    .action-card small {
+      color: #0d7f8c;
+      background: rgba(0, 242, 230, .10);
+    }
+
+    .preview-visual,
+    .visual,
+    .visual.video,
+    .preview-visual.video,
+    .visual.search,
+    .preview-visual.search,
+    .visual.social,
+    .preview-visual.social {
+      background:
+        radial-gradient(circle at 22% 18%, rgba(0, 242, 230, .22), transparent 44%),
+        linear-gradient(135deg, #ffffff, #eaeaea);
+    }
+
+    .avatar,
+    .creator-card:nth-child(2) .avatar,
+    .creator-card:nth-child(3) .avatar {
+      background: var(--gradient-forest-to-deep-gradient);
     }
   </style>
 </head>
@@ -80,11 +700,564 @@
   </header>
 
   <main class="shell">
-    <section class="placeholder" aria-label="STEP2 준비 상태">
-      <small>STEP2</small>
-      <h1>아직 준비중...</h1>
-      <p>콘텐츠 추천 생성 화면은 다음 단계에서 연결됩니다.</p>
+    <section class="hero">
+      <div>
+        <small>MARKETING CONTENT DASHBOARD</small>
+        <h1>STEP2 콘텐츠 추천 대시보드</h1>
+        <p>STEP1에서 도출한 고객층을 선택하면 플랫폼 순위와 플랫폼별 콘텐츠 우선순위를 확인하고, 선택한 콘텐츠의 구체 전략 생성으로 이어집니다.</p>
+      </div>
+    </section>
+
+    <div class="customer-tabs" aria-label="고객 카테고리 선택">
+      <button class="customer-tab" type="button" data-segment="existing" aria-pressed="true">기존 고객</button>
+      <button class="customer-tab" type="button" data-segment="prospect" aria-pressed="false">잠재 고객</button>
+      <button class="customer-tab" type="button" data-segment="all" aria-pressed="false">전체 수요</button>
+    </div>
+
+    <section class="dashboard-grid" aria-label="STEP2 추천 흐름">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>플랫폼 순위</h2>
+            <p id="platformBasis">기존고객 기준 플랫폼 적합도 순위</p>
+          </div>
+          <span class="metric-chip">MAU/도달 지수 예시</span>
+        </div>
+        <div class="rank-list" id="platformList"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>콘텐츠 순위</h2>
+            <p id="contentBasis">선택 플랫폼에서 우선 제작할 콘텐츠</p>
+          </div>
+          <span class="metric-chip">성과 지표 예시</span>
+        </div>
+        <div class="content-list" id="contentList"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>상세 정보</h2>
+            <p>선택한 콘텐츠의 집행 방법</p>
+          </div>
+          <span class="metric-chip">콘텐츠 가이드</span>
+        </div>
+        <div class="detail-card" id="detailCard"></div>
+      </article>
+    </section>
+
+    <section class="strategy-panel" id="strategyPanel" aria-label="구체 전략">
+      <h2>구체 전략</h2>
+      <div class="strategy-grid">
+        <div class="strategy-copy">
+          <h3 id="strategyTitle">네이버 쇼핑 중심 전환 전략</h3>
+          <p id="strategyText">플랫폼과 콘텐츠를 선택하면 해당 조합에 맞는 구체 전략이 표시됩니다.</p>
+          <div class="strategy-extra" id="strategyExtra"></div>
+        </div>
+        <div class="generate-card">
+          <strong>마케팅 콘텐츠를 생성하시겠습니까?</strong>
+          <span id="generateSummary">선택된 고객층·플랫폼·콘텐츠 정보를 바탕으로 AI 제작 단계로 연결됩니다.</span>
+          <button type="button" id="generateButton">AI 콘텐츠 제작 시작</button>
+        </div>
+      </div>
     </section>
   </main>
+
+  <script>
+    const logoPath = "assets/step2-logos/";
+    const segments = {
+      existing: {
+        label: "기존 고객",
+        target: "40대 남성",
+        basis: "CRM 기존고객과 구매 전환 접점 기준",
+        platformScores: {
+          naverShopping: 94, google: 78, instagram: 66, youtube: 82, ohou: 63, blog: 86, tiktok: 52, edge: 61, naverCafe: 83
+        }
+      },
+      prospect: {
+        label: "잠재 고객",
+        target: "50대 남성",
+        basis: "네이버 쇼핑 클릭 기반 잠재고객 도달 기준",
+        platformScores: {
+          naverShopping: 91, google: 84, instagram: 59, youtube: 86, ohou: 57, blog: 80, tiktok: 46, edge: 73, naverCafe: 79
+        }
+      },
+      all: {
+        label: "전체 수요",
+        target: "전체 연령",
+        basis: "전 연령 공통 도달 가능성과 검색 접점 기준",
+        platformScores: {
+          naverShopping: 92, google: 90, instagram: 82, youtube: 95, ohou: 72, blog: 84, tiktok: 76, edge: 70, naverCafe: 78
+        }
+      }
+    };
+
+    const platforms = {
+      naverShopping: {
+        name: "네이버 쇼핑",
+        logo: "naver-shopping.png",
+        metric: "쇼핑 클릭·검색 접점",
+        summary: "검색 후 바로 상품 비교와 구매로 이어지는 전환형 플랫폼입니다.",
+        tags: ["쇼핑검색", "구매전환", "가격/혜택"],
+        strategy: "검색 의도가 강한 고객에게 상품명, 쇼핑검색광고, 파워링크를 우선 노출해 상세페이지 유입을 늘립니다.",
+        contents: [
+          { name: "쇼핑 검색 광고", desc: "키워드 검색 결과에 상품을 직접 노출하는 광고", metric: "예상 클릭수", score: 96, type: "search" },
+          { name: "파워링크", desc: "검색 결과 상단에서 구매 의도 고객을 상세페이지로 유도", metric: "키워드 검색량", score: 90, type: "search" },
+          { name: "쇼핑 라이브", desc: "홈쇼핑처럼 제품 사용 장면과 혜택을 실시간 설명", metric: "평균 시청자", score: 72, type: "video" },
+          { name: "배너", desc: "기획전·프로모션 영역에서 시각적으로 노출", metric: "예상 노출수", score: 68, type: "visual" }
+        ]
+      },
+      google: {
+        name: "Google",
+        logo: "google.png",
+        metric: "검색 클릭·디스플레이 도달",
+        summary: "검색형 광고와 웹 전반 배너로 신규 고객 유입을 만들 수 있습니다.",
+        tags: ["검색광고", "배너", "리타겟팅"],
+        strategy: "핵심 키워드를 검색하는 고객에게 파워링크형 검색광고를 노출하고, 관심 고객에게 배너로 재노출합니다.",
+        contents: [
+          { name: "파워링크/검색광고", desc: "Google 검색 결과에서 키워드 기반으로 노출되는 광고", metric: "예상 클릭수", score: 91, type: "search" },
+          { name: "배너", desc: "기사, 웹사이트, Gmail 등에서 이미지형으로 노출", metric: "예상 노출수", score: 85, type: "visual" }
+        ]
+      },
+      instagram: {
+        name: "Instagram",
+        logo: "instagram.png",
+        metric: "타겟 도달·참여",
+        summary: "감성 이미지와 짧은 영상으로 제품의 공간 연출 가치를 보여주기 좋습니다.",
+        tags: ["릴스", "스토리", "쇼핑태그"],
+        strategy: "감성 이미지와 짧은 영상으로 사용 장면을 먼저 보여주고, 쇼핑 태그와 프로필 링크로 구매 흐름을 만듭니다.",
+        contents: [
+          { name: "릴스 광고", desc: "짧은 세로 영상으로 제품 사용 장면을 확산", metric: "예상 도달수", score: 94, type: "social" },
+          { name: "캐러셀", desc: "여러 장의 이미지로 기능과 사용 상황을 순차 설명", metric: "저장수", score: 86, type: "social" },
+          { name: "스토리 광고", desc: "짧은 노출과 링크 클릭으로 빠른 행동 유도", metric: "링크 클릭수", score: 82, type: "social" },
+          { name: "게시물/해시태그", desc: "제품 이미지와 관심 키워드로 자연 노출", metric: "참여수", score: 76, type: "visual" },
+          { name: "크리에이터 협업", desc: "타겟 팔로워를 보유한 크리에이터를 통한 추천", metric: "평균 조회수", score: 71, type: "video" }
+        ]
+      },
+      youtube: {
+        name: "YouTube",
+        logo: "youtube.png",
+        metric: "조회·영상 도달",
+        summary: "사용 장면, 비교 리뷰, 쇼츠 확산을 통해 제품 이해도를 높일 수 있습니다.",
+        tags: ["쇼츠", "영상광고", "협업"],
+        strategy: "짧은 쇼츠로 관심을 만들고, 상세 리뷰·협업 영상으로 제품 장점과 사용 상황을 설명합니다.",
+        contents: [
+          { name: "쇼츠 릴스", desc: "짧은 영상으로 제품의 사용 장면을 빠르게 전달", metric: "예상 조회수", score: 93, type: "video" },
+          { name: "유튜버 협업 광고", desc: "관련 채널 영상 안에서 제품을 소개", metric: "평균 조회수", score: 88, type: "video" },
+          { name: "영상 전 광고", desc: "영상 시청 전 노출되는 인스트림 광고", metric: "완전 조회수", score: 81, type: "video" },
+          { name: "영상 속 광고", desc: "영상 중간에 삽입되는 광고", metric: "노출수", score: 75, type: "video" },
+          { name: "영상 밑 광고", desc: "영상 하단 또는 주변에 노출되는 광고", metric: "노출수", score: 70, type: "visual" },
+          { name: "쇼츠 제휴", desc: "쇼츠 제작자와 제휴해 제품 노출", metric: "평균 조회수", score: 67, type: "video" }
+        ]
+      },
+      ohou: {
+        name: "오늘의집",
+        logo: "ohou.png",
+        metric: "스크랩·상품 클릭",
+        summary: "공간 배치와 인테리어 맥락에서 제품을 설득하기 좋은 채널입니다.",
+        tags: ["공간연출", "기획전", "체험단"],
+        strategy: "자취방, 홈바, 화장대 등 실제 배치 장면 안에 제품을 넣어 공간 활용 가치를 보여줍니다.",
+        contents: [
+          { name: "오늘의딜/기획전 입점", desc: "할인·테마 기획전에서 제품을 노출", metric: "상품 클릭수", score: 89, type: "visual" },
+          { name: "콘텐츠 제품 태그", desc: "인테리어 콘텐츠 안에 제품 태그를 삽입", metric: "태그 클릭수", score: 85, type: "social" },
+          { name: "체험단 운영", desc: "실제 공간 후기 콘텐츠를 확보", metric: "콘텐츠 조회수", score: 76, type: "visual" },
+          { name: "라이브", desc: "실시간으로 공간 활용과 혜택을 설명", metric: "평균 시청자", score: 68, type: "video" }
+        ]
+      },
+      blog: {
+        name: "블로그",
+        logo: "blog.png",
+        metric: "검색 노출·조회",
+        summary: "구매 전 비교, 후기, FAQ를 길게 설명해 불안을 줄이는 채널입니다.",
+        tags: ["SEO", "후기", "체험단"],
+        strategy: "검색 키워드 기반 리뷰와 FAQ 글을 쌓아 구매 전 고민을 해결하고 상세페이지로 연결합니다.",
+        contents: [
+          { name: "파워블로거 협업", desc: "영향력 있는 블로거의 리뷰형 콘텐츠", metric: "평균 조회수", score: 88, type: "visual" },
+          { name: "체험단 리뷰", desc: "다수의 사용 후기 글을 확보", metric: "리뷰 글 수", score: 82, type: "visual" },
+          { name: "브랜드 공식 블로그 운영", desc: "제품 정보, FAQ, 활용법을 공식 콘텐츠로 축적", metric: "검색 노출수", score: 76, type: "search" }
+        ]
+      },
+      tiktok: {
+        name: "TikTok",
+        logo: "tiktok.png",
+        metric: "숏폼 조회·참여",
+        summary: "짧고 강한 후킹으로 제품을 재미있게 각인시키는 채널입니다.",
+        tags: ["숏폼", "크리에이터", "밈"],
+        strategy: "제품을 직접 설명하기보다 짧은 상황극, 밈, 사용 전후 장면으로 기억에 남게 만듭니다.",
+        contents: [
+          { name: "크리에이터 협업 영상", desc: "크리에이터 톤으로 제품을 자연스럽게 노출", metric: "평균 조회수", score: 89, type: "video" },
+          { name: "인피드 비디오 광고", desc: "추천 피드 사이에 노출되는 세로형 영상 광고", metric: "예상 도달수", score: 83, type: "video" }
+        ]
+      },
+      edge: {
+        name: "Microsoft Edge/Bing",
+        logo: "edge.png",
+        metric: "Bing 검색·네이티브 노출",
+        summary: "검색광고와 네이티브 배너로 비교 탐색 고객에게 접근할 수 있습니다.",
+        tags: ["Bing", "검색광고", "네이티브"],
+        strategy: "가격과 기능을 비교 검색하는 고객에게 검색광고와 네이티브 광고로 노출합니다.",
+        contents: [
+          { name: "Bing 검색광고", desc: "Bing 검색 결과에 노출되는 키워드 광고", metric: "예상 클릭수", score: 84, type: "search" },
+          { name: "배너/네이티브 광고", desc: "Edge/MSN 콘텐츠 영역에 자연스럽게 노출", metric: "예상 노출수", score: 73, type: "visual" }
+        ]
+      },
+      naverCafe: {
+        name: "네이버 카페",
+        logo: "naver-cafe.png",
+        metric: "게시글·회원 반응",
+        summary: "구매 고민, 후기, 공동구매 맥락에서 신뢰 기반 확산이 가능합니다.",
+        tags: ["맘카페", "바이럴", "공동구매"],
+        strategy: "구매 전 불안을 해결하는 후기·질문답변형 게시글과 공동구매 제안으로 커뮤니티 신뢰를 활용합니다.",
+        contents: [
+          { name: "맘카페", desc: "육아·생활 커뮤니티에서 후기형으로 제품 노출", metric: "회원 수", score: 86, type: "visual" },
+          { name: "바이럴 게시글", desc: "구매 고민 해결형 글로 자연스럽게 확산", metric: "게시글 조회수", score: 80, type: "search" },
+          { name: "카페 제휴 공동구매", desc: "카페 회원 대상 혜택과 공동구매 제안", metric: "참여 신청수", score: 74, type: "visual" }
+        ]
+      }
+    };
+
+    let activeSegment = "existing";
+    let activePlatform = "naverShopping";
+    let activeContent = 0;
+
+    const qs = selector => document.querySelector(selector);
+    const qsa = selector => [...document.querySelectorAll(selector)];
+
+    function rankedPlatforms() {
+      const scores = segments[activeSegment].platformScores;
+      return Object.keys(platforms).map(key => ({ key, ...platforms[key], score: scores[key] || 0 })).sort((a, b) => b.score - a.score);
+    }
+
+    function rankedContents(platformKey) {
+      return [...platforms[platformKey].contents].sort((a, b) => b.score - a.score);
+    }
+
+    function getContentGuide(platform, content) {
+      const name = content.name;
+      if (name.includes("협업") || name.includes("제휴") || name.includes("파워블로거")) {
+        return {
+          how: "타겟 고객층과 팔로워가 겹치는 creator를 선정해 제품 사용 장면을 자연스럽게 노출합니다.",
+          material: "제품 제공, 핵심 메시지, 필수 노출 장면, 해시태그, 구매 링크",
+          metric: "조회수, 댓글 반응, 저장수, 링크 클릭수"
+        };
+      }
+      if (name.includes("검색") || name.includes("파워링크") || name.includes("Bing")) {
+        return {
+          how: "핵심 키워드를 검색한 고객에게 광고 제목과 상세페이지 링크를 노출합니다.",
+          material: "검색 키워드, 광고 제목, 짧은 설명문, 랜딩 URL, 가격/혜택 문구",
+          metric: "노출수, 클릭수, 클릭률, 상세페이지 유입수"
+        };
+      }
+      if (name.includes("배너") || name.includes("네이티브")) {
+        return {
+          how: "관심 고객이 많이 보는 지면에 이미지형 소재를 노출해 제품 인지를 만듭니다.",
+          material: "대표 이미지, 짧은 카피, 혜택 문구, CTA 버튼, 랜딩 URL",
+          metric: "노출수, 클릭률, 재방문수"
+        };
+      }
+      if (name.includes("라이브")) {
+        return {
+          how: "실시간 방송에서 제품 사용 장면, 보관 용도, 혜택을 설명하며 구매를 유도합니다.",
+          material: "방송 대본, 제품 시연 장면, 쿠폰/혜택, 예상 질문 답변",
+          metric: "시청자 수, 채팅 반응, 방송 중 클릭수, 주문 전환"
+        };
+      }
+      if (name.includes("체험단") || name.includes("리뷰")) {
+        return {
+          how: "실사용자가 제품을 직접 사용한 뒤 후기 콘텐츠를 작성하도록 운영합니다.",
+          material: "체험단 모집 문구, 리뷰 가이드, 촬영 가이드, 필수 키워드",
+          metric: "리뷰 수, 검색 노출수, 긍정 키워드 비율"
+        };
+      }
+      if (name.includes("쇼츠") || name.includes("릴스") || name.includes("비디오") || name.includes("영상")) {
+        return {
+          how: "짧은 세로 영상으로 제품의 사용 상황을 빠르게 보여주고 구매 링크로 연결합니다.",
+          material: "3초 후킹 문구, 사용 장면 컷, 자막, 썸네일, CTA",
+          metric: "조회수, 완주율, 저장수, 링크 클릭수"
+        };
+      }
+      if (name.includes("캐러셀") || name.includes("게시물") || name.includes("해시태그") || name.includes("제품 태그")) {
+        return {
+          how: "여러 장의 이미지나 게시물 태그로 제품 사용 상황과 장점을 단계적으로 보여줍니다.",
+          material: "대표 이미지, 사용 상황 컷, 해시태그, 쇼핑 태그, 짧은 설명",
+          metric: "저장수, 공유수, 프로필 클릭수, 상품 태그 클릭수"
+        };
+      }
+      if (name.includes("공동구매")) {
+        return {
+          how: "커뮤니티 회원에게 기간 한정 혜택을 제시해 묶음 구매와 입소문을 유도합니다.",
+          material: "공동구매 혜택, 신청 링크, 제품 FAQ, 후기 이미지",
+          metric: "신청 수, 댓글 문의 수, 공동구매 전환율"
+        };
+      }
+      return {
+        how: `${platform.name}에서 ${content.name} 형식으로 제품의 사용 상황과 구매 이유를 전달합니다.`,
+        material: "핵심 키워드, 제품 이미지, 짧은 카피, 구매 링크",
+        metric: content.metric
+      };
+    }
+
+    function getContentCost(content) {
+      const name = content.name;
+      if (name.includes("검색") || name.includes("파워링크") || name.includes("Bing")) {
+        return "클릭당 과금 · 월 30만~100만 원부터 테스트";
+      }
+      if (name.includes("배너") || name.includes("네이티브")) {
+        return "노출/클릭 과금 · 월 50만~200만 원 규모";
+      }
+      if (name.includes("라이브")) {
+        return "방송 운영비+혜택비 · 회당 50만~300만 원";
+      }
+      if (name.includes("협업") || name.includes("제휴") || name.includes("파워블로거")) {
+        return "creator 규모별 협찬비 · 건당 30만~300만 원";
+      }
+      if (name.includes("체험단") || name.includes("리뷰")) {
+        return "제품 제공+운영비 · 10명 기준 50만~150만 원";
+      }
+      if (name.includes("쇼츠") || name.includes("릴스") || name.includes("비디오") || name.includes("영상")) {
+        return "소재 제작+광고비 · 건당 30만~150만 원";
+      }
+      if (name.includes("캐러셀") || name.includes("게시물") || name.includes("해시태그") || name.includes("제품 태그")) {
+        return "소재 제작+광고비 · 건당 10만~80만 원";
+      }
+      if (name.includes("공동구매")) {
+        return "할인/수수료 기반 · 판매가의 10~30% 수준";
+      }
+      return "집행 방식별 견적 확인 필요";
+    }
+
+    function getConcreteStrategy(segment, platform, content) {
+      const target = segment.target;
+      const name = content.name;
+      if (name.includes("협업") || name.includes("제휴") || name.includes("파워블로거")) {
+        return `${target}에게 도달할 수 있는 생활가전·인테리어·홈바·뷰티 보관 분야 creator를 우선 추천합니다. 후보는 팔로워 규모보다 댓글 반응률, 최근 조회수, 제품 배치 장면의 자연스러움을 기준으로 선별합니다.`;
+      }
+      if (name.includes("검색") || name.includes("파워링크") || name.includes("Bing")) {
+        return `${target}이 검색할 가능성이 높은 키워드를 광고 그룹으로 묶고, 제목에는 사용 목적을 먼저 배치합니다. 예: "사무실 냉장고", "와인 냉장고", "화장품 냉장고"처럼 검색 의도가 바로 보이는 문구를 테스트합니다.`;
+      }
+      if (name.includes("배너") || name.includes("네이티브")) {
+        return `${target}이 바로 이해할 수 있도록 제품 사진보다 사용 장면을 크게 배치합니다. 배너 문구는 "내 공간에 두는 작은 냉장고"처럼 용도와 장면을 한 번에 전달하는 방향이 적합합니다.`;
+      }
+      if (name.includes("라이브")) {
+        return `${target}이 궁금해할 용량, 소음, 보관 가능 품목을 방송에서 직접 보여줍니다. 방송 구성은 제품 외관 소개보다 실제 사용 장면, Q&A, 한정 혜택 순서가 적합합니다.`;
+      }
+      if (name.includes("체험단") || name.includes("리뷰")) {
+        return `${target}과 비슷한 사용 환경을 가진 체험단을 모집해 "어디에 두고 무엇을 보관했는지"가 드러나는 후기를 확보합니다. 리뷰 가이드에는 소음, 용량, 디자인 만족도를 반드시 포함합니다.`;
+      }
+      if (name.includes("쇼츠") || name.includes("릴스") || name.includes("비디오") || name.includes("영상")) {
+        return `${target}의 사용 상황을 5초 안에 보여주는 짧은 영상이 적합합니다. 첫 컷은 책상 옆, 홈바, 화장대처럼 배치 장면으로 시작하고 마지막 컷에서 제품명과 구매 링크를 연결합니다.`;
+      }
+      if (name.includes("캐러셀") || name.includes("게시물") || name.includes("해시태그") || name.includes("제품 태그")) {
+        return `${target}이 저장하고 비교할 수 있도록 1장에는 대표 장면, 2장에는 보관 품목, 3장에는 장점, 4장에는 구매 링크를 배치합니다. 해시태그는 사용 목적 중심으로 구성합니다.`;
+      }
+      if (name.includes("공동구매")) {
+        return `${target}이 모여 있는 카페에서 기간 한정 혜택과 후기 이미지를 함께 제시합니다. 댓글 문의가 많은 항목은 FAQ로 바로 답변해 구매 망설임을 줄입니다.`;
+      }
+      return `${target} 기준으로 ${platform.name}의 ${content.name} 콘텐츠를 제작하고, STEP1의 핵심 키워드와 반응 데이터를 카피·이미지·CTA에 반영합니다.`;
+    }
+
+    function isCreatorContent(content) {
+      const name = content.name;
+      return name.includes("협업") || name.includes("제휴") || name.includes("파워블로거");
+    }
+
+    function getCreatorCandidates(segment, platform) {
+      const target = segment.target;
+      const segmentTone = activeSegment === "prospect" ? "잠재고객 확장" : activeSegment === "all" ? "전연령 도달" : "기존고객 강화";
+      const candidates = {
+        existing: [
+          { initials: "HB", name: "홈바·와인 공간 리뷰어", field: "홈바/가전 리뷰", reach: "8.4만", fit: "92", reason: "사무실·홈바 배치 장면을 자주 다뤄 40대 남성의 사용 목적과 잘 맞습니다." },
+          { initials: "OF", name: "오피스 데스크 셋업 creator", field: "업무공간/데스크테리어", reach: "6.1만", fit: "88", reason: "책상 옆 음료 보관, 개인 공간 연출 콘텐츠로 전환 메시지를 만들기 좋습니다." },
+          { initials: "RV", name: "생활가전 비교 리뷰어", field: "소형가전 비교", reach: "5.7만", fit: "84", reason: "가격·용량·소음처럼 구매 전 비교 지점을 설명하는 콘텐츠에 적합합니다." }
+        ],
+        prospect: [
+          { initials: "WN", name: "와인·홈바 라이프 creator", field: "와인/홈바", reach: "7.9만", fit: "91", reason: "와인 냉장고 니즈가 있는 잠재 고객에게 활용성과 분위기를 동시에 보여줄 수 있습니다." },
+          { initials: "MN", name: "미니멀 라이프 리뷰어", field: "1인공간/수납", reach: "6.8만", fit: "86", reason: "작은 공간에서 쓰는 보관 가전 이미지를 만들기 좋습니다." },
+          { initials: "IT", name: "실용 가전 큐레이터", field: "생활가전/구매가이드", reach: "5.2만", fit: "82", reason: "구매 이유와 가격 부담을 객관적으로 설명하는 리뷰형 콘텐츠에 적합합니다." }
+        ],
+        all: [
+          { initials: "SP", name: "공간 스타일링 creator", field: "인테리어/소품", reach: "11.2만", fit: "90", reason: "전연령이 이해하기 쉬운 공간 연출형 콘텐츠로 제품 이미지를 넓게 확산할 수 있습니다." },
+          { initials: "BT", name: "뷰티 보관 리뷰어", field: "뷰티/화장품 보관", reach: "9.6만", fit: "87", reason: "화장품 냉장고와 선물용 메시지를 시각적으로 보여주기 좋습니다." },
+          { initials: "LV", name: "생활꿀템 숏폼 creator", field: "생활팁/숏폼", reach: "12.8만", fit: "85", reason: "짧은 영상으로 제품의 용도와 사용 장면을 빠르게 각인시키기 좋습니다." }
+        ]
+      };
+      return candidates[activeSegment].map(candidate => ({ ...candidate, target, segmentTone, platform: platform.name }));
+    }
+
+    function getActionCards(segment, platform, content) {
+      const target = segment.target;
+      const name = content.name;
+      if (name.includes("검색") || name.includes("파워링크") || name.includes("Bing")) {
+        return [
+          { label: "키워드 묶음", title: "사용 목적형 키워드 우선", body: `${target} 기준으로 사무실·홈바·화장품 보관처럼 구매 목적이 보이는 키워드를 광고 그룹으로 구성합니다.` },
+          { label: "광고 문구", title: "첫 문장에 보관 장면 배치", body: "가격보다 사용 장면과 용도를 먼저 보여주고, 상세페이지에서는 용량·소음·보관 가능 품목을 보완합니다." },
+          { label: "측정 지표", title: "클릭 이후 행동 확인", body: "노출수보다 상세페이지 유입, 문의 클릭, 장바구니 전환을 우선 확인합니다." }
+        ];
+      }
+      if (name.includes("배너") || name.includes("네이티브")) {
+        return [
+          { label: "이미지", title: "제품 단독보다 공간 장면", body: `${target}이 바로 이해할 수 있도록 책상 옆, 홈바, 화장대 같은 배치 장면을 크게 씁니다.` },
+          { label: "카피", title: "한 줄로 용도 전달", body: "작은 냉장고가 필요한 이유를 8~12자 중심 문구로 압축합니다." },
+          { label: "랜딩", title: "상세페이지 바로 연결", body: "배너 클릭 후 상품 비교가 아니라 선택 제품 상세로 바로 이동시키는 구성이 적합합니다." }
+        ];
+      }
+      if (name.includes("라이브")) {
+        return [
+          { label: "방송 구성", title: "실사용 장면 먼저", body: "첫 3분 안에 보관 품목, 소음 체감, 공간 배치 장면을 보여줍니다." },
+          { label: "Q&A", title: "구매 전 불안 즉시 해소", body: "용량, 냉각력, 전기료, 배송 관련 질문을 고정 답변으로 준비합니다." },
+          { label: "전환 장치", title: "라이브 한정 혜택", body: "방송 중 쿠폰과 구매 링크를 고정해 실시간 전환을 유도합니다." }
+        ];
+      }
+      if (name.includes("체험단") || name.includes("리뷰")) {
+        return [
+          { label: "모집 기준", title: "타겟 사용환경 일치", body: `${target}과 비슷한 공간을 가진 체험자를 우선 선정합니다.` },
+          { label: "리뷰 가이드", title: "사진 3장 필수", body: "제품 배치 전경, 내부 보관컷, 사용 후기를 한 세트로 받습니다." },
+          { label: "활용", title: "FAQ와 상세페이지 재사용", body: "반복 문의가 많은 내용을 상세페이지와 광고 문구에 재활용합니다." }
+        ];
+      }
+      return [
+        { label: "후킹", title: "첫 화면에 사용 상황", body: `${target}이 공감할 수 있는 공간 장면으로 시작합니다.` },
+        { label: "구성", title: "문제 → 제품 → 결과", body: "냉장 보관이 필요한 상황을 보여준 뒤 꼬모냉장고로 해결되는 흐름을 만듭니다." },
+        { label: "CTA", title: "구매 링크 명확히", body: "마지막 화면에서 제품명과 구매 이동 버튼을 분명히 노출합니다." }
+      ];
+    }
+
+    function renderStrategyExtra(segment, platform, content) {
+      if (isCreatorContent(content)) {
+        qs("#strategyExtra").innerHTML = getCreatorCandidates(segment, platform).map(candidate => `
+          <article class="creator-card">
+            <div class="creator-top">
+              <span class="avatar">${candidate.initials}</span>
+              <span class="creator-name">
+                <strong>${candidate.name}</strong>
+                <span>${candidate.field} · ${candidate.segmentTone}</span>
+              </span>
+            </div>
+            <div class="creator-metrics">
+              <b>도달 ${candidate.reach}</b>
+              <b>적합도 ${candidate.fit}</b>
+            </div>
+            <p>${candidate.reason}</p>
+          </article>
+        `).join("");
+        return;
+      }
+
+      qs("#strategyExtra").innerHTML = getActionCards(segment, platform, content).map(card => `
+        <article class="action-card">
+          <small>${card.label}</small>
+          <strong>${card.title}</strong>
+          <p>${card.body}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderPlatforms() {
+      const segment = segments[activeSegment];
+      qs("#platformBasis").textContent = `${segment.label}(${segment.target}) · ${segment.basis}`;
+      qs("#platformList").innerHTML = rankedPlatforms().map((platform, index) => `
+        <button class="rank-item" type="button" data-platform="${platform.key}" aria-selected="${platform.key === activePlatform}">
+          <span class="rank-num">${index + 1}</span>
+          <span class="logo-box"><img src="${logoPath}${platform.logo}" alt=""></span>
+          <span class="rank-title"><strong>${platform.name}</strong><span>${platform.metric}</span></span>
+          <span class="rank-score"><b>${platform.score}</b><span>지수</span></span>
+        </button>
+      `).join("");
+      qsa("[data-platform]").forEach(button => {
+        button.addEventListener("click", () => {
+          activePlatform = button.dataset.platform;
+          activeContent = 0;
+          render();
+        });
+      });
+    }
+
+    function renderContents() {
+      const platform = platforms[activePlatform];
+      const contents = rankedContents(activePlatform);
+      qs("#contentBasis").textContent = `${platform.name} 내 콘텐츠 우선순위`;
+      qs("#contentList").innerHTML = contents.map((content, index) => `
+        <button class="content-card" type="button" data-content="${index}" aria-selected="${index === activeContent}">
+          <span class="content-main"><strong>${index + 1}. ${content.name}</strong><p>${content.desc}</p></span>
+          <span class="content-score"><b>${content.score}</b><span>${content.metric}</span></span>
+        </button>
+      `).join("");
+      qsa("[data-content]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeContent = Number(button.dataset.content);
+          render();
+        });
+      });
+    }
+
+    function renderDetail() {
+      const segment = segments[activeSegment];
+      const platform = platforms[activePlatform];
+      const content = rankedContents(activePlatform)[activeContent];
+      const guide = getContentGuide(platform, content);
+      qs("#detailCard").innerHTML = `
+        <div class="preview-visual ${content.type}" aria-hidden="true"></div>
+        <div class="selected-platform">
+          <img src="${logoPath}${platform.logo}" alt="">
+          <div><strong>${content.name}</strong><span>${platform.name} · ${segment.label} · ${segment.target}</span></div>
+        </div>
+        <div class="info-box">
+          <small>집행 방식</small>
+          <p>${guide.how}</p>
+        </div>
+        <div class="info-box">
+          <small>필요 소재</small>
+          <p>${guide.material}</p>
+        </div>
+        <div class="info-box">
+          <small>예상 비용</small>
+          <p>${getContentCost(content)}</p>
+        </div>
+        <div class="tag-row">
+          <span class="tag">${guide.metric}</span>
+          ${platform.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
+        </div>
+        <button class="strategy-button" type="button" id="strategyButton">전략 보기</button>
+      `;
+      qs("#strategyButton").addEventListener("click", () => qs("#strategyPanel").scrollIntoView({ behavior: "smooth", block: "start" }));
+    }
+
+    function renderStrategy() {
+      const segment = segments[activeSegment];
+      const platform = platforms[activePlatform];
+      const content = rankedContents(activePlatform)[activeContent];
+      qs("#strategyTitle").textContent = `${segment.label} 대상 ${platform.name} · ${content.name} 전략`;
+      qs("#strategyText").textContent = getConcreteStrategy(segment, platform, content);
+      renderStrategyExtra(segment, platform, content);
+      qs("#generateSummary").textContent = `${segment.label} / ${platform.name} / ${content.name} 조합으로 AI 생성 입력값을 구성합니다.`;
+    }
+
+    function render() {
+      qsa(".customer-tab").forEach(tab => tab.setAttribute("aria-pressed", String(tab.dataset.segment === activeSegment)));
+      renderPlatforms();
+      renderContents();
+      renderDetail();
+      renderStrategy();
+    }
+
+    qsa(".customer-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        activeSegment = tab.dataset.segment;
+        activePlatform = rankedPlatforms()[0].key;
+        activeContent = 0;
+        render();
+      });
+    });
+
+    qs("#generateButton").addEventListener("click", () => {
+      alert("AI 콘텐츠 제작 기능은 다음 단계에서 연결됩니다.");
+    });
+
+    activePlatform = rankedPlatforms()[0].key;
+    render();
+  </script>
 </body>
 </html>
