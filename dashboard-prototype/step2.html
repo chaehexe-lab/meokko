@@ -695,6 +695,118 @@
         radial-gradient(circle at 0 0, rgba(217, 239, 118, .20), transparent 28rem),
         var(--bg);
     }
+
+    /* Desktop overview: keep the full recommendation dashboard above the fold. */
+    @media (min-width: 1041px) {
+      .topbar,
+      .hero {
+        display: none;
+      }
+
+      .shell {
+        width: min(1500px, calc(100% - 16px));
+      }
+
+      main {
+        padding: 8px 0 56px;
+      }
+
+      .customer-tabs {
+        margin-bottom: 10px;
+        padding: 5px;
+      }
+
+      .customer-tab {
+        min-height: 38px;
+      }
+
+      .dashboard-grid {
+        height: calc(100svh - 74px);
+        min-height: 590px;
+        max-height: 700px;
+        gap: 12px;
+      }
+
+      .panel {
+        min-height: 0;
+        height: 100%;
+        padding: 14px;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .panel-head {
+        margin-bottom: 10px;
+      }
+
+      .rank-list {
+        gap: 6px;
+      }
+
+      .rank-item {
+        min-height: 48px;
+        padding: 6px 8px;
+      }
+
+      .content-list {
+        gap: 8px;
+      }
+
+      .content-card {
+        min-height: 62px;
+        padding: 10px;
+      }
+
+      .detail-card {
+        gap: 8px;
+      }
+
+      .preview-visual {
+        min-height: 112px;
+      }
+
+      .selected-platform {
+        padding: 9px 11px;
+      }
+
+      .selected-platform img {
+        width: 38px;
+        height: 38px;
+      }
+
+      .info-box {
+        padding: 10px 11px;
+      }
+
+      .info-box p {
+        margin-top: 5px;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .tag-row {
+        gap: 5px;
+      }
+
+      .tag {
+        padding: 6px 8px;
+        font-size: 10px;
+      }
+
+      .strategy-button {
+        min-height: 40px;
+      }
+
+      .strategy-panel {
+        scroll-margin-top: 8px;
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .strategy-panel {
+        scroll-margin-top: 72px;
+      }
+    }
   </style>
 </head>
 <body>
