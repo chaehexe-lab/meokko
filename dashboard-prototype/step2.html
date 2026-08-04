@@ -135,7 +135,7 @@
     }
     .customer-tabs {
       display: inline-grid;
-      grid-template-columns: repeat(3, minmax(84px, 1fr));
+      grid-template-columns: auto repeat(2, minmax(84px, 1fr));
       gap: 4px;
       margin-bottom: 12px;
       padding: 4px;
@@ -155,6 +155,88 @@
       font-weight: 950;
     }
     .customer-tab[aria-pressed="true"] { color: #fff; background: var(--green); }
+    .existing-tab-control {
+      display: grid;
+      grid-template-columns: minmax(84px, 1fr) auto;
+      align-items: center;
+      gap: 4px;
+      padding-right: 3px;
+      border-radius: 10px;
+      transition: background .16s ease;
+    }
+    .existing-tab-control:has(.customer-tab[aria-pressed="true"]) {
+      background: var(--gradient-forest-to-deep-gradient);
+      box-shadow: rgba(0, 0, 0, .15) 0 4px 20px 0;
+    }
+    .existing-tab-control .customer-tab[aria-pressed="true"] {
+      background: transparent;
+    }
+    .customer-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .customer-toolbar .customer-tabs { margin-bottom: 0; }
+    .customer-tabs .period-filter {
+      min-height: 24px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .customer-tabs .period-filter select {
+      width: 68px;
+      min-height: 24px;
+      padding: 0 16px 0 6px;
+      border: 1px solid rgba(27, 27, 27, .24);
+      border-radius: 6px;
+      background: #fff;
+      color: #242424;
+      font-size: 9px;
+    }
+    .period-filter {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      padding: 3px;
+      border: 1px solid rgba(27, 27, 27, .08);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .88);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 8px 24px rgba(0, 0, 0, .06);
+      transition: opacity .16s ease;
+    }
+    .period-filter[data-disabled="true"] { opacity: .45; }
+    .period-filter select {
+      min-height: 26px;
+      padding: 0 22px 0 8px;
+      border: 0;
+      border-radius: 7px;
+      outline: none;
+      color: #0d7f8c;
+      background: rgba(0, 242, 230, .10);
+      cursor: pointer;
+      font: inherit;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .panel-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .target-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: #0d7f8c;
+      background: rgba(0, 242, 230, .10);
+      font-size: 10px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
 
     .dashboard-grid {
       display: grid;
@@ -541,7 +623,9 @@
       .shell { width: min(100% - 24px, 1440px); }
       .hero { display: block; }
       .hero-rank-card { width: 100%; margin-top: 16px; transform: none; }
+      .customer-toolbar { align-items: stretch; flex-direction: column; }
       .customer-tabs { width: 100%; grid-template-columns: 1fr; }
+      .period-filter { align-self: flex-start; }
       .rank-item { grid-template-columns: 28px 36px minmax(0, 1fr); }
       .rank-score { grid-column: 3; text-align: left; }
       .content-card { grid-template-columns: 1fr; }
@@ -791,6 +875,26 @@
         radial-gradient(circle at 0 0, rgba(217, 239, 118, .20), transparent 28rem),
         var(--bg);
     }
+
+    /* Keep only the platform ranking compact: five items on the first row, four on the second. */
+    @media (min-width: 1041px) {
+      .dashboard-grid {
+        grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr);
+      }
+      .platform-panel {
+        grid-column: 1 / -1;
+        min-height: 0;
+      }
+      .platform-panel .rank-list {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .platform-panel .rank-item {
+        grid-template-columns: 30px 38px minmax(0, 1fr);
+        min-height: 58px;
+        padding: 8px 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -806,7 +910,6 @@
       <div>
         <small>MARKETING CONTENT DASHBOARD</small>
         <h1>STEP2 콘텐츠 추천 대시보드</h1>
-        <p>STEP1에서 도출한 고객층을 선택하면 추천 플랫폼과 콘텐츠별 예상 금액을 확인하고, 구체적인 집행 전략으로 이어집니다.</p>
       </div>
       <aside class="hero-rank-card" aria-label="꼬모냉장고 검색 순위 6위, 전월 대비 20퍼센트 상승">
         <strong class="hero-rank-title">꼬모냉장고 검색 순위</strong>
@@ -817,17 +920,30 @@
       </aside>
     </section>
 
-    <div class="customer-tabs" aria-label="고객 카테고리 선택">
-      <button class="customer-tab" type="button" data-segment="existing" aria-pressed="true">기존 고객</button>
-      <button class="customer-tab" type="button" data-segment="prospect" aria-pressed="false">잠재 고객</button>
-      <button class="customer-tab" type="button" data-segment="all" aria-pressed="false">전체 수요</button>
+    <div class="customer-toolbar">
+      <div class="customer-tabs" aria-label="고객 카테고리 선택">
+        <div class="existing-tab-control">
+          <button class="customer-tab" type="button" data-segment="existing" aria-pressed="true">기존 고객</button>
+          <label class="period-filter" id="periodFilter">
+            <select id="crmPeriod" aria-label="기존 고객 분석 기간">
+              <option value="3m">3개월</option>
+              <option value="6m">6개월</option>
+              <option value="12m">12개월</option>
+              <option value="all">전체 누적</option>
+            </select>
+          </label>
+        </div>
+        <button class="customer-tab" type="button" data-segment="prospect" aria-pressed="false">잠재 고객</button>
+        <button class="customer-tab" type="button" data-segment="all" aria-pressed="false">전체 수요</button>
+      </div>
     </div>
 
     <section class="dashboard-grid" aria-label="STEP2 추천 흐름">
-      <article class="panel">
+      <article class="panel platform-panel">
         <div class="panel-head">
-          <div>
+          <div class="panel-title-row">
             <h2>플랫폼 순위</h2>
+            <span class="target-chip" id="platformTarget">타겟층 · 40대 남성</span>
           </div>
         </div>
         <div class="rank-list" id="platformList"></div>
@@ -896,6 +1012,13 @@
           naverShopping: 92, google: 90, instagram: 82, youtube: 95, ohou: 72, blog: 84, tiktok: 76, edge: 70, naverCafe: 78
         }
       }
+    };
+
+    let crmPeriodTargets = {
+      "3m": { label: "최근 3개월", target: "40대 남성" },
+      "6m": { label: "최근 6개월", target: "40대 여성" },
+      "12m": { label: "최근 12개월", target: "40대 여성" },
+      all: { label: "전체 누적", target: "40대 여성" }
     };
 
     const platforms = {
@@ -1023,6 +1146,7 @@
     };
 
     let activeSegment = "existing";
+    let activePeriod = "3m";
     let activePlatform = "naverShopping";
     let activeContent = 0;
     const step1PayloadKey = "meokko:step1-to-step2-payload:v1";
@@ -1043,6 +1167,34 @@
           segments.prospect.basis = payload.prospect.source;
         }
       } catch {}
+    }
+
+    async function loadCrmPeriodTargets() {
+      try {
+        const response = await fetch("/api/dashboard/crm", { cache: "no-store" });
+        if (!response.ok) return;
+        const snapshot = await response.json();
+        const periods = snapshot?.periods || {};
+        Object.keys(crmPeriodTargets).forEach(key => {
+          if (!periods[key]?.target) return;
+          crmPeriodTargets[key] = {
+            label: key === "all" ? "전체 누적" : periods[key].label,
+            target: periods[key].target
+          };
+        });
+        render();
+      } catch {}
+    }
+
+    function getActiveTarget() {
+      if (activeSegment === "existing") {
+        return crmPeriodTargets[activePeriod]?.target || segments.existing.target;
+      }
+      return segments[activeSegment].target;
+    }
+
+    function getActiveSegment() {
+      return { ...segments[activeSegment], target: getActiveTarget() };
     }
 
     function rankedPlatforms() {
@@ -1283,6 +1435,7 @@
     }
 
     function renderPlatforms() {
+      qs("#platformTarget").textContent = `타겟층 · ${getActiveTarget()}`;
       qs("#platformList").innerHTML = rankedPlatforms().map((platform, index) => `
         <button class="rank-item" type="button" data-platform="${platform.key}" aria-selected="${platform.key === activePlatform}">
           <span class="rank-num">${index + 1}</span>
@@ -1316,7 +1469,7 @@
     }
 
     function renderDetail() {
-      const segment = segments[activeSegment];
+      const segment = getActiveSegment();
       const platform = platforms[activePlatform];
       const content = rankedContents(activePlatform)[activeContent];
       const guide = getContentGuide(platform, content);
@@ -1336,7 +1489,7 @@
     }
 
     function renderStrategy() {
-      const segment = segments[activeSegment];
+      const segment = getActiveSegment();
       const platform = platforms[activePlatform];
       const content = rankedContents(activePlatform)[activeContent];
       qs("#strategyTitle").textContent = `${segment.label} 대상 ${platform.name} · ${content.name} 전략`;
@@ -1357,6 +1510,9 @@
 
     function render() {
       qsa(".customer-tab").forEach(tab => tab.setAttribute("aria-pressed", String(tab.dataset.segment === activeSegment)));
+      qs("#crmPeriod").value = activePeriod;
+      qs("#crmPeriod").disabled = activeSegment !== "existing";
+      qs("#periodFilter").dataset.disabled = String(activeSegment !== "existing");
       renderPlatforms();
       renderContents();
       renderDetail();
@@ -1373,6 +1529,11 @@
       });
     });
 
+    qs("#crmPeriod").addEventListener("change", event => {
+      activePeriod = event.target.value;
+      render();
+    });
+
     qs("#generateButton").addEventListener("click", () => {
       alert("AI 콘텐츠 제작 기능은 다음 단계에서 연결됩니다.");
     });
@@ -1382,6 +1543,7 @@
     applyStep1Payload();
     activePlatform = rankedPlatforms()[0].key;
     render();
+    loadCrmPeriodTargets();
   </script>
 </body>
 </html>
