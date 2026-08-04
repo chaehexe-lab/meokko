@@ -800,9 +800,7 @@
         <div class="panel-head">
           <div>
             <h2>플랫폼 순위</h2>
-            <p id="platformBasis">기존고객 기준 플랫폼 적합도 순위</p>
           </div>
-          <span class="metric-chip">MAU/도달 지수 예시</span>
         </div>
         <div class="rank-list" id="platformList"></div>
       </article>
@@ -811,9 +809,7 @@
         <div class="panel-head">
           <div>
             <h2>콘텐츠</h2>
-            <p id="contentBasis">선택 플랫폼에서 제작할 콘텐츠</p>
           </div>
-          <span class="metric-chip">콘텐츠 선택</span>
         </div>
         <div class="content-list" id="contentList"></div>
       </article>
@@ -821,10 +817,8 @@
       <article class="panel">
         <div class="panel-head">
           <div>
-            <h2>상세 정보</h2>
-            <p>선택한 콘텐츠의 집행 방법</p>
+            <h2>콘텐츠 가이드</h2>
           </div>
-          <span class="metric-chip">콘텐츠 가이드</span>
         </div>
         <div class="detail-card" id="detailCard"></div>
       </article>
@@ -1261,13 +1255,11 @@
     }
 
     function renderPlatforms() {
-      const segment = segments[activeSegment];
-      qs("#platformBasis").textContent = `${segment.label}(${segment.target}) · ${segment.basis}`;
       qs("#platformList").innerHTML = rankedPlatforms().map((platform, index) => `
         <button class="rank-item" type="button" data-platform="${platform.key}" aria-selected="${platform.key === activePlatform}">
           <span class="rank-num">${index + 1}</span>
           <span class="logo-box"><img src="${logoPath}${platform.logo}" alt=""></span>
-          <span class="rank-title"><strong>${platform.name}</strong><span>${platform.metric}</span></span>
+          <span class="rank-title"><strong>${platform.name}</strong></span>
         </button>
       `).join("");
       qsa("[data-platform]").forEach(button => {
@@ -1280,9 +1272,7 @@
     }
 
     function renderContents() {
-      const platform = platforms[activePlatform];
       const contents = rankedContents(activePlatform);
-      qs("#contentBasis").textContent = `${platform.name}에서 제작 가능한 콘텐츠`;
       qs("#contentList").innerHTML = contents.map((content, index) => `
         <button class="content-card" type="button" data-content="${index}" aria-selected="${index === activeContent}">
           <span class="content-main"><strong>${content.name}</strong><p>${content.desc}</p></span>
