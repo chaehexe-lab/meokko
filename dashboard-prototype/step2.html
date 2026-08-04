@@ -67,6 +67,72 @@
     .hero small { color: var(--green-2); font-size: 12px; font-weight: 950; letter-spacing: .12em; }
     h1 { margin: 8px 0 0; font-size: clamp(30px, 4vw, 54px); line-height: 1.05; letter-spacing: -.06em; }
     .hero p { max-width: 620px; margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; font-weight: 760; }
+    .hero-rank-card {
+      width: min(240px, 23vw);
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      flex: 0 0 auto;
+      padding: 0;
+      transform: translateY(18px);
+    }
+    .hero-rank-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #4d6a6f;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.2;
+      letter-spacing: -.01em;
+      text-align: center;
+    }
+    .hero-rank-title::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #19a05f;
+      box-shadow: 0 0 0 4px rgba(25, 160, 95, .10);
+    }
+    .hero-rank-ring {
+      position: relative;
+      isolation: isolate;
+      width: 116px;
+      aspect-ratio: 1;
+      display: grid;
+      place-content: center;
+      gap: 4px;
+      border: 0;
+      border-radius: 50%;
+      background: conic-gradient(#19a05f 0 72deg, rgba(13, 127, 140, .16) 72deg 360deg);
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(13, 127, 140, .10);
+    }
+    .hero-rank-ring::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      z-index: -1;
+      border-radius: 50%;
+      background: rgba(247, 247, 247, .96);
+    }
+    .hero-rank-ring strong {
+      color: #174f59;
+      font-size: 38px;
+      font-weight: 850;
+      line-height: 1;
+      letter-spacing: -.08em;
+    }
+    .hero-rank-ring span {
+      color: #0d7f8c;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: -.01em;
+    }
     .customer-tabs {
       display: inline-grid;
       grid-template-columns: repeat(3, minmax(130px, 1fr));
@@ -439,12 +505,14 @@
     }
 
     @media (max-width: 1040px) {
-      .hero { display: block; }
+      .hero { align-items: center; }
       .dashboard-grid, .strategy-grid { grid-template-columns: 1fr; }
       .panel { min-height: 0; }
     }
     @media (max-width: 680px) {
       .shell { width: min(100% - 24px, 1440px); }
+      .hero { display: block; }
+      .hero-rank-card { width: 100%; margin-top: 16px; transform: none; }
       .customer-tabs { width: 100%; grid-template-columns: 1fr; }
       .rank-item { grid-template-columns: 28px 36px minmax(0, 1fr); }
       .rank-score { grid-column: 3; text-align: left; }
@@ -712,6 +780,13 @@
         <h1>STEP2 콘텐츠 추천 대시보드</h1>
         <p>STEP1에서 도출한 고객층을 선택하면 추천 플랫폼과 콘텐츠별 예상 금액을 확인하고, 구체적인 집행 전략으로 이어집니다.</p>
       </div>
+      <aside class="hero-rank-card" aria-label="꼬모냉장고 검색 순위 6위, 전월 대비 20퍼센트 상승">
+        <strong class="hero-rank-title">꼬모냉장고 검색 순위</strong>
+        <div class="hero-rank-ring" aria-hidden="true">
+          <strong>6위</strong>
+          <span>▲ 20% 상승</span>
+        </div>
+      </aside>
     </section>
 
     <div class="customer-tabs" aria-label="고객 카테고리 선택">
