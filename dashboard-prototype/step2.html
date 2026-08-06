@@ -522,7 +522,7 @@
     }
     .preview-visual.has-guide-image {
       min-height: 0;
-      aspect-ratio: 16 / 9;
+      aspect-ratio: 3 / 2;
       display: grid;
       place-items: center;
       padding: 0;
@@ -535,7 +535,7 @@
       inset: 8px;
       width: calc(100% - 16px);
       height: calc(100% - 16px);
-      object-fit: fill;
+      object-fit: cover;
       border-radius: 12px;
     }
     .selected-platform {
@@ -1436,6 +1436,58 @@
       }
     };
 
+    const captureFiles = {
+      naverShopping: [
+        "01-naver-shopping-search.png",
+        "02-naver-powerlink.png",
+        "03-naver-shopping-live.png",
+        "04-naver-shopping-banner.png"
+      ],
+      google: [
+        "05-google-search-ad.png",
+        "06-google-display-banner.png"
+      ],
+      instagram: [
+        "07-instagram-reels.png",
+        "08-instagram-carousel.png",
+        "09-instagram-story.png",
+        "10-instagram-feed.png",
+        "11-instagram-creator.png"
+      ],
+      youtube: [
+        "12-youtube-shorts.png",
+        "13-youtube-creator.png",
+        "14-youtube-instream.png",
+        "14-youtube-instream.png",
+        "15-youtube-display.png",
+        "12-youtube-shorts.png"
+      ],
+      ohou: [
+        "16-ohou-deal.png",
+        "17-ohou-product-tag.png",
+        "18-ohou-review.png",
+        "19-ohou-live.png"
+      ],
+      blog: [
+        "20-blog-creator-review.png",
+        "20-blog-creator-review.png",
+        "21-blog-official.png"
+      ],
+      tiktok: [
+        "22-tiktok-creator.png",
+        "23-tiktok-infeed.png"
+      ],
+      edge: [
+        "24-bing-search.png",
+        "25-edge-native.png"
+      ],
+      naverCafe: [
+        "26-naver-cafe-viral.png",
+        "26-naver-cafe-viral.png",
+        "27-naver-cafe-groupbuy.png"
+      ]
+    };
+
     let activeSegment = "existing";
     let activePeriod = "3m";
     let activePlatform = "naverShopping";
@@ -1814,9 +1866,10 @@
       const platform = platforms[activePlatform];
       const content = rankedContents(activePlatform)[activeContent];
       const guide = getContentGuide(platform, content);
-      const isNaverShoppingBanner = activePlatform === "naverShopping" && content === platforms.naverShopping.contents[3];
-      const preview = isNaverShoppingBanner
-        ? `<div class="preview-visual has-guide-image"><img src="assets/step2/guide-naver-shopping-search-ad.png" alt="Naver Shopping banner placement example"></div>`
+      const originalContentIndex = platform.contents.indexOf(content);
+      const captureFile = captureFiles[activePlatform]?.[originalContentIndex];
+      const preview = captureFile
+        ? `<div class="preview-visual has-guide-image"><img src="assets/step2-captures/${captureFile}" alt="${platform.name} ${content.name} 광고 노출 목업"></div>`
         : `<div class="preview-visual ${content.type}" aria-hidden="true"></div>`;
       qs("#detailCard").innerHTML = `
         ${preview}
